@@ -10,6 +10,7 @@ import {
 } from 'discord.js';
 
 import axios, { type AxiosError } from 'axios';
+import { URL } from 'url';
 
 import { type Client } from '../../typings/discord';
 import { discord } from '../../utils/standardize';
@@ -22,16 +23,17 @@ const cmd: SlashCommandBuilder = new SlashCommandBuilder()
 
 const run = async (client: Client, interaction: ChatInputCommandInteraction): Promise<void> => {
     try {
-        const url = interaction.options.getString(`url`, true);
+        const inputURL = interaction.options.getString(`url`, true);
+        const url = new URL(inputURL);
 
         const sEmbed = new EmbedBuilder()
-            .setAuthor({ name: `URL Status`, iconURL: interaction.guild?.iconURL() ?? undefined, url })
+            .setAuthor({ name: `URL Status`, iconURL: interaction.guild?.iconURL() ?? undefined, url: url.href })
             .setTimestamp()
             .setFooter({ text: config.footer });
 
         const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
-                .setURL(url)
+                .setURL(url.href)
                 .setLabel(`View Site`)
                 .setStyle(ButtonStyle.Link)
         );
@@ -41,7 +43,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
         /**
          * @todo Change UA so that axios isn't detected.
          */
-        axios.get(url).then(res => {
+        axios.get(url.href).then(res => {
             sEmbed.setColor(config.colors.teal);
             sEmbed.addFields([{ name: `Response`, value: config.httpCodes[res.status] !== undefined ? `${res.status} - ${config.httpCodes[res.status]}` : `The bot could not understand the response sent by the server.` }]);
         }).catch((err: AxiosError) => {
@@ -50,7 +52,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
             sEmbed.setColor(config.colors.red);
             sEmbed.addFields([{ name: `Response`, value: status !== undefined && config.httpCodes[status] !== undefined ? `${status} - ${config.httpCodes[status]}` : `The bot's attempt to establish a connection to the server timed out.` }]);
         }).finally(() => {
-            sEmbed.setDescription(`[${discord(url)}](${url})`);
+            sEmbed.setDescription(`[${discord(url.hostname)}](${url.href})`);
             void interaction.followUp({
                 embeds: [sEmbed],
                 components: [sRow]
