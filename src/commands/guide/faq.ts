@@ -24,19 +24,20 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
         .addFields([
             {
                 name: `What is this server?`,
-                value: `The community area for Surviv Reloaded, an open-source server for the now defunct online game surviv.io.`
+                value: `This is the official Discord server for Suroi, an open-source 2D battle royale game inspired by surviv.io.
+This used to be the server for Surviv Reloaded, a surviv.io remake.`
             },
             {
                 name: `What is this bot?`,
-                value: `This bot was originally made by DamienVesper & Killaship to save the hassle of explaining exactly what this project is to everyone.`
+                value: `This bot was originally made by DamienVesper & Killaship to save the hassle of explaining exactly what Surviv Reloaded was to everyone. Updated by Katie for Suroi`
             },
             {
-                name: `What is Surviv Reloaded?`,
-                value: `An open source server implementation of surviv.io, utilizing the client from the original game. In other words, it's surviv.io, just hosted on a different server.`
+                name: `What is Suroi`,
+                value: `Suroi is a new open-source 2D battle royale game inspired by surviv.io.`
             },
             {
                 name: `Where can I get more info?`,
-                value: `More information can be found on our [GitHub](https://github.com/SurvivReloaded).`
+                value: `More information can be found on our [GitHub](https://github.com/HasangerGames/suroi).`
             }
         ])
         .setTimestamp()

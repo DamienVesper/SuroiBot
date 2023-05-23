@@ -32,27 +32,28 @@ const translateCode = (code: number | undefined): string => {
 const run = async (client: Client, interaction: ChatInputCommandInteraction): Promise<void> => {
     await interaction.deferReply();
 
-    const naRes = await axios.get(`https://resurviv.io`).then(res => res.status).catch((err: AxiosError) => err.response?.status);
-    const euRes = await axios.get(`https://eu.resurviv.io`).then(res => res.status).catch((err: AxiosError) => err.response?.status);
-    const asRes = await axios.get(`https://as.resurviv.io`).then(res => res.status).catch((err: AxiosError) => err.response?.status);
+    const naRes = await axios.get(`https://suroi.io`).then(res => res.status).catch((err: AxiosError) => err.response?.status);
+    //const euRes = await axios.get(`https://eu.resurviv.io`).then(res => res.status).catch((err: AxiosError) => err.response?.status);
+    //const asRes = await axios.get(`https://as.resurviv.io`).then(res => res.status).catch((err: AxiosError) => err.response?.status);
 
     const sEmbed = new EmbedBuilder()
         .setColor(config.colors.teal)
         .setAuthor({ name: `Server Status`, iconURL: interaction.guild?.iconURL() ?? undefined })
         .setDescription(`Current status of all Surviv Reloaded servers.\n\n**NOTE:** If your game is frozen, it's most likely that the client froze or crashed. The game is still relatively unstable, you'll have to reload the game.`)
         .addFields([
-            { name: `resurviv.io`, value: translateCode(naRes) },
-            { name: `eu.resurviv.io`, value: translateCode(euRes) },
-            { name: `as.resurviv.io`, value: translateCode(asRes) }
+            { name: `suroi.io`, value: translateCode(naRes) }
+            //{ name: `eu.resurviv.io`, value: translateCode(euRes) },
+            //{ name: `as.resurviv.io`, value: translateCode(asRes) }
         ])
         .setTimestamp()
         .setFooter({ text: config.footer });
 
     const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
-            .setURL(`https://resurviv.io`)
-            .setLabel(`resurviv.io`)
+            .setURL(`https://suroi.io`)
+            .setLabel(`suroi.io`)
             .setStyle(ButtonStyle.Link),
+    /*
         new ButtonBuilder()
             .setURL(`https://eu.resurviv.io`)
             .setLabel(`eu.resurviv.io`)
@@ -61,6 +62,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
             .setURL(`https://as.resurviv.io`)
             .setLabel(`as.resurviv.io`)
             .setStyle(ButtonStyle.Link)
+    */
     );
 
     void interaction.followUp({

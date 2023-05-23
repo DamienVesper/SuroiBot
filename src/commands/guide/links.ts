@@ -18,7 +18,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
     const sEmbed = new EmbedBuilder()
         .setColor(config.colors.orange)
         .setAuthor({ name: `Useful Links`, iconURL: interaction.guild?.iconURL() ?? undefined })
-        .setDescription(`[Resurviv.io - Stable](https://resurviv.io)\n[Resurviv.io - Beta](https://test.resurviv.io)\n[Discord](https://discord.resurviv.io)\n[Subreddit](https://reddit.com/r/survivreloaded)\n[GitHub](https://github.com/SurvivReloaded)\n[Bot GitHub](https://github.com/DamienVesper/SurvivReloadedBot)`)
+        .setDescription(`[Suroi.io - Stable](https://suroi.io)\n[Discord](https://discord.suroi.io)\n[Subreddit](https://reddit.com/r/suroigame)\n[GitHub](https://github.com/HasangerGames/suroi)\n[Bot GitHub](https://github.com/DamienVesper/SurvivReloadedBot)`)
         .setTimestamp()
         .setFooter({ text: config.footer });
 

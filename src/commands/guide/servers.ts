@@ -17,20 +17,12 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
 
     const sEmbed = new EmbedBuilder()
         .setColor(config.colors.orange)
-        .setAuthor({ name: `Resurviv.io Servers`, iconURL: interaction.guild?.iconURL() ?? undefined })
-        .setDescription(`A list of servers hosting Surviv Reloaded.\nIf you are looking for the beta server, click [here](https://test.resurviv.io).`)
+        .setAuthor({ name: `Suroi.io Servers`, iconURL: interaction.guild?.iconURL() ?? undefined })
+        .setDescription(`A list of servers hosting Suroi.\nDon't see your region? Other than the North America server, they are volunteer hosted. Interested in hosting a server? Contact Hasanger for details.')
         .addFields([
             {
                 name: `North America`,
-                value: `[resurviv.io](https://resurviv.io)`
-            },
-            {
-                name: `Europe`,
-                value: `[eu.resurviv.io](https://eu.resurviv.io)`
-            },
-            {
-                name: `Asia`,
-                value: `[as.resurviv.io](https://as.resurviv.io)`
+                value: `[surio.io](https://suroi.io)`
             }
         ])
         .setTimestamp()
