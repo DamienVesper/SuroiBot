@@ -11,7 +11,7 @@ import { type Client } from '../typings/discord';
 const refreshActivity = async (client: Client): Promise<void> => {
     client.user?.setPresence({
         activities: [{
-            name: `Surviv Reloaded`,
+            name: `Suroi`,
             type: ActivityType.Watching
         }],
 

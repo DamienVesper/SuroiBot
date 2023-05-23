@@ -24,16 +24,11 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
         .addFields([
             {
                 name: `What is this server?`,
-                value: `This is the official Discord server for Suroi, an open-source 2D battle royale game inspired by surviv.io.
-This used to be the server for Surviv Reloaded, a surviv.io remake.`
+                value: `This is the official Discord server for Suroi, an open-source 2D battle royale game inspired by surviv.io.\nThis used to be the server for Surviv Reloaded, a remake of the latter.`
             },
             {
                 name: `What is this bot?`,
-                value: `This bot was originally made by DamienVesper & Killaship to save the hassle of explaining exactly what Surviv Reloaded was to everyone. Updated by Katie for Suroi`
-            },
-            {
-                name: `What is Suroi`,
-                value: `Suroi is a new open-source 2D battle royale game inspired by surviv.io.`
+                value: `This bot was originally made by <@${config.users.damienvesper}> & <@${config.users.killaship}> to explain the significance of Surviv Reloaded. It was later updated by <@${config.users.katloo}> for Suroi.`
             },
             {
                 name: `Where can I get more info?`,
@@ -45,7 +40,7 @@ This used to be the server for Surviv Reloaded, a surviv.io remake.`
 
     const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
-            .setURL(`https://resurviv.io`)
+            .setURL(`https://suroi.io`)
             .setLabel(`Website`)
             .setStyle(ButtonStyle.Link)
     );

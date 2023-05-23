@@ -10,7 +10,7 @@ import { type Client } from '../../typings/discord';
 
 const cmd: SlashCommandBuilder = new SlashCommandBuilder()
     .setName(`servers`)
-    .setDescription(`View servers hosting Surviv Reloaded.`);
+    .setDescription(`View servers hosting Suroi.`);
 
 const run = async (client: Client, interaction: ChatInputCommandInteraction): Promise<void> => {
     if (interaction.guild === null || interaction.guild.rulesChannel === null) return;
@@ -18,7 +18,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
     const sEmbed = new EmbedBuilder()
         .setColor(config.colors.orange)
         .setAuthor({ name: `Suroi.io Servers`, iconURL: interaction.guild?.iconURL() ?? undefined })
-        .setDescription(`A list of servers hosting Suroi.\nDon't see your region? Other than the North America server, they are volunteer hosted. Interested in hosting a server? Contact Hasanger for details.`)
+        .setDescription(`A list of servers hosting Suroi.\nDon't see your region? Other than the North America server, they are volunteer hosted. Interested in hosting a server? Contact <@${config.users.hasanger}> for details.`)
         .addFields([
             {
                 name: `North America`,
