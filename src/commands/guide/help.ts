@@ -31,7 +31,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
             .setLabel(`Rules`)
             .setStyle(ButtonStyle.Link),
         new ButtonBuilder()
-            .setURL(`https://resurviv.io`)
+            .setURL(`https://suroi.io`)
             .setLabel(`Website`)
             .setStyle(ButtonStyle.Link),
         new ButtonBuilder()

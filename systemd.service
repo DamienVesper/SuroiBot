@@ -1,9 +1,9 @@
 [Unit]
-Description=Surviv Reloaded Discord bot.
+Description=Suroi Discord bot.
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/SurvivReloadedBot
+WorkingDirectory=/opt/SuroiBot
 ExecStart=/usr/bin/pnpm start
 
 [Install]

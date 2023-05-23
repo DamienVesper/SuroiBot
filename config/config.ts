@@ -27,7 +27,7 @@ const config = {
     guild: `1077043833621184563`,
     logChannel: `1092435780095451236`,
 
-    github: `DamienVesper/SurvivReloadedBot`,
+    github: `DamienVesper/SuroiBot`,
 
     version,
     footer: `Suroi Bot | v${version}`

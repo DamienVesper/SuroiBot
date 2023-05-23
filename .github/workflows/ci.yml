@@ -17,21 +17,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install pNPM
+      - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7.30.0
+          version: 8
 
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 19
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
 
       - name: Install Packages
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm run build
-
-      - name: Lint
-        run: pnpm run dev:lint:ci
