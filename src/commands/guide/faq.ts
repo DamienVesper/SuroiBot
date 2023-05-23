@@ -24,11 +24,15 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
         .addFields([
             {
                 name: `What is this server?`,
-                value: `This is the official Discord server for Suroi, an open-source 2D battle royale game inspired by surviv.io.\nThis used to be the server for Surviv Reloaded, a remake of the latter.`
+                value: `This is the official Discord server for Suroi.\nIt was formerly the server for Surviv Reloaded, a remake of surviv.io.`
             },
             {
                 name: `What is this bot?`,
                 value: `This bot was originally made by <@${config.users.damienvesper}> & <@${config.users.killaship}> to explain the significance of Surviv Reloaded. It was later updated by <@${config.users.katloo}> for Suroi.`
+            },
+            {
+                name: `What is Suroi?`,
+                value: `Suroi is an open-source 2D battle royale game inspired by surviv.io.`
             },
             {
                 name: `Where can I get more info?`,

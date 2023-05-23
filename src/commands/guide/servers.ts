@@ -18,7 +18,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
     const sEmbed = new EmbedBuilder()
         .setColor(config.colors.orange)
         .setAuthor({ name: `Suroi.io Servers`, iconURL: interaction.guild?.iconURL() ?? undefined })
-        .setDescription(`A list of servers hosting Suroi.\nDon't see your region? Other than the North America server, they are volunteer hosted. Interested in hosting a server? Contact <@${config.users.hasanger}> for details.`)
+        .setDescription(`A list of servers hosting Suroi.\n\n**Don't see your region?**\nApart from the North America server, all others are hosted by volunteers.\nIf you are interested in hosting a server, please contact <@${config.users.hasanger}> for more information.`)
         .addFields([
             {
                 name: `North America`,
