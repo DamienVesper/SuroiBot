@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/DamienVesper/SuroiBot#readme",
   "devDependencies": {
-    "@types/node": "^20.2.3",
+    "@types/node": "^20.2.4",
     "@typescript-eslint/eslint-plugin": "^5.59.7",
     "@typescript-eslint/parser": "^5.59.7",
     "dotenv": "^16.0.3",
@@ -53,7 +53,7 @@
     "discord-api-types": "^0.37.42",
     "discord.js": "^14.11.0",
     "ffmpeg-static": "^5.1.0",
-    "mongoose": "^7.2.0",
+    "mongoose": "^7.2.1",
     "qs": "^6.11.2",
     "tweetnacl": "^1.0.3",
     "youtube-sr": "^4.3.4",
