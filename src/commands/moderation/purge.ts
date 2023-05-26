@@ -1,7 +1,13 @@
 import config from '../../../config/config';
 
 import { EmbedBuilder, SlashCommandBuilder } from '@discordjs/builders';
-import { type ChatInputCommandInteraction, type GuildTextBasedChannel, PermissionsBitField, type TextChannel } from 'discord.js';
+import {
+    type ChatInputCommandInteraction,
+    type GuildTextBasedChannel,
+    PermissionsBitField,
+    type TextChannel,
+    PermissionFlagsBits
+} from 'discord.js';
 
 import log from '../../utils/log';
 
@@ -11,7 +17,8 @@ const cmd: SlashCommandBuilder = new SlashCommandBuilder()
     .setName(`purge`)
     .addIntegerOption(option => option.setName(`amount`).setDescription(`The amount of messages to be deleted.`).setMinValue(1).setMaxValue(100).setRequired(true))
     .addStringOption(option => option.setName(`reason`).setDescription(`The reason you are purging the channel.`))
-    .setDescription(`Purge a channel's messages.`);
+    .setDescription(`Purge a channel's messages.`)
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages);
 
 const run = async (client: Client, interaction: ChatInputCommandInteraction): Promise<void> => {
     if (interaction.guild === null) return;

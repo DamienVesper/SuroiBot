@@ -1,7 +1,12 @@
 import config from '../../../config/config';
 
 import { EmbedBuilder, SlashCommandBuilder } from '@discordjs/builders';
-import { type ChatInputCommandInteraction, PermissionsBitField, type TextChannel } from 'discord.js';
+import {
+    type ChatInputCommandInteraction,
+    PermissionsBitField,
+    type TextChannel,
+    PermissionFlagsBits
+} from 'discord.js';
 
 import type { Client } from '../../typings/discord';
 import { discord } from '../../utils/standardize';
@@ -10,7 +15,8 @@ const cmd: SlashCommandBuilder = new SlashCommandBuilder()
     .setName(`ban`)
     .addUserOption(option => option.setName(`user`).setDescription(`The user to ban.`).setRequired(true))
     .addStringOption(option => option.setName(`reason`).setDescription(`The reason you are banning the user.`))
-    .setDescription(`Ban a user.`);
+    .setDescription(`Ban a user.`)
+    .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers);
 
 const run = async (client: Client, interaction: ChatInputCommandInteraction): Promise<void> => {
     if (interaction.guild === null) return;
