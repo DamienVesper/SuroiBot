@@ -9,6 +9,8 @@ import {
     EmbedBuilder
 } from 'discord.js';
 
+import { toCapitalString } from '../../utils/standardize';
+
 import { type Client } from '../../typings/discord';
 
 const cmd: SlashCommandBuilder = new SlashCommandBuilder()
@@ -21,7 +23,7 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
     const sEmbed = new EmbedBuilder()
         .setColor(config.colors.orange)
         .setAuthor({ name: `Help`, iconURL: interaction.guild?.iconURL() ?? undefined })
-        .setDescription(Object.entries(config.help).map(x => `\`/${x[0]}\` - ${x[1]}`).join(`\n`))
+        .setDescription(Object.entries(config.help).map(x => `**${toCapitalString(x[0])}**\n${Object.entries(x[1]).map(x => `\`/${x[0]}\` - ${x[1]}`).join(`\n`)}`).join(`\n\n`))
         .setTimestamp()
         .setFooter({ text: config.footer });
 
