@@ -12,10 +12,10 @@ import type { Client } from '../../typings/discord';
 import { discord } from '../../utils/standardize';
 
 const cmd: SlashCommandBuilder = new SlashCommandBuilder()
-    .setName(`hackban`)
-    .addStringOption(option => option.setName(`id`).setDescription(`The ID of user to ban.`).setRequired(true))
-    .addStringOption(option => option.setName(`reason`).setDescription(`The reason you are banning the user.`))
-    .setDescription(`Ban a user who is not in the Discord server.`)
+    .setName(`unban`)
+    .addStringOption(option => option.setName(`id`).setDescription(`The user to unban.`).setRequired(true))
+    .addStringOption(option => option.setName(`reason`).setDescription(`The reason you are unbanning the user.`))
+    .setDescription(`Unban a user.`)
     .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers);
 
 const run = async (client: Client, interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -38,20 +38,17 @@ const run = async (client: Client, interaction: ChatInputCommandInteraction): Pr
 
     const sEmbed = new EmbedBuilder()
         .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.avatarURL() ?? interaction.user.defaultAvatarURL })
-        .setDescription(`**Banned** <@${targetMemberID}> **from the server.**\n\n**ID**\`\`\`${targetMemberID}\`\`\`\n**Reason**\`\`\`${discord(reason)}\`\`\``)
+        .setDescription(`**Unbanned** <@${targetMemberID}> **from the server.**\n\n**ID**\`\`\`${targetMemberID}\`\`\`\n**Reason**\`\`\`${discord(reason)}\`\`\``)
         .setTimestamp()
         .setFooter({ text: config.footer });
 
     const xEmbed = new EmbedBuilder()
-        .setAuthor({ name: `Hackban | ${targetMemberID}`, iconURL: interaction.guild.iconURL() ?? `` })
-        .setDescription(`**<@${targetMemberID}> was banned from the server.**\n\n**Responsible Moderator**\n<@${interaction.user.id}>\n\n**ID**\`\`\`${targetMemberID}\`\`\`\n**Reason**\`\`\`${discord(reason)}\`\`\``)
+        .setAuthor({ name: `Unban | ${targetMemberID}`, iconURL: interaction.guild.iconURL() ?? `` })
+        .setDescription(`**<@${targetMemberID}> was unbanned from the server.**\n\n**Responsible Moderator**\n<@${interaction.user.id}>\n\n**ID**\`\`\`${targetMemberID}\`\`\`\n**Reason**\`\`\`${discord(reason)}\`\`\``)
         .setTimestamp()
         .setFooter({ text: config.footer });
 
-    await interaction.guild.members.ban(targetMemberID, {
-        reason,
-        deleteMessageSeconds: 86400
-    });
+    await interaction.guild.members.unban(targetMemberID, reason);
 
     await interaction.followUp({ embeds: [sEmbed] });
     await logChannel.send({ embeds: [xEmbed] });
