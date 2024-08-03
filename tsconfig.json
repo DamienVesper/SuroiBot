@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "lib": ["ESNext"],
+        "module": "NodeNext",
+        "target": "ESNext",
+
+        "moduleResolution": "NodeNext",
+
+        "strict": true,
+        "strictNullChecks": true,
+        "alwaysStrict": true,
+        "skipLibCheck": true,
+
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+
+        "outDir": "dist"
+    },
+    "include": [
+        "src/**/*.ts",
+        "eslint.config.js",
+        "jest.config.js"
+    ],
+}

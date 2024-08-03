@@ -1,0 +1,42 @@
+{
+  "name": "@damienvesper/suroibot",
+  "version": "3.0.0",
+  "description": "A Discord bot for the 2d battle royale game suroi.io.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx ./src/index.ts",
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint . --max-warnings 0"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DamienVesper/SuroiBot.git"
+  },
+  "author": "DamienVesper",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DamienVesper/SuroiBot/issues"
+  },
+  "homepage": "https://github.com/DamienVesper/SuroiBot#readme",
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.6.1",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.1.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.8.0",
+    "tsx": "^4.16.5",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "prisma": "^5.17.0"
+  }
+}
