@@ -8,7 +8,6 @@ class Ready extends Event {
     };
 
     run: (data: any) => Promise<void> = async data => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         await this.client.lavalinkManager.updateVoiceState(data);
     };
 }

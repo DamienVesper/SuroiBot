@@ -86,7 +86,7 @@ export class DiscordBot extends Client<true> {
             });
 
             this.lavalinkManager.on(`nodeConnect`, node => {
-                this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
+                this.logger.info(`Lavalink Manager`, `Connected to node "${node.options.identifier}".`);
             });
 
             this.lavalinkManager.on(`nodeError`, (node, error) => {
@@ -154,6 +154,21 @@ export class DiscordBot extends Client<true> {
         const sEmbed = new EmbedBuilder()
             .setColor(this.config.colors.red)
             .setDescription(`${this.config.emojis.xmark} ${text}`)
+            .setTimestamp()
+            .setFooter({ text: `ID: ${user.id}` });
+
+        return sEmbed;
+    };
+
+    /**
+     * Create an approve embed.
+     * @param id The ID of the user running the command.
+     * @param text The text to display.
+     */
+    createApproveEmbed = (user: User, text: string): EmbedBuilder => {
+        const sEmbed = new EmbedBuilder()
+            .setColor(this.config.colors.green)
+            .setDescription(`${this.config.emojis.checkmark} ${text}`)
             .setTimestamp()
             .setFooter({ text: `ID: ${user.id}` });
 

@@ -4,7 +4,7 @@ import { Event } from '../classes/Event.js';
 class InteractionCreate extends Event {
     config = {
         name: Events.InteractionCreate,
-        once: true
+        once: false
     };
 
     run: (...args: ClientEvents[Events.InteractionCreate]) => Promise<void> = async interaction => {
@@ -16,7 +16,7 @@ class InteractionCreate extends Event {
             }
 
             try {
-                if (interaction.guild !== null) this.client.logger.debug(`Gateway`, `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`);
+                if (interaction.guild !== null) this.client.logger.debug(`System`, `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`);
                 await command.run(interaction);
             } catch (err) {
                 this.client.logger.error(`System`, err);
