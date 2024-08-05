@@ -1,0 +1,32 @@
+import { Events, type ClientEvents } from 'discord.js';
+import { Event } from '../classes/Event.js';
+
+class InteractionCreate extends Event {
+    config = {
+        name: Events.InteractionCreate,
+        once: true
+    };
+
+    run: (...args: ClientEvents[Events.InteractionCreate]) => Promise<void> = async interaction => {
+        if (interaction.isChatInputCommand()) {
+            const command = this.client.commands.get(interaction.commandName);
+            if (command === undefined) {
+                await interaction.reply({ content: `This command is outdated.`, ephemeral: true });
+                return;
+            }
+
+            try {
+                if (interaction.guild !== null) this.client.logger.debug(`Gateway`, `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`);
+                await command.run(interaction);
+            } catch (err) {
+                this.client.logger.error(`System`, err);
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                interaction.replied || interaction.deferred
+                    ? await interaction.followUp({ content: `There was an error executing this command.`, ephemeral: interaction.ephemeral ?? true })
+                    : await interaction.reply({ content: `There was an error executing this command.`, ephemeral: true });
+            }
+        }
+    };
+}
+
+export default InteractionCreate;

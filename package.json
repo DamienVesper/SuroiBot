@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "discord.js": "^14.15.3",
+    "magmastream": "^2.5.11",
     "prisma": "^5.17.0"
   }
 }

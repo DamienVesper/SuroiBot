@@ -1,27 +1,54 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-misused-promises */
 import { config } from '../config/config.js';
+
 import {
     ActivityType,
     Client,
     Collection,
     GatewayIntentBits,
-    Partials
+    Partials,
+    type Snowflake
 } from 'discord.js';
 
-import { Logger } from './Logger.js';
 import { resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { readdirSync } from 'fs';
 
-export class DiscordBot extends Client {
+import { Logger } from './Logger.js';
+
+import type { Command } from '../classes/Command.js';
+import type { Event } from '../classes/Event.js';
+
+import { Manager } from 'magmastream';
+
+const nodes = [{
+    host: `207.225.26.215`,
+    identifier: `Lavalink`,
+    password: `odQ0dVd42fKPxJSLye5KRt5WGCuvSbRg`,
+    port: 40006,
+    retryAmount: 1000,
+    retrydelay: 10000,
+    resumeStatus: true,
+    resumeTimeout: 1000,
+    secure: false
+}];
+
+export class DiscordBot extends Client<true> {
     config = config;
 
-    logger = new Logger(
-        resolve(fileURLToPath(import.meta.url), `../../logs/console.log`),
-        resolve(fileURLToPath(import.meta.url), `../../logs/error.log`)
-    );
+    logger = new Logger({
+        files: {
+            log: resolve(fileURLToPath(import.meta.url), `../../logs/console.log`),
+            errorLog: resolve(fileURLToPath(import.meta.url), `../../logs/error.log`)
+        },
+        handleExceptions: true
+    });
 
-    commands = new Collection();
+    commands = new Collection<Command[`cmd`][`name`], Command>();
     subcommands = new Collection();
-    cooldowns = new Collection();
+    cooldowns = new Collection<Snowflake, Array<Command[`cmd`][`name`]>>();
+
+    lavalinkManager: Manager;
 
     constructor () {
         super({
@@ -57,5 +84,59 @@ export class DiscordBot extends Client {
                 }]
             }
         });
+
+        this.lavalinkManager = new Manager({
+            nodes,
+            send: (id, payload) => {
+                const guild = this.guilds.cache.get(id);
+                if (guild) guild.shard.send(payload);
+            }
+        });
+
+        this.lavalinkManager.on(`nodeConnect`, node => {
+            this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
+        });
+
+        this.lavalinkManager.on(`nodeError`, (node, error) => {
+            this.logger.error(`Lavalink Manager`, `Node ${node.options.identifier} encountered an error:`, error.message);
+        });
     }
+
+    /**
+     * Load events.
+     * @param dir The directory to load events from.
+     */
+    loadEvents = async (dir: string): Promise<void> => {
+        const files = readdirSync(dir, {
+            recursive: true,
+            withFileTypes: true
+        }).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
+
+        for (const file of files) {
+            const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default as typeof Event;
+            const event = new ClientEvent(this);
+
+            if (event.config.once) this.once(event.config.name as string, event.run.bind(null));
+            else this.on(event.config.name as string, event.run.bind(null));
+        }
+    };
+
+    /**
+     * Load commands.
+     * @param dir The directory to load commands from.
+     */
+    loadCommands = async (dir: string): Promise<void> => {
+        // Get all the files (commands and subcommands).
+        const files = readdirSync(dir, {
+            recursive: true,
+            withFileTypes: true
+        }).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
+
+        for (const file of files) {
+            const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default as typeof Command;
+            const command = new ClientCommand(this);
+
+            this.commands.set(command.cmd.name, command);
+        }
+    };
 }

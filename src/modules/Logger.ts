@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
 import {
     createWriteStream,
     existsSync,
@@ -61,41 +61,48 @@ export class Logger {
         clear: boolean
         padding: boolean
         handleExceptions: boolean
+
+        files?: {
+            log: string
+            errorLog: string
+        }
     };
 
-    readonly #logFilePath: string;
-    readonly #errorLogFilePath: string;
+    readonly #logFilePath: string | undefined = undefined;
+    readonly #errorLogFilePath: string | undefined = undefined;
 
-    readonly #logStream: WriteStream;
-    readonly #errorLogStream: WriteStream;
+    readonly #logStream: WriteStream | undefined = undefined;
+    readonly #errorLogStream: WriteStream | undefined = undefined;
 
-    constructor (logFile: string, errorLogFile: string, options?: Partial<typeof this.config>) {
+    constructor (options?: Partial<typeof this.config>) {
         this.config = {
             clear: options?.clear ?? true,
             padding: options?.padding ?? false,
             handleExceptions: options?.handleExceptions ?? false
         };
 
-        this.#logFilePath = resolve(logFile);
-        this.#errorLogFilePath = resolve(errorLogFile);
+        if (options?.files) {
+            this.#logFilePath = resolve(options.files.log);
+            this.#errorLogFilePath = resolve(options.files.errorLog);
 
-        // Create the file directories, if applicable.
-        if (!existsSync(dirname(this.#logFilePath))) mkdirSync(dirname(this.#logFilePath));
-        if (!existsSync(dirname(this.#errorLogFilePath))) mkdirSync(dirname(this.#errorLogFilePath));
+            // Create the file directories, if applicable.
+            if (!existsSync(dirname(this.#logFilePath))) mkdirSync(dirname(this.#logFilePath));
+            if (!existsSync(dirname(this.#errorLogFilePath))) mkdirSync(dirname(this.#errorLogFilePath));
 
-        // Clear the log files if necessary.
-        if (this.config.clear) this.reset();
+            // Clear the log files if necessary.
+            if (this.config.clear) this.reset();
 
-        this.#logStream = createWriteStream(this.#logFilePath);
-        this.#errorLogStream = createWriteStream(this.#errorLogFilePath);
+            this.#logStream = createWriteStream(this.#logFilePath);
+            this.#errorLogStream = createWriteStream(this.#errorLogFilePath);
+        }
 
         // Handle exceptions, if applicable.
         if (this.config.handleExceptions) {
             process.on(`uncaughtException`, (err, origin) => {
                 this.error(`System`, err.stack ?? err.message);
             });
-            process.on(`unhandledRejection`, (err, origin) => {
-                this.error(`System`, err);
+            process.on(`unhandledRejection`, (err: any, origin) => {
+                this.error(`System`, err?.stack ?? err);
             });
         }
     }
@@ -114,7 +121,10 @@ export class Logger {
     reset = (): void => {
         if (this.#logStream !== undefined
             || this.#errorLogStream !== undefined)
-            throw new Error(`Cannot clear log file: A write stream was not closed.`);
+            return this.error(`Logger`, `Failed clearing log file: write stream not closed.`);
+
+        if (this.#logFilePath === undefined || this.#errorLogFilePath === undefined)
+            return this.error(`Logger`, `Failed clearing log file: file paths not specified.`);
 
         rmSync(this.#logFilePath, { force: true });
         if (this.#logFilePath !== this.#errorLogFilePath) rmSync(this.#errorLogFilePath, { force: true });
@@ -144,7 +154,7 @@ export class Logger {
             this.format(this.styles.bold, this.format(this.styles.dim, `|`)),
             this.format(this.styles.bold, system),
             this.format(this.styles.bold, this.format(this.styles.dim, `|`)),
-            this.format(this.styles.reset, ...args)
+            this.format(this.styles.reset, this.normalizedArgs(args).join(` `))
         ];
 
         /**
@@ -164,8 +174,8 @@ export class Logger {
         // Log the message.
         console.log(...logMsg);
 
-        if (level === `error`) this.#errorLogStream.write(logEntryMsg.join(` `));
-        else this.#logStream.write(logEntryMsg.join(` `));
+        if (this.#errorLogStream !== undefined && level === `error`) this.#errorLogStream.write(logEntryMsg.join(` `));
+        else if (this.#logStream !== undefined) this.#logStream.write(logEntryMsg.join(` `));
     };
 
     info = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log(`info`, system, ...args);
@@ -179,13 +189,13 @@ export class Logger {
      * @param args The message to format.
      * @returns
      */
-    format = (style: typeof this.styles.reset, ...args: string[]): string => `\x1b[${style[0]}m${this.normalizedArgs(...args).join(` `)}\x1b[${style[1]}m`;
+    format = (style: typeof this.styles.reset, ...args: string[]): string => `\x1b[${style[0]}m${this.normalizedArgs(args).join(` `)}\x1b[${style[1]}m`;
 
     /**
      * Normalize arguments to return string equivalents.
      * @param args The arguments to normalize.
      */
-    private normalizedArgs = (...args: any[]): typeof args => args.map(arg => {
+    private normalizedArgs = (args: any[]): typeof args => args.map(arg => {
         if (typeof arg === `object`) return JSON.stringify(arg);
         else return arg;
     });
