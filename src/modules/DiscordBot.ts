@@ -10,7 +10,8 @@ import {
     Routes,
     EmbedBuilder,
     type Snowflake,
-    type User
+    type User,
+    type TextBasedChannel
 } from 'discord.js';
 
 import { resolve } from 'path';
@@ -92,6 +93,13 @@ export class DiscordBot extends Client<true> {
             this.lavalinkManager.on(`nodeError`, (node, error) => {
                 this.logger.error(`Lavalink Manager`, `Node ${node.options.identifier} encountered an error:`, error.message);
             });
+
+            this.lavalinkManager.on(`queueEnd`, player => {
+                const channel = this.channels.cache.get(player.textChannel!) as TextBasedChannel | null;
+
+                void channel?.send({ embeds: [this.createEmbed(player.guild, `The queue has ended.`)] });
+                player.destroy();
+            });
         }
     }
 
@@ -146,32 +154,31 @@ export class DiscordBot extends Client<true> {
     };
 
     /**
-     * Create a deny embed.
-     * @param id The ID of the user running the command.
+     * Create a simple text embed.
+     * @param id The ID to display.
      * @param text The text to display.
      */
-    createDenyEmbed = (user: User, text: string): EmbedBuilder => {
+    createEmbed = (id: Snowflake, text: string): EmbedBuilder => {
         const sEmbed = new EmbedBuilder()
-            .setColor(this.config.colors.red)
-            .setDescription(`${this.config.emojis.xmark} ${text}`)
+            .setColor(this.config.colors.gray)
+            .setDescription(text)
             .setTimestamp()
-            .setFooter({ text: `ID: ${user.id}` });
+            .setFooter({ text: `ID: ${id}` });
 
         return sEmbed;
     };
+
+    /**
+     * Create a deny embed.
+     * @param user The interaction user.
+     * @param text The text to display.
+     */
+    createDenyEmbed = (user: User, text: string): EmbedBuilder => this.createEmbed(user.id, `${this.config.emojis.xmark} ${text}`).setColor(this.config.colors.red);
 
     /**
      * Create an approve embed.
      * @param id The ID of the user running the command.
      * @param text The text to display.
      */
-    createApproveEmbed = (user: User, text: string): EmbedBuilder => {
-        const sEmbed = new EmbedBuilder()
-            .setColor(this.config.colors.green)
-            .setDescription(`${this.config.emojis.checkmark} ${text}`)
-            .setTimestamp()
-            .setFooter({ text: `ID: ${user.id}` });
-
-        return sEmbed;
-    };
+    createApproveEmbed = (user: User, text: string): EmbedBuilder => this.createEmbed(user.id, `${this.config.emojis.checkmark} ${text}`).setColor(this.config.colors.green);
 }

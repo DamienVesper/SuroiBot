@@ -8,7 +8,7 @@ class Ready extends Event {
     };
 
     run: (...args: ClientEvents[Events.Error]) => Promise<void> = async err => {
-        this.client.logger.error(`Gateway`, err);
+        this.client.logger.error(`Gateway`, err.stack ?? err.message);
     };
 }
 

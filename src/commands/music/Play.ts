@@ -34,8 +34,7 @@ class Play extends Command {
         if (res.loadType === `empty`) {
             console.log(`help!`);
             throw new Error(`There were no tracks to queue.`);
-        }
-        else if (res.loadType === `playlist`) {
+        } else if (res.loadType === `playlist`) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `We're getting there with playlists. Please be patient.`)] });
             return;
         } else if (res.loadType === `error`) {
@@ -54,8 +53,8 @@ class Play extends Command {
         player.connect();
         player.queue.add(res.tracks[0]);
 
-        if (!player.playing && !player.paused && !player.queue.size) player.play();
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${res.tracks[0].title}** has been queued!`)] })
+        if (!player.playing && !player.paused && !player.queue.size) await player.play();
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${res.tracks[0].title}** has been queued!`)] });
     };
 }
 
