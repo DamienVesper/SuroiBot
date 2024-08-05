@@ -29,11 +29,13 @@
     "@stylistic/eslint-plugin": "^2.6.1",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.1.0",
+    "@types/yargs": "^17.0.32",
     "dotenv": "^16.4.5",
     "eslint": "^9.8.0",
     "tsx": "^4.16.5",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.0.0",
+    "yargs": "^17.7.2"
   },
   "dependencies": {
     "discord.js": "^14.15.3",

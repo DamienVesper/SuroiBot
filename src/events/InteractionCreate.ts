@@ -11,7 +11,7 @@ class InteractionCreate extends Event {
         if (interaction.isChatInputCommand()) {
             const command = this.client.commands.get(interaction.commandName);
             if (command === undefined) {
-                await interaction.reply({ content: `This command is outdated.`, ephemeral: true });
+                await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `This command is outdated.`)], ephemeral: true });
                 return;
             }
 
@@ -22,8 +22,8 @@ class InteractionCreate extends Event {
                 this.client.logger.error(`System`, err);
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 interaction.replied || interaction.deferred
-                    ? await interaction.followUp({ content: `There was an error executing this command.`, ephemeral: interaction.ephemeral ?? true })
-                    : await interaction.reply({ content: `There was an error executing this command.`, ephemeral: true });
+                    ? await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There was an error executing this command.`)], ephemeral: interaction.ephemeral ?? true })
+                    : await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `There was an error executing this command.`)], ephemeral: true });
             }
         }
     };

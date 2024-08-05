@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-misused-promises */
-import { config } from '../config/config.js';
+import { config } from '../.config/config.js';
 
 import {
     ActivityType,
@@ -7,7 +7,10 @@ import {
     Collection,
     GatewayIntentBits,
     Partials,
-    type Snowflake
+    Routes,
+    EmbedBuilder,
+    type Snowflake,
+    type User
 } from 'discord.js';
 
 import { resolve } from 'path';
@@ -20,18 +23,6 @@ import type { Command } from '../classes/Command.js';
 import type { Event } from '../classes/Event.js';
 
 import { Manager } from 'magmastream';
-
-const nodes = [{
-    host: `207.225.26.215`,
-    identifier: `Lavalink`,
-    password: `odQ0dVd42fKPxJSLye5KRt5WGCuvSbRg`,
-    port: 40006,
-    retryAmount: 1000,
-    retrydelay: 10000,
-    resumeStatus: true,
-    resumeTimeout: 1000,
-    secure: false
-}];
 
 export class DiscordBot extends Client<true> {
     config = config;
@@ -48,7 +39,7 @@ export class DiscordBot extends Client<true> {
     subcommands = new Collection();
     cooldowns = new Collection<Snowflake, Array<Command[`cmd`][`name`]>>();
 
-    lavalinkManager: Manager;
+    lavalinkManager!: Manager;
 
     constructor () {
         super({
@@ -85,21 +76,23 @@ export class DiscordBot extends Client<true> {
             }
         });
 
-        this.lavalinkManager = new Manager({
-            nodes,
-            send: (id, payload) => {
-                const guild = this.guilds.cache.get(id);
-                if (guild) guild.shard.send(payload);
-            }
-        });
+        if (this.config.modules.music.enabled) {
+            this.lavalinkManager = new Manager({
+                nodes: this.config.modules.music.lavalinkNodes,
+                send: (id, payload) => {
+                    const guild = this.guilds.cache.get(id);
+                    if (guild) guild.shard.send(payload);
+                }
+            });
 
-        this.lavalinkManager.on(`nodeConnect`, node => {
-            this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
-        });
+            this.lavalinkManager.on(`nodeConnect`, node => {
+                this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
+            });
 
-        this.lavalinkManager.on(`nodeError`, (node, error) => {
-            this.logger.error(`Lavalink Manager`, `Node ${node.options.identifier} encountered an error:`, error.message);
-        });
+            this.lavalinkManager.on(`nodeError`, (node, error) => {
+                this.logger.error(`Lavalink Manager`, `Node ${node.options.identifier} encountered an error:`, error.message);
+            });
+        }
     }
 
     /**
@@ -138,5 +131,32 @@ export class DiscordBot extends Client<true> {
 
             this.commands.set(command.cmd.name, command);
         }
+    };
+
+    deployCommands = async (dev: boolean): Promise<void> => {
+        try {
+            this.logger.info(`Deploying ${this.commands.size} commands.`);
+            await this.rest.put(dev
+                ? Routes.applicationGuildCommands(this.user.id, config.dev.guildID)
+                : Routes.applicationCommands(this.user.id)
+            );
+        } catch (err) {
+            this.logger.error(`Gateway`, err);
+        }
+    };
+
+    /**
+     * Create a deny embed.
+     * @param id The ID of the user running the command.
+     * @param text The text to display.
+     */
+    createDenyEmbed = (user: User, text: string): EmbedBuilder => {
+        const sEmbed = new EmbedBuilder()
+            .setColor(this.config.colors.red)
+            .setDescription(`${this.config.emojis.xmark} ${text}`)
+            .setTimestamp()
+            .setFooter({ text: `ID: ${user.id}` });
+
+        return sEmbed;
     };
 }

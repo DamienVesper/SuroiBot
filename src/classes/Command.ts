@@ -1,18 +1,21 @@
-import { PermissionFlagsBits, type ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import {
+    PermissionFlagsBits,
+    type ChatInputCommandInteraction,
+    SlashCommandBuilder,
+    type SlashCommandOptionsOnlyBuilder
+} from 'discord.js';
 import type { DiscordBot } from '../modules/DiscordBot.js';
 
 export class Command {
     client: DiscordBot;
-    cmd = new SlashCommandBuilder();
 
+    cmd: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder();
     config: {
-        guildOnly: boolean
         botPermissions: bigint[]
         userPermissions: bigint[]
         isSubcommand: boolean
         cooldown: number
     } = {
-            guildOnly: false,
             botPermissions: [
                 PermissionFlagsBits.SendMessages,
                 PermissionFlagsBits.EmbedLinks

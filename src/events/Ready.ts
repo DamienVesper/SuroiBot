@@ -8,9 +8,9 @@ class Ready extends Event {
     };
 
     run: (...args: ClientEvents[Events.ClientReady]) => Promise<void> = async client => {
-        this.client.lavalinkManager.init(client.user.id);
-
         this.client.logger.info(`Gateway`, `Connected to Discord as "${client.user.tag}" (${client.user.id}).`);
+
+        this.client.lavalinkManager.init(client.user.id);
     };
 }
 
