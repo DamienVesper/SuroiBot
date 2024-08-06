@@ -1,20 +1,6 @@
 import { config } from '../.config/config.js';
 
 /**
- * Convert a number to duration form.
- * @param num The number.
- */
-export const numToDurationFormat = (num: number): string => {
-    const seconds = num % 60;
-    const minutes = num % 3600;
-    const hours = Math.floor(num / 3600);
-
-    return hours > 0
-        ? `${hours}:${minutes}:${seconds}`
-        : `${minutes}:${seconds}`;
-};
-
-/**
  * Translate Suroi HTTP response.
  * @param code The HTTP response.
  */
@@ -28,3 +14,23 @@ export const translateSuroiStatus = (code: number | undefined): string => {
             return config.emojis.xmark;
     }
 };
+
+/**
+ * Convert a number to duration form.
+ * @param num The number.
+ */
+export const numToDurationFormat = (num: number): string => {
+    const seconds = (Math.trunc(num / 1e3) % 60).toString().padStart(2, `0`);
+    const minutes = (Math.trunc(num / 6e4) % 60).toString().padStart(2, `0`);
+    const hours = Math.trunc(num / 36e5);
+
+    return hours > 0
+        ? `${hours}:${minutes}:${seconds}`
+        : `${minutes}:${seconds}`;
+};
+
+/**
+ * Capitalize a string
+ * @param str The string to capitalize.
+ */
+export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);

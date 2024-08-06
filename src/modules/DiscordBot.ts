@@ -88,7 +88,18 @@ export class DiscordBot extends Client<true> {
             });
 
             this.lavalinkManager.on(`nodeConnect`, node => {
+                if (this.lavalinkManager.nodes.has(node.options.identifier!)) return;
                 this.logger.info(`Lavalink Manager`, `Connected to node "${node.options.identifier}".`);
+            });
+
+            this.lavalinkManager.on(`nodeDisconnect`, node => {
+                this.logger.warn(`Lavalink Manager`, `Disconnected from "${node.options.identifier}".`);
+                this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.destroy());
+            });
+
+            this.lavalinkManager.on(`nodeReconnect`, node => {
+                this.logger.info(`Lavalink Manager`, `Reconnected to "${node.options.identifier}".`);
+                this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.restart());
             });
 
             this.lavalinkManager.on(`nodeError`, (node, error) => {

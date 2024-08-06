@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class Play extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`play`)
-        .setDescription(`Play a song.`)
+        .setDescription(`Play a track.`)
         .addStringOption(option => option.setName(`name`).setDescription(`The name or link to the song.`).setRequired(true))
         .setDMPermission(false);
 

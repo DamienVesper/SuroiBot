@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashComman
 
 import { Command } from '../../classes/Command.js';
 
-import { numToDurationFormat } from '../../utils/utils.js';
+import { capitalize, numToDurationFormat } from '../../utils/utils.js';
 
 class NowPlaying extends Command {
     cmd = new SlashCommandBuilder()
@@ -43,16 +43,28 @@ class NowPlaying extends Command {
             .setColor(this.client.config.colors.blue)
             .setTitle(song.title)
             .setAuthor({ name: song?.author ?? `John Doe`, url: song.uri })
+            .setDescription(`There ${player.queue.length > 1 ? `are` : `is`} currently **${player.queue.length}** ${player.queue.length > 1 ? `songs` : `song`} in the queue.`)
             .addFields([
                 {
                     name: `Duration`,
-                    value: `\`${numToDurationFormat(song.duration!)}\``
+                    value: numToDurationFormat(song.duration!),
+                    inline: true
+                },
+                {
+                    name: `Source`,
+                    value: capitalize(song.sourceName!),
+                    inline: true
+                },
+                {
+                    name: `Requester`,
+                    value: song.requester?.tag ?? `John Doe`,
+                    inline: true
                 }
             ])
             .setThumbnail((song.artworkUrl ?? song.thumbnail)!)
+            .setTimestamp()
             .setFooter({ text: `ID: ${song.requester?.id}` });
 
-        console.log(song.sourceName);
         const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`View Song`).setURL(song.uri ?? `https://example.org`)
         );
