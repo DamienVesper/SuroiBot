@@ -34,9 +34,11 @@ export const numToDurationFormat = (num: number): string => {
  * @param num The number.
  */
 export const numToCooldownFormat = (num: number): string => {
-    const seconds = ((num / 1e3) % 60).toFixed(3);
-    const minutes = (Math.trunc(num / 6e4) % 60);
     const hours = Math.trunc(num / 36e5);
+    const minutes = (Math.trunc(num / 6e4) % 60);
+    const seconds = (hours > 0 || minutes > 0)
+        ? Math.ceil(((num / 1e3) % 60))
+        : ((num / 1e3) % 60).toFixed(3);
 
     return `${hours > 0 ? `${hours}h ` : ``}${minutes > 0 ? `${minutes}m ` : ``}${seconds}s`;
 };
