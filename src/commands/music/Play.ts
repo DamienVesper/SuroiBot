@@ -53,14 +53,15 @@ class Play extends Command {
 
         if (res.loadType === `playlist` && res.playlist !== undefined) {
             player.queue.add(res.playlist.tracks);
+
+            if (!player.playing && !player.paused && player.queue.size === res.playlist.tracks.length) await player.play();
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Queued **${res.playlist.tracks.length}** songs.`)] });
-            return;
         } else {
             player.queue.add(res.tracks[0]);
+
+            if (!player.playing && !player.paused && !player.queue.size) await player.play();
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${res.tracks[0].title}** has been queued!`)] });
         }
-
-        if (!player.playing && !player.paused && !player.queue.size) await player.play();
     };
 }
 
