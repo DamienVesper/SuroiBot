@@ -129,7 +129,7 @@ export class DiscordBot extends Client<true> {
             });
 
             this.lavalinkManager.on(`trackStart`, (player, track) => {
-                this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}"`);
+                this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}".`);
                 if (player.queue.length !== 0 && player.textChannel !== null) {
                     void this.channels.fetch(player.textChannel).then(channel => {
                         if (channel !== null && channel instanceof TextChannel) void channel.send(this.createNowPlayingDetails(player, true));
