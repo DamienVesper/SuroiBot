@@ -41,7 +41,7 @@ class Rewind extends Command {
         }
 
         const seekPos = Math.max(player.position - interaction.options.getInteger(`time`, true) * 1e3, 0);
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Rewinded the current track by **${Math.round((player.position - seekPos) / 1e3)}** seconds`)] });
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Rewinded the current track by **${Math.round((player.position - seekPos) / 1e3)}** seconds.`)] });
 
         player.seek(seekPos);
     };
