@@ -63,6 +63,10 @@ interface Config {
          * The guild where slash commands should be applied, and where the bot is usable in developer mode.
          */
         guildID: Snowflake
+        /**
+         * Whether to override the built-in permissions checker.
+         */
+        overridePermissions?: boolean
     }
 
     /**
