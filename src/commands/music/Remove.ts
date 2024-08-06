@@ -36,10 +36,15 @@ class Remove extends Command {
         if (songID > player.queue.length) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There are only **${player.queue.length}** songs in the queue!`)] });
             return;
-        }
+        } else if (songID === player.queue.length) {
+            const song = player.queue.current!;
+            player.stop(1);
 
-        player.queue.splice(songID, songID + 1);
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed the song at position **${songID}** in the queue.`)] });
+            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${song.title}** from the queue.`)] });
+        } else {
+            const song = player.queue.splice(songID, songID + 1)[0];
+            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${song.title}** from the queue.`)] });
+        }
     };
 }
 
