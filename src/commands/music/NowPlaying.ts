@@ -36,10 +36,10 @@ class NowPlaying extends Command {
             return;
         }
 
-        const sEmbed = this.client.createEmbed(song.requester!.id, `### [${song.title}](${song.uri})\n-# Requested by <@${song.requester?.id}>`)
+        const sEmbed = this.client.createEmbed(song.requester!.id, `# Nowwerewrwrewe Playing ## [${song.title}](${song.uri})`)
             .setColor(this.client.config.colors.blue)
             .setAuthor({ name: song?.author ?? `John Doe` })
-            .setThumbnail((song.artworkUrl ?? song.thumbnail)!);
+            .setImage((song.artworkUrl ?? song.thumbnail)!);
 
         await interaction.followUp({ embeds: [sEmbed] });
     };

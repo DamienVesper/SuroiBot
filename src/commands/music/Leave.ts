@@ -3,8 +3,8 @@ import { Command } from '../../classes/Command.js';
 
 class NowPlaying extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`nowplaying`)
-        .setDescription(`View the current song being played.`)
+        .setName(`leave`)
+        .setDescription(`Leave the voice channel.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -30,18 +30,7 @@ class NowPlaying extends Command {
             return;
         }
 
-        const song = player.queue.current;
-        if (song === null) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `No song is currently being played!`)] });
-            return;
-        }
-
-        const sEmbed = this.client.createEmbed(song.requester!.id, `### [${song.title}](${song.uri})\n-# Requested by <@${song.requester?.id}>`)
-            .setColor(this.client.config.colors.blue)
-            .setAuthor({ name: song?.author ?? `John Doe` })
-            .setThumbnail((song.artworkUrl ?? song.thumbnail)!);
-
-        await interaction.followUp({ embeds: [sEmbed] });
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Left the voice channel.`)] });
     };
 }
 
