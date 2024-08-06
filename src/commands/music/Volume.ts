@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class Volume extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`volume`)
-        .addIntegerOption(option => option.setName(`value`).setDescription(`The value to set the volume to.`).setMinValue(1).setMaxValue(100).setRequired(true))
+        .addIntegerOption(option => option.setName(`value`).setDescription(`The value to set the volume to.`).setMinValue(1).setMaxValue(200).setRequired(true))
         .setDescription(`View the current song being played.`)
         .setDMPermission(false);
 

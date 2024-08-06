@@ -19,7 +19,8 @@ export const config = {
     mode: argv.mode,
     dev: {
         userID: `386940319666667521`,
-        guildID: `1269117681710137504`
+        guildID: `1269117681710137504`,
+        overridePermissions: true
     },
 
     modules: {
@@ -29,7 +30,7 @@ export const config = {
                 host: process.env.LAVALINK_HOST!,
                 identifier: `0`,
                 password: process.env.LAVALINK_TOKEN,
-                port: 40006,
+                port: Number(process.env.LAVALINK_PORT!),
                 retryAmount: 10,
                 retryDelay: 1e4,
                 resumeStatus: true,
