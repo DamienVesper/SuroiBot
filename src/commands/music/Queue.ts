@@ -61,7 +61,7 @@ class Queue extends Command {
             embeds.push(new EmbedBuilder()
                 .setColor(this.client.config.colors.blue)
                 .setTitle(`Server Queue`)
-                .setDescription(tracks.map((track, j) => `${i === 0 && j === 0 ? `↳ ` : ``}**${i + j + 1}.** [${track.title}](${track.uri!}) - [${numToDurationFormat(track.duration!)}]`).join(`\n`))
+                .setDescription(tracks.map((track, j) => `${i === 0 && j === 0 ? `↳ ` : ``}**${i + j + 1}.** [${track.title}](${track.uri!}) - \`[${numToDurationFormat(track.duration!)}]\``).join(`\n`))
                 .setFields([
                     {
                         name: `Queue Size`,

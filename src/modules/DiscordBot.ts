@@ -89,6 +89,10 @@ export class DiscordBot extends Client<true> {
 
             let killPlayers: NodeJS.Timeout;
 
+            this.lavalinkManager.on(`trackStart`, (player, track) => {
+                this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}"`);
+            });
+
             this.lavalinkManager.on(`nodeConnect`, node => {
                 this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
             });
