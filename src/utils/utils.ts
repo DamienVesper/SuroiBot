@@ -1,3 +1,4 @@
+import type { Player, Track } from 'magmastream';
 import { config } from '../.config/config.js';
 
 /**
@@ -48,3 +49,30 @@ export const numToCooldownFormat = (num: number): string => {
  * @param str The string to capitalize.
  */
 export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
+
+/**
+ * Create a progress bar.
+ * @param position The position to fill to.
+ * @param max The maximum position.
+ */
+export const createProgressBar = (position: number, max: number): string => {
+    const FILLED = `▰`;
+    const EMPTY = `▱`;
+
+    const BAR_LENGTH = 8;
+
+    const barStr = [];
+    for (let i = 0; i < BAR_LENGTH; i++) barStr.push((position / max) > ((i + 1) / BAR_LENGTH) ? FILLED : EMPTY);
+
+    return barStr.join(``);
+};
+
+export const createTrackBar = (player: Player): string => {
+    const track = player.queue.current as Track | null;
+    if (track === null) return `ERROR`;
+
+    const MAX_LENGTH = 20;
+    const COUNT = Math.floor((track.isStream ? 0 : (player.position ?? 0) / track.duration) * MAX_LENGTH);
+
+    return `${numToDurationFormat(player.position)} ${`⎯`.repeat(COUNT)}◯${`⎯`.repeat(MAX_LENGTH - (COUNT + 1))} ${numToDurationFormat(track.duration)}`;
+};

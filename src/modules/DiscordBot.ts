@@ -32,7 +32,7 @@ import { MusicPlayer } from './MusicPlayer.js';
 import { Command } from '../classes/Command.js';
 import type { Event } from '../classes/Event.js';
 
-import { capitalize, numToDurationFormat } from '../utils/utils.js';
+import { createTrackBar } from '../utils/utils.js';
 
 export class DiscordBot extends Client<true> {
     config = config;
@@ -233,20 +233,22 @@ export class DiscordBot extends Client<true> {
     createNowPlayingDetails = (player: Player): BaseMessageOptions => {
         // Assumes you have done the necessary type guarding for this.
         const song = player.queue.current! as Track;
+        
+        let queueLength = 0;
+        player.queue.concat(player.queue.current!).forEach(queue => queueLength += queue.duration ?? 0); 
+
         const sEmbed = new EmbedBuilder()
             .setColor(this.config.colors.blue)
-            .setTitle(song.title)
-            .setAuthor({ name: song?.author ?? `John Doe`, url: song.uri })
-            .setDescription(`\`${numToDurationFormat(player.position)}\` / \`${numToDurationFormat(song.duration)}\``)
+            .setDescription(`### Now Playing\n**${song.title}**\n\n${createTrackBar(player)}`)
             .setFields([
-                {
-                    name: `Source`,
-                    value: capitalize(song.sourceName),
-                    inline: true
-                },
                 {
                     name: `Requester`,
                     value: song.requester?.displayName ?? song.requester?.tag ?? `John Doe`,
+                    inline: true
+                },
+                {
+                    name: `Voice Channel`,
+                    value: `<#${player.voiceChannel}>`,
                     inline: true
                 }
             ])
@@ -254,7 +256,7 @@ export class DiscordBot extends Client<true> {
             .setTimestamp()
             .setFooter({ text: `ID: ${song.requester?.id}` });
 
-        const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`View Track`).setURL(song.uri));
+        const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Track Info`).setURL(song.uri));
 
         return {
             embeds: [sEmbed],
