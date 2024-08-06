@@ -132,7 +132,7 @@ export class DiscordBot extends Client<true> {
                 this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}"`);
                 if (player.queue.length !== 0 && player.textChannel !== null) {
                     void this.channels.fetch(player.textChannel).then(channel => {
-                        if (channel !== null && channel instanceof TextChannel) void channel.send(this.createNowPlayingDetails(player));
+                        if (channel !== null && channel instanceof TextChannel) void channel.send(this.createNowPlayingDetails(player, true));
                     });
                 }
             });
@@ -229,8 +229,9 @@ export class DiscordBot extends Client<true> {
     /**
      * Create an embed and action row component for the currently playing song.
      * @param player The player handling the queue.
+     * @param isAutoMessage Whether this is an automatic message (queue message).
      */
-    createNowPlayingDetails = (player: Player): BaseMessageOptions => {
+    createNowPlayingDetails = (player: Player, isAutoMessage?: boolean): BaseMessageOptions => {
         // Assumes you have done the necessary type guarding for this.
         const song = player.queue.current! as Track;
         
@@ -239,22 +240,29 @@ export class DiscordBot extends Client<true> {
 
         const sEmbed = new EmbedBuilder()
             .setColor(this.config.colors.blue)
-            .setDescription(`### Now Playing\n**${song.title}**\n\n${createTrackBar(player)}`)
-            .setFields([
-                {
-                    name: `Requester`,
-                    value: song.requester?.displayName ?? song.requester?.tag ?? `John Doe`,
-                    inline: true
-                },
-                {
-                    name: `Voice Channel`,
-                    value: `<#${player.voiceChannel}>`,
-                    inline: true
-                }
-            ])
             .setThumbnail((song.artworkUrl ?? song.thumbnail))
             .setTimestamp()
             .setFooter({ text: `ID: ${song.requester?.id}` });
+
+        if (isAutoMessage) {
+            sEmbed
+                .setDescription(`### Now Playing\n**${song.title}**`)
+        } else {
+            sEmbed
+                .setDescription(`### Now Playing\n**${song.title}**\n\n${createTrackBar(player)}`)
+                .setFields([
+                    {
+                        name: `Requester`,
+                        value: song.requester?.displayName ?? song.requester?.tag ?? `John Doe`,
+                        inline: true
+                    },
+                    {
+                        name: `Voice Channel`,
+                        value: `<#${player.voiceChannel}>`,
+                        inline: true
+                    }
+                ]);
+        }
 
         const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Track Info`).setURL(song.uri));
 
