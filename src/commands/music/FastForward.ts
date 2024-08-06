@@ -41,7 +41,7 @@ class FastForward extends Command {
         }
 
         const seekPos = Math.min(player.position + interaction.options.getInteger(`time`, true) * 1e3, player.queue.current.duration!);
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Fast-forwarded the current track by **${Math.round(seekPos - player.position)}** seconds`)] });
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Fast-forwarded the current track by **${Math.round((seekPos - player.position) / 1e3)}** seconds`)] });
 
         player.seek(seekPos);
     };
