@@ -108,7 +108,7 @@ export class DiscordBot extends Client<true> {
 
                 // Reset and restart all players.
                 clearInterval(killPlayers);
-                this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.restart());
+                this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.pause(false));
             });
 
             this.lavalinkManager.on(`nodeError`, (node, error) => {
