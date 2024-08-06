@@ -1,4 +1,4 @@
-import { EmbedBuilder, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import axios, { AxiosResponse, type AxiosError } from 'axios';
 
 import { Command } from '../../classes/Command.js';
@@ -54,7 +54,14 @@ class Status extends Command {
                 .setTimestamp()
                 .setFooter({ text: `ID: ${interaction.user.id}` });
 
-            await interaction.followUp({ embeds: [sEmbed] });
+            const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Play Suroi`).setURL(`https://${this.client.config.customData.domain}`),
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Wiki`).setURL(`https://wiki.${this.client.config.customData.domain}`),
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`GitHub`).setURL(`https://github.com/${this.client.config.customData.github}`),
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Report a problem`).setURL(`https://discord.com/users/${this.client.config.customData.users.hasanger}`)
+            );
+
+            await interaction.followUp({ embeds: [sEmbed], components: [sRow] });
         });
     };
 }

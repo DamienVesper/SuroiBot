@@ -6,7 +6,10 @@ const customData = {
     bots: {
         suroiBot: `659582297871220766`,
         suroiWatcher: `1237567483850920058`
-    }
+    },
+
+    domain: `suroi.io`,
+    github: `HasangerGames/suroi`
 };
 
 export default customData;
