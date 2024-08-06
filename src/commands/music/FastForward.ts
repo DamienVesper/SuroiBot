@@ -2,13 +2,11 @@ import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.j
 
 import { Command } from '../../classes/Command.js';
 
-import { numToDurationFormat } from '../../utils/utils.js';
-
-class Seek extends Command {
+class FastForward extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`seek`)
-        .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to seek to.`).setMinValue(1).setRequired(true))
-        .setDescription(`Seek a certain position in a track.`)
+        .setName(`fastforward`)
+        .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to fast-forward.`).setMinValue(1).setRequired(true))
+        .setDescription(`Fast-forward the track.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -42,11 +40,11 @@ class Seek extends Command {
             return;
         }
 
-        const seekPos = Math.min(Math.max(interaction.options.getInteger(`time`, true) * 1e3, 0), player.queue.current.duration!);
-        player.seek(seekPos);
+        const seekPos = Math.min(player.position + interaction.options.getInteger(`time`, true) * 1e3, player.queue.current.duration!);
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Fast-forwarded the current track by **${Math.round(seekPos - player.position)}** seconds`)] });
 
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Seeked to **${numToDurationFormat(seekPos)}** in the current track.`)] });
+        player.seek(seekPos);
     };
 }
 
-export default Seek;
+export default FastForward;
