@@ -124,7 +124,7 @@ export class DiscordBot extends Client<true> {
             this.lavalinkManager.on(`queueEnd`, player => {
                 const channel = this.channels.cache.get(player.textChannel!) as TextBasedChannel | null;
 
-                void channel?.send({ embeds: [this.createEmbed(player.guild, `The queue has ended.`).setColor(this.config.colors.blue)] });
+                void channel?.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
                 player.destroy();
             });
 

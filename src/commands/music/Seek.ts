@@ -7,7 +7,7 @@ import { numToDurationFormat } from '../../utils/utils.js';
 class Seek extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`seek`)
-        .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to seek to.`).setMinValue(1).setRequired(true))
+        .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to seek to.`).setMinValue(0).setRequired(true))
         .setDescription(`Seek a certain position in a track.`)
         .setDMPermission(false);
 
@@ -42,7 +42,7 @@ class Seek extends Command {
             return;
         }
 
-        const seekPos = Math.min(Math.max(interaction.options.getInteger(`time`, true) * 1e3, 0), player.queue.current.duration!);
+        const seekPos = Math.min(Math.max(interaction.options.getInteger(`time`, true) * 1e3, 0), player.queue.current.duration! - 1e3);
         player.seek(seekPos);
 
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Seeked to **${numToDurationFormat(seekPos)}** in the current track.`)] });
