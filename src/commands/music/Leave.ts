@@ -2,7 +2,7 @@ import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.j
 
 import { Command } from '../../classes/Command.js';
 
-class NowPlaying extends Command {
+class Leave extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`leave`)
         .setDescription(`Leave the voice channel.`)
@@ -36,4 +36,4 @@ class NowPlaying extends Command {
     };
 }
 
-export default NowPlaying;
+export default Leave;

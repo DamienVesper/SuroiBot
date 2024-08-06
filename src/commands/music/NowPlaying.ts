@@ -1,15 +1,10 @@
 import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    EmbedBuilder,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from 'discord.js';
+import type { Track } from 'magmastream';
 
 import { Command } from '../../classes/Command.js';
-
-import { capitalize, numToDurationFormat } from '../../utils/utils.js';
 
 class NowPlaying extends Command {
     cmd = new SlashCommandBuilder()
@@ -40,43 +35,14 @@ class NowPlaying extends Command {
             return;
         }
 
-        const song = player.queue.current;
-        if (song === null) {
+        // Check for a property in song that is nulled by the other types.
+        const song = player.queue.current as Track | null;
+        if (!song?.sourceName) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `No song is currently being played!`)] });
             return;
         }
 
-        const sEmbed = new EmbedBuilder()
-            .setColor(this.client.config.colors.blue)
-            .setTitle(song.title)
-            .setAuthor({ name: song?.author ?? `John Doe`, url: song.uri })
-            .setDescription(`There ${player.queue.length + 1 === 1 ? `is` : `are`} currently **${player.queue.length + 1}** ${player.queue.length + 1 === 1 ? `song` : `songs`} in the queue.`)
-            .setFields([
-                {
-                    name: `Duration`,
-                    value: numToDurationFormat(song.duration!),
-                    inline: true
-                },
-                {
-                    name: `Source`,
-                    value: capitalize(song.sourceName!),
-                    inline: true
-                },
-                {
-                    name: `Requester`,
-                    value: song.requester?.displayName ?? song.requester?.tag ?? `John Doe`,
-                    inline: true
-                }
-            ])
-            .setThumbnail((song.artworkUrl ?? song.thumbnail)!)
-            .setTimestamp()
-            .setFooter({ text: `ID: ${song.requester?.id}` });
-
-        const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-            new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`View Song`).setURL(song.uri ?? `https://example.org`)
-        );
-
-        await interaction.followUp({ embeds: [sEmbed], components: [sRow] });
+        await interaction.followUp(this.client.createNowPlayingDetails(player));
     };
 }
 

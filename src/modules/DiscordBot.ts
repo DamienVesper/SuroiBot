@@ -11,9 +11,16 @@ import {
     EmbedBuilder,
     type Snowflake,
     type User,
-    type TextBasedChannel
+    type TextBasedChannel,
+    TextChannel,
+    type InteractionReplyOptions,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    type MessageCreateOptions,
+    type BaseMessageOptions
 } from 'discord.js';
-import { Manager, Structure } from 'magmastream';
+import { Manager, Structure, type Player, type Track } from 'magmastream';
 
 import { resolve } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -24,6 +31,8 @@ import { MusicPlayer } from './MusicPlayer.js';
 
 import { Command } from '../classes/Command.js';
 import type { Event } from '../classes/Event.js';
+
+import { capitalize, numToDurationFormat } from '../utils/utils.js';
 
 export class DiscordBot extends Client<true> {
     config = config;
@@ -121,6 +130,11 @@ export class DiscordBot extends Client<true> {
 
             this.lavalinkManager.on(`trackStart`, (player, track) => {
                 this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}"`);
+                if (player.queue.length !== 0 && player.textChannel !== null) {
+                    void this.channels.fetch(player.textChannel).then(channel => {
+                        if (channel !== null && channel instanceof TextChannel) void channel.send(this.createNowPlayingDetails(player));
+                    });
+                }
             });
         }
     }
@@ -211,4 +225,40 @@ export class DiscordBot extends Client<true> {
      * @param text The text to display.
      */
     createApproveEmbed = (user: User, text: string): EmbedBuilder => this.createEmbed(user.id, `${this.config.emojis.checkmark} ${text}`).setColor(this.config.colors.green);
+
+    /**
+     * Create an embed and action row component for the currently playing song.
+     * @param player The player handling the queue.
+     */
+    createNowPlayingDetails = (player: Player): BaseMessageOptions => {
+        // Assumes you have done the necessary type guarding for this.
+        const song = player.queue.current! as Track;
+        const sEmbed = new EmbedBuilder()
+            .setColor(this.config.colors.blue)
+            .setTitle(song.title)
+            .setAuthor({ name: song?.author ?? `John Doe`, url: song.uri })
+            .setDescription(`\`${numToDurationFormat(player.position)}\` / \`${numToDurationFormat(song.duration)}\``)
+            .setFields([
+                {
+                    name: `Source`,
+                    value: capitalize(song.sourceName),
+                    inline: true
+                },
+                {
+                    name: `Requester`,
+                    value: song.requester?.displayName ?? song.requester?.tag ?? `John Doe`,
+                    inline: true
+                }
+            ])
+            .setThumbnail((song.artworkUrl ?? song.thumbnail))
+            .setTimestamp()
+            .setFooter({ text: `ID: ${song.requester?.id}` });
+
+        const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`View Track`).setURL(song.uri));
+
+        return {
+            embeds: [sEmbed],
+            components: [sRow]
+        };
+    };
 }
