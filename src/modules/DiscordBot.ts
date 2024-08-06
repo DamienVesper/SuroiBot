@@ -89,10 +89,6 @@ export class DiscordBot extends Client<true> {
 
             let killPlayers: NodeJS.Timeout;
 
-            this.lavalinkManager.on(`trackStart`, (player, track) => {
-                this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}"`);
-            });
-
             this.lavalinkManager.on(`nodeConnect`, node => {
                 this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
             });
@@ -121,6 +117,10 @@ export class DiscordBot extends Client<true> {
 
                 void channel?.send({ embeds: [this.createEmbed(player.guild, `The queue has ended.`).setColor(this.config.colors.blue)] });
                 player.destroy();
+            });
+
+            this.lavalinkManager.on(`trackStart`, (player, track) => {
+                this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}"`);
             });
         }
     }
