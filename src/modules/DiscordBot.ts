@@ -90,12 +90,11 @@ export class DiscordBot extends Client<true> {
             let killPlayers: NodeJS.Timeout;
 
             this.lavalinkManager.on(`nodeConnect`, node => {
-                if (this.lavalinkManager.nodes.has(node.options.identifier!)) return;
-                this.logger.info(`Lavalink Manager`, `Connected to node "${node.options.identifier}".`);
+                this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
             });
 
             this.lavalinkManager.on(`nodeDisconnect`, node => {
-                this.logger.warn(`Lavalink Manager`, `Disconnected from "${node.options.identifier}".`);
+                this.logger.warn(`Lavalink Manager`, `Disconnected from node ${node.options.identifier}.`);
 
                 // Kill all players after 30 seconds.
                 killPlayers = setTimeout(() => {
@@ -104,8 +103,6 @@ export class DiscordBot extends Client<true> {
             });
 
             this.lavalinkManager.on(`nodeReconnect`, node => {
-                this.logger.info(`Lavalink Manager`, `Reconnected to "${node.options.identifier}".`);
-
                 // Reset and restart all players.
                 clearInterval(killPlayers);
                 this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.pause(false));

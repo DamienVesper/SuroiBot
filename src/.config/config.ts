@@ -27,13 +27,13 @@ export const config = {
             enabled: true,
             lavalinkNodes: [{
                 host: process.env.LAVALINK_HOST!,
-                identifier: `Lavalink`,
+                identifier: `0`,
                 password: process.env.LAVALINK_TOKEN,
                 port: 40006,
-                retryAmount: 1000,
-                retryDelay: 10000,
+                retryAmount: 10,
+                retryDelay: 1e4,
                 resumeStatus: true,
-                resumeTimeout: 1000,
+                resumeTimeout: 3e4,
                 secure: false
             }]
         }
