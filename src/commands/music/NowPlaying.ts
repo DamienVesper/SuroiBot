@@ -1,4 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    EmbedBuilder,
+    SlashCommandBuilder,
+    type ChatInputCommandInteraction
+} from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -44,7 +51,7 @@ class NowPlaying extends Command {
             .setTitle(song.title)
             .setAuthor({ name: song?.author ?? `John Doe`, url: song.uri })
             .setDescription(`There ${player.queue.length + 1 === 1 ? `is` : `are`} currently **${player.queue.length + 1}** ${player.queue.length + 1 === 1 ? `song` : `songs`} in the queue.`)
-            .addFields([
+            .setFields([
                 {
                     name: `Duration`,
                     value: numToDurationFormat(song.duration!),
