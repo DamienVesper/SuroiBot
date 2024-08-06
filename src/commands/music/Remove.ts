@@ -34,9 +34,9 @@ class Remove extends Command {
 
         const songID = interaction.options.getInteger(`id`, true) - 1;
         if (songID > player.queue.length) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There are only **${player.queue.length}** songs in the queue!`)] });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There are only **${player.queue.length + 1}** songs in the queue!`)] });
             return;
-        } else if (songID === player.queue.length) {
+        } else if (songID === 0) {
             const song = player.queue.current!;
             player.stop(1);
 

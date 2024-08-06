@@ -13,11 +13,9 @@ import {
     type User,
     type TextBasedChannel,
     TextChannel,
-    type InteractionReplyOptions,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    type MessageCreateOptions,
     type BaseMessageOptions
 } from 'discord.js';
 import { Manager, Structure, type Player, type Track } from 'magmastream';
@@ -234,9 +232,9 @@ export class DiscordBot extends Client<true> {
     createNowPlayingDetails = (player: Player, isAutoMessage?: boolean): BaseMessageOptions => {
         // Assumes you have done the necessary type guarding for this.
         const song = player.queue.current! as Track;
-        
+
         let queueLength = 0;
-        player.queue.concat(player.queue.current!).forEach(queue => queueLength += queue.duration ?? 0); 
+        player.queue.concat(player.queue.current!).forEach(queue => queueLength += queue.duration ?? 0);
 
         const sEmbed = new EmbedBuilder()
             .setColor(this.config.colors.blue)
@@ -246,7 +244,7 @@ export class DiscordBot extends Client<true> {
 
         if (isAutoMessage) {
             sEmbed
-                .setDescription(`### Now Playing\n**${song.title}**`)
+                .setDescription(`### Now Playing\n**${song.title}**`);
         } else {
             sEmbed
                 .setDescription(`### Now Playing\n**${song.title}**\n\n${createTrackBar(player)}`)
