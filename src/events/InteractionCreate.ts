@@ -1,5 +1,8 @@
-import { Events, PermissionsBitField, type ClientEvents } from 'discord.js';
+import { Collection, Events, PermissionsBitField, type ClientEvents } from 'discord.js';
+
 import { Event } from '../classes/Event.js';
+
+import { numToCooldownFormat } from '../utils/utils.js';
 
 class InteractionCreate extends Event {
     config = {
@@ -34,7 +37,7 @@ class InteractionCreate extends Event {
                     if (userPermissions.includes(perm) && !value) missingUserPerms.push(perm);
 
                 if (missingUserPerms.length !== 0) {
-                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? `permission` : `permissions`} ${missingUserPerms.map(x => `\`${x}\``).join(`, `)} to use this command.`)] });
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? `permission` : `permissions`} ${missingUserPerms.map(x => `\`${x}\``).join(`, `)} to use this command.`)], ephemeral: true });
                     return;
                 }
 
@@ -46,8 +49,24 @@ class InteractionCreate extends Event {
                     if (botPermissions.includes(perm) && !value) missingBotPerms.push(perm);
 
                 if (missingBotPerms.length !== 0) {
-                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? `permission` : `permissions`} ${missingBotPerms.map(x => `\`${x}\``).join(`, `)} to execute this command.`)] });
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? `permission` : `permissions`} ${missingBotPerms.map(x => `\`${x}\``).join(`, `)} to execute this command.`)], ephemeral: true });
                     return;
+                }
+
+                // Check cooldowns.
+                if (command.config.cooldown !== 0) {
+                    let cooldowns = this.client.cooldowns.get(interaction.user.id);
+                    if (cooldowns === undefined) {
+                        this.client.cooldowns.set(interaction.user.id, new Collection());
+                        cooldowns = this.client.cooldowns.get(interaction.user.id)!;
+                    }
+
+                    const cmdCooldown = cooldowns.get(command.cmd.name);
+                    if (cmdCooldown === undefined || (new Date().valueOf() - cmdCooldown > command.config.cooldown)) cooldowns.set(command.cmd.name, new Date().valueOf());
+                    else {
+                        await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must wait another \`${numToCooldownFormat(new Date().valueOf() - cmdCooldown)}\` before using that command.`)] });
+                        return;
+                    }
                 }
             }
 

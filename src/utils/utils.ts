@@ -30,6 +30,18 @@ export const numToDurationFormat = (num: number): string => {
 };
 
 /**
+ * Convert a number to cooldown form.
+ * @param num The number.
+ */
+export const numToCooldownFormat = (num: number): string => {
+    const seconds = ((num / 1e3) % 60).toFixed(3);
+    const minutes = (Math.trunc(num / 6e4) % 60);
+    const hours = Math.trunc(num / 36e5);
+
+    return `${hours > 0 ? `${hours}h ` : ``}${minutes > 0 ? `${minutes}m ` : ``}${seconds}s`;
+};
+
+/**
  * Capitalize a string
  * @param str The string to capitalize.
  */

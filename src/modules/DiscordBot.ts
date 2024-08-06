@@ -38,7 +38,7 @@ export class DiscordBot extends Client<true> {
 
     commands = new Collection<Command[`cmd`][`name`], Command>();
     subcommands = new Collection<Command[`cmd`][`name`], Command>();
-    cooldowns = new Collection<Snowflake, Array<Command[`cmd`][`name`]>>();
+    cooldowns = new Collection<Snowflake, Collection<Command[`cmd`][`name`], number>>();
 
     lavalinkManager!: Manager;
 
