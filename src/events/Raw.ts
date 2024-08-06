@@ -1,7 +1,7 @@
 import { Events } from 'discord.js';
 import { Event } from '../classes/Event.js';
 
-class Ready extends Event {
+class Raw extends Event {
     config = {
         name: Events.Raw,
         once: false
@@ -12,4 +12,4 @@ class Ready extends Event {
     };
 }
 
-export default Ready;
+export default Raw;

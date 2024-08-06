@@ -1,7 +1,7 @@
 import { Events, type ClientEvents } from 'discord.js';
 import { Event } from '../classes/Event.js';
 
-class Ready extends Event {
+class ErrorEvent extends Event {
     config = {
         name: Events.Error,
         once: false
@@ -12,4 +12,4 @@ class Ready extends Event {
     };
 }
 
-export default Ready;
+export default ErrorEvent;
