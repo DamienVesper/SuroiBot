@@ -41,6 +41,7 @@ class Remove extends Command {
             player.stop(1);
 
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${song.title}** from the queue.`)] });
+            await interaction.channel?.send(this.client.createNowPlayingDetails(player, true));
         } else {
             const song = player.queue.splice(songID - 1, songID)[0];
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${song.title}** from the queue.`)] });
