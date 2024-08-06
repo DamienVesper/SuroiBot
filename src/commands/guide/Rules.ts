@@ -1,4 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    EmbedBuilder,
+    SlashCommandBuilder,
+    type ChatInputCommandInteraction
+} from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@napi-rs/canvas':
+        specifier: ^0.1.53
+        version: 0.1.53
       axios:
         specifier: ^1.7.3
         version: 1.7.3
@@ -253,6 +256,64 @@ packages:
   '@humanwhocodes/retry@0.3.0':
     resolution: {integrity: sha512-d2CGZR2o7fS6sWB7DG/3a95bGKQyHMACZ5aW8qGkkqQpUoZV6C0X7Pc7l4ZNMZkfNBf4VWNe9E1jRsf0G146Ew==}
     engines: {node: '>=18.18'}
+
+  '@napi-rs/canvas-android-arm64@0.1.53':
+    resolution: {integrity: sha512-2YhxfVsZguATlRWE0fZdTx35SE9+r5D7HV5GPNDataZOKmHf+zZ5//dspuuBSbOriQdoicaFrgXKCUqI0pK3WQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@napi-rs/canvas-darwin-arm64@0.1.53':
+    resolution: {integrity: sha512-ls+CWLMusf4RAGo5BvIIzA6dNcc0elwVp6LKjHfQECHA8KKmvdB58YuE5BQcTlb2rzk0SEKtBC/Th3NI2oNdfg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@napi-rs/canvas-darwin-x64@0.1.53':
+    resolution: {integrity: sha512-ZAgcoCH5+5OKS2P8Lxx+jbkAPKkyLD2x6OvSrHg1U6ppdxmLA+CkJlRl8w45HCXwuyIiP7OeymECRtiNYTwznQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.53':
+    resolution: {integrity: sha512-p9km/3C/loDxu3AvA8/vtpIS1BGMd/Ehkl2Iu/v/Gw8N/KUIt3HUvTS7AKApyVE28bxTfq96wJQjtcT8jzDncw==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.53':
+    resolution: {integrity: sha512-QKK+sykEiYwjwd+ogyLcpcnH38DNZ8KViBlnfEpoGA2Wa+21/cWQKfMxnbgb/rbvm5tazJinZcihFvH577WQ5g==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-arm64-musl@0.1.53':
+    resolution: {integrity: sha512-2N41U0X8RnrTKzpTtPv1ozlYkJtPsUdbfF3uP/KEd/BsULGd8Y8ghkGMS6CM+821au4ex0dPrWOOdT9wC1rSqQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-x64-gnu@0.1.53':
+    resolution: {integrity: sha512-7XjuTvDKCODtf/vMwF43VGDrjfgwYKgS91ggdcX3UrJaBYWyWu/+eqNvNj+zdXSe/0x+YOjf5jG4m8xIXdBMQA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@napi-rs/canvas-linux-x64-musl@0.1.53':
+    resolution: {integrity: sha512-970WEvB8vmj+uxvgdBZ+AGFV7uq9GJhXrqG5PGQ5lWciHX0P0d/OhS2F7TITgFR0LsKDQZ7XQgzMxsYOfwZ0FQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@napi-rs/canvas-win32-x64-msvc@0.1.53':
+    resolution: {integrity: sha512-rLFQCSJaWg/sv54Aap9nAhaodi4Vyb4un50EgW+PNkk8icMziU6KLRKirGBdQr9ZdxnshAPeQXD1g2ArStujKA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@napi-rs/canvas@0.1.53':
+    resolution: {integrity: sha512-XsEZi97+kKykmAiPpY+IpZoHxJY1srqFZp8jDt1/RySzC0kB0iZYt/VMIFqQKpLCARZjD7SOAz2AULtwYlesCA==}
+    engines: {node: '>= 10'}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1117,6 +1178,45 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/retry@0.3.0': {}
+
+  '@napi-rs/canvas-android-arm64@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-darwin-arm64@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-darwin-x64@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm64-musl@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-linux-x64-gnu@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-linux-x64-musl@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas-win32-x64-msvc@0.1.53':
+    optional: true
+
+  '@napi-rs/canvas@0.1.53':
+    optionalDependencies:
+      '@napi-rs/canvas-android-arm64': 0.1.53
+      '@napi-rs/canvas-darwin-arm64': 0.1.53
+      '@napi-rs/canvas-darwin-x64': 0.1.53
+      '@napi-rs/canvas-linux-arm-gnueabihf': 0.1.53
+      '@napi-rs/canvas-linux-arm64-gnu': 0.1.53
+      '@napi-rs/canvas-linux-arm64-musl': 0.1.53
+      '@napi-rs/canvas-linux-x64-gnu': 0.1.53
+      '@napi-rs/canvas-linux-x64-musl': 0.1.53
+      '@napi-rs/canvas-win32-x64-msvc': 0.1.53
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
