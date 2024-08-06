@@ -16,7 +16,7 @@ class InteractionCreate extends Event {
             }
 
             try {
-                if (interaction.guild !== null) this.client.logger.debug(`System`, `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`);
+                if (interaction.guild !== null) this.client.logger.debug(`Gateway`, `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`);
                 await command.run(interaction);
             } catch (err: any) {
                 this.client.logger.error(`Gateway`, err.stack ?? err.message);
