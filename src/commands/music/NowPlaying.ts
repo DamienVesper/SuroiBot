@@ -43,7 +43,7 @@ class NowPlaying extends Command {
             .setColor(this.client.config.colors.blue)
             .setTitle(song.title)
             .setAuthor({ name: song?.author ?? `John Doe`, url: song.uri })
-            .setDescription(`There ${player.queue.length > 1 ? `are` : `is`} currently **${player.queue.length}** ${player.queue.length > 1 ? `songs` : `song`} in the queue.`)
+            .setDescription(`There ${player.queue.length + 1 === 1 ? `is` : `are`} currently **${player.queue.length + 1}** ${player.queue.length + 1 === 1 ? `song` : `songs`} in the queue.`)
             .addFields([
                 {
                     name: `Duration`,
@@ -57,7 +57,7 @@ class NowPlaying extends Command {
                 },
                 {
                     name: `Requester`,
-                    value: song.requester?.tag ?? `John Doe`,
+                    value: song.requester?.displayName ?? song.requester?.tag ?? `John Doe`,
                     inline: true
                 }
             ])
