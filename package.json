@@ -34,7 +34,7 @@
     "eslint": "^9.8.0",
     "tsx": "^4.16.5",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0",
+    "typescript-eslint": "^8.0.1",
     "yargs": "^17.7.2"
   },
   "dependencies": {
@@ -42,6 +42,6 @@
     "axios": "^1.7.3",
     "discord.js": "^14.15.3",
     "magmastream": "^2.5.11",
-    "prisma": "^5.17.0"
+    "prisma": "^5.18.0"
   }
 }
