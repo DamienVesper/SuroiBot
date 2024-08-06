@@ -10,22 +10,17 @@ export class Command {
     client: DiscordBot;
 
     cmd: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder();
-    config: {
-        botPermissions: bigint[]
-        userPermissions: bigint[]
-        isSubcommand: boolean
-        cooldown: number
-    } = {
-            botPermissions: [
-                PermissionFlagsBits.SendMessages,
-                PermissionFlagsBits.EmbedLinks
-            ],
-            userPermissions: [
-                PermissionFlagsBits.UseApplicationCommands
-            ],
-            isSubcommand: false,
-            cooldown: 0
-        };
+    config: ConfigType = {
+        botPermissions: [
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.EmbedLinks
+        ],
+        userPermissions: [
+            PermissionFlagsBits.UseApplicationCommands
+        ],
+        isSubcommand: false,
+        cooldown: 0
+    };
 
     constructor (client: DiscordBot) {
         this.client = client;
@@ -38,3 +33,17 @@ export class Command {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {};
 }
+
+export type ConfigType<T = boolean> = T extends true
+    ? {
+        botPermissions: bigint[]
+        userPermissions: bigint[]
+        isSubcommand: T
+        parent: SlashCommandBuilder[`name`]
+        cooldown: number
+    } : {
+        botPermissions: bigint[]
+        userPermissions: bigint[]
+        isSubcommand: T
+        cooldown: number
+    };

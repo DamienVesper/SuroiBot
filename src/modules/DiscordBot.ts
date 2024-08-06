@@ -22,7 +22,7 @@ import { readdirSync } from 'fs';
 import { Logger } from './Logger.js';
 import { MusicPlayer } from './MusicPlayer.js';
 
-import type { Command } from '../classes/Command.js';
+import { Command } from '../classes/Command.js';
 import type { Event } from '../classes/Event.js';
 
 export class DiscordBot extends Client<true> {
@@ -37,7 +37,7 @@ export class DiscordBot extends Client<true> {
     });
 
     commands = new Collection<Command[`cmd`][`name`], Command>();
-    subcommands = new Collection();
+    subcommands = new Collection<Command[`cmd`][`name`], Command>();
     cooldowns = new Collection<Snowflake, Array<Command[`cmd`][`name`]>>();
 
     lavalinkManager!: Manager;
@@ -156,9 +156,11 @@ export class DiscordBot extends Client<true> {
 
         for (const file of files) {
             const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default as typeof Command;
+
             const command = new ClientCommand(this);
 
-            this.commands.set(command.cmd.name, command);
+            if (command.config.isSubcommand) this.subcommands.set(command.config.parent, command);
+            else this.commands.set(command.cmd.name, command);
         }
     };
 

@@ -1,6 +1,6 @@
 import { PermissionFlagsBits, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
-import { Command } from '../../classes/Command.js';
+import { Command, type ConfigType } from '../../classes/Command.js';
 
 class Say extends Command {
     cmd = new SlashCommandBuilder()
@@ -9,7 +9,7 @@ class Say extends Command {
         .setDescription(`Say something.`)
         .setDMPermission(false);
 
-    config = {
+    config: ConfigType = {
         botPermissions: [
             PermissionFlagsBits.SendMessages,
             PermissionFlagsBits.EmbedLinks

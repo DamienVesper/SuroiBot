@@ -1,4 +1,4 @@
-import { Events, type ClientEvents } from 'discord.js';
+import { Events, PermissionsBitField, type ClientEvents } from 'discord.js';
 import { Event } from '../classes/Event.js';
 
 class InteractionCreate extends Event {
@@ -13,6 +13,42 @@ class InteractionCreate extends Event {
             if (command === undefined) {
                 await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `This command is outdated.`)], ephemeral: true });
                 return;
+            }
+
+            // There isn't any permissions handling outside of guilds, so we can safely ignore all other interaction sources.
+            if (command.cmd.dm_permission === false && interaction.guild !== null) {
+                const member = await interaction.guild.members.fetch(interaction.user.id);
+                const bot = await interaction.guild.members.fetch(this.client.user.id);
+
+                // Handle any weird API errors.
+                if (member === undefined || bot === undefined) {
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `There was an error running that command.`)] });
+                    throw new Error(`The GuildMember of either the interaction user or client was not defined.`);
+                }
+
+                // Check if the user has permissions.
+                const userPermissions = Object.entries(new PermissionsBitField(command.config.userPermissions).serialize()).filter(x => x[1]).map(x => x[0]);
+                const missingUserPerms: string[] = [];
+
+                for (const [perm, value] of Object.entries(member.permissions.serialize()))
+                    if (userPermissions.includes(perm) && !value) missingUserPerms.push(perm);
+
+                if (missingUserPerms.length !== 0) {
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? `permission` : `permissions`} ${missingUserPerms.map(x => `\`${x}\``).join(`, `)} to use this command.`)] });
+                    return;
+                }
+
+                // Check if the bot has permissions. This is usually a less common issue, so it's checked afterwards for efficiency.
+                const botPermissions = Object.entries(new PermissionsBitField(command.config.botPermissions).serialize()).filter(x => x[1]).map(x => x[0]);
+                const missingBotPerms: string[] = [];
+
+                for (const [perm, value] of Object.entries(bot.permissions.serialize()))
+                    if (botPermissions.includes(perm) && !value) missingBotPerms.push(perm);
+
+                if (missingBotPerms.length !== 0) {
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? `permission` : `permissions`} ${missingBotPerms.map(x => `\`${x}\``).join(`, `)} to execute this command.`)] });
+                    return;
+                }
             }
 
             try {
