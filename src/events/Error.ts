@@ -1,4 +1,5 @@
 import { Events, type ClientEvents } from 'discord.js';
+
 import { Event } from '../classes/Event.js';
 
 class ErrorEvent extends Event {

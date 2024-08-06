@@ -1,4 +1,5 @@
 import colors from './colors.js';
+import customData from './customData.js';
 import emojis from './emojis.js';
 
 import type { Snowflake } from 'discord.js';
@@ -38,6 +39,8 @@ export const config = {
         }
     },
 
+    customData,
+
     colors,
     emojis
 } satisfies Config as Config;
@@ -71,6 +74,11 @@ interface Config {
          */
         music: Module<MusicModule>
     }
+
+    /**
+     * Custom data added to the config
+     */
+    customData: typeof customData
 
     colors: typeof colors
     emojis: typeof emojis

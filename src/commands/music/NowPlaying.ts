@@ -1,5 +1,8 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+
 import { Command } from '../../classes/Command.js';
+
+import { numToDurationFormat } from '../../utils/utils.js';
 
 class NowPlaying extends Command {
     cmd = new SlashCommandBuilder()
@@ -36,12 +39,25 @@ class NowPlaying extends Command {
             return;
         }
 
-        const sEmbed = this.client.createEmbed(song.requester!.id, `# Nowwerewrwrewe Playing ## [${song.title}](${song.uri})`)
+        const sEmbed = new EmbedBuilder()
             .setColor(this.client.config.colors.blue)
-            .setAuthor({ name: song?.author ?? `John Doe` })
-            .setImage((song.artworkUrl ?? song.thumbnail)!);
+            .setTitle(song.title)
+            .setAuthor({ name: song?.author ?? `John Doe`, url: song.uri })
+            .addFields([
+                {
+                    name: `Duration`,
+                    value: `\`${numToDurationFormat(song.duration!)}\``
+                }
+            ])
+            .setThumbnail((song.artworkUrl ?? song.thumbnail)!)
+            .setFooter({ text: `ID: ${song.requester?.id}` });
 
-        await interaction.followUp({ embeds: [sEmbed] });
+        console.log(song.sourceName);
+        const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`View Song`).setURL(song.uri ?? `https://example.org`)
+        );
+
+        await interaction.followUp({ embeds: [sEmbed], components: [sRow] });
     };
 }
 

@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+
 import { Command } from '../../classes/Command.js';
 
 class NowPlaying extends Command {
@@ -30,6 +31,7 @@ class NowPlaying extends Command {
             return;
         }
 
+        player.destroy();
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Left the voice channel.`)] });
     };
 }
