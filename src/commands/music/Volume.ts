@@ -10,7 +10,7 @@ class Volume extends Command {
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null || interaction.channel === null) {
+        if (interaction.guild === null) {
             await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
             return;
         }
