@@ -11,6 +11,8 @@ class Ready extends Event {
         this.client.logger.info(`Gateway`, `Connected to Discord as "${client.user.tag}" (${client.user.id}).`);
 
         this.client.lavalinkManager.init(client.user.id);
+
+        await this.client.deployCommands(this.client.config.mode);
     };
 }
 

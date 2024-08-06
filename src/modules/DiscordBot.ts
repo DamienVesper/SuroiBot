@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { config } from '../.config/config.js';
 
 import {
@@ -13,17 +13,17 @@ import {
     type User,
     type TextBasedChannel
 } from 'discord.js';
+import { Manager, Structure } from 'magmastream';
 
 import { resolve } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { readdirSync } from 'fs';
 
 import { Logger } from './Logger.js';
+import { MusicPlayer } from './MusicPlayer.js';
 
 import type { Command } from '../classes/Command.js';
 import type { Event } from '../classes/Event.js';
-
-import { Manager } from 'magmastream';
 
 export class DiscordBot extends Client<true> {
     config = config;
@@ -78,6 +78,7 @@ export class DiscordBot extends Client<true> {
         });
 
         if (this.config.modules.music.enabled) {
+            Structure.extend(`Player`, Player => MusicPlayer);
             this.lavalinkManager = new Manager({
                 nodes: this.config.modules.music.lavalinkNodes,
                 send: (id, payload) => {
@@ -141,15 +142,21 @@ export class DiscordBot extends Client<true> {
         }
     };
 
-    deployCommands = async (dev: boolean): Promise<void> => {
+    /**
+     * Deploy commands.
+     * @param dev In development mode?
+     */
+    deployCommands = async (mode: typeof this.config.mode): Promise<void> => {
         try {
-            this.logger.info(`Deploying ${this.commands.size} commands.`);
-            await this.rest.put(dev
+            this.logger.info(`Gateway`, `Deployed ${this.commands.size} commands.`);
+
+            const commands = this.commands.map(command => command.cmd.toJSON());
+            await this.rest.put(mode === `dev`
                 ? Routes.applicationGuildCommands(this.user.id, config.dev.guildID)
                 : Routes.applicationCommands(this.user.id)
-            );
-        } catch (err) {
-            this.logger.error(`Gateway`, err);
+            , { body: commands });
+        } catch (err: any) {
+            this.logger.error(`Gateway`, err.stack ?? err.message);
         }
     };
 

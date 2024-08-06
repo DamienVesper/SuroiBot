@@ -82,7 +82,8 @@ export default tseslint.config(
             [`@typescript-eslint/no-unnecessary-condition`]: `off`,
             [`@typescript-eslint/no-explicit-any`]: `off`,
             [`@typescript-eslint/no-non-null-assertion`]: `off`,
-            [`@typescript-eslint/no-unsafe-argument`]: `off`
+            [`@typescript-eslint/no-unsafe-argument`]: `off`,
+            [`@typescript-eslint/no-unsafe-member-access`]: `off`
         }
     },
     {

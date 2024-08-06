@@ -20,27 +20,24 @@ class Play extends Command {
             return;
         }
 
+        await interaction.deferReply();
+
         const guildPlayer = this.client.lavalinkManager.players.get(interaction.guild.id);
         if (guildPlayer !== undefined && voiceChannel.id !== guildPlayer.voiceChannel) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in the same voice channel as the bot to use that command!`)], ephemeral: true });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in the same voice channel as the bot to use that command!`)] });
             return;
         }
-
-        await interaction.deferReply();
 
         const songInput = interaction.options.getString(`name`, true);
         const res = await this.client.lavalinkManager.search(songInput, interaction.user as any);
 
         if (res.loadType === `empty`) {
-            console.log(`help!`);
-            throw new Error(`There were no tracks to queue.`);
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I could not find any songs with the provided query.`)] });
+            return;
         } else if (res.loadType === `playlist`) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `We're getting there with playlists. Please be patient.`)] });
             return;
-        } else if (res.loadType === `error`) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I could not find any songs with the provided query.`)] });
-            return;
-        }
+        } else if (res.loadType === `error`) throw new Error(`There was an error queuing a track.`);
 
         const player = this.client.lavalinkManager.create({
             guild: interaction.guild.id,

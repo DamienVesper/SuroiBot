@@ -18,8 +18,8 @@ class InteractionCreate extends Event {
             try {
                 if (interaction.guild !== null) this.client.logger.debug(`System`, `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`);
                 await command.run(interaction);
-            } catch (err) {
-                this.client.logger.error(`System`, err);
+            } catch (err: any) {
+                this.client.logger.error(`Gateway`, err.stack ?? err.message);
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 interaction.replied || interaction.deferred
                     ? await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There was an error executing this command.`)], ephemeral: interaction.ephemeral ?? true })
