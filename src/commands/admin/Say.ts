@@ -26,15 +26,12 @@ class Say extends Command {
         if (interaction.guild === null) return;
         const message = interaction.options.getString(`message`, true);
 
-        await interaction.deferReply();
-        await interaction.channel?.send({ content: message }).catch(err => {
-            this.client.logger.warn(`Gateway`, `Failed to send "say" message: No permission.`);
-        });
+        await interaction.reply({ embeds: [this.client.createApproveEmbed(interaction.user, `Your message was sent.`)], ephemeral: true });
+        await interaction.deleteReply();
 
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Your message was sent.`)], ephemeral: true });
-        setTimeout(() => {
-            void interaction.deleteReply();
-        }, 3e3);
+        await interaction.channel?.send({ content: message }).catch(err => {
+            this.client.logger.warn(`Gateway`, `Failed to send message: ${err.stack ?? err.message}`);
+        });
     };
 }
 
