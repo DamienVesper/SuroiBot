@@ -32,13 +32,14 @@ class Play extends Command {
         const songInput = interaction.options.getString(`name`, true);
         const res = await this.client.lavalinkManager.search(songInput, interaction.user as any);
 
-        if (res.loadType === `empty`) {
+        if (res.loadType === `error`) {
+            this.client.logger.debug(`Lavalink Manager`, res);
+            this.client.logger.error(`Lavalink Manager`, `There was an error queuing a track.`);
+            return;
+        } else if (res.loadType === `empty`) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I could not find any songs with the provided query.`)] });
             return;
-        } else if (res.loadType === `playlist`) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `We're getting there with playlists. Please be patient.`)] });
-            return;
-        } else if (res.loadType === `error`) throw new Error(`There was an error queuing a track.`);
+        }
 
         const player = this.client.lavalinkManager.create({
             guild: interaction.guild.id,
@@ -49,10 +50,17 @@ class Play extends Command {
         });
 
         player.connect();
-        player.queue.add(res.tracks[0]);
+
+        if (res.loadType === `playlist` && res.playlist !== undefined) {
+            player.queue.add(res.playlist.tracks);
+            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Queued **${res.playlist.tracks.length}** songs.`)] });
+            return;
+        } else {
+            player.queue.add(res.tracks[0]);
+            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${res.tracks[0].title}** has been queued!`)] });
+        }
 
         if (!player.playing && !player.paused && !player.queue.size) await player.play();
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${res.tracks[0].title}** has been queued!`)] });
     };
 }
 

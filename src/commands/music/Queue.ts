@@ -45,7 +45,7 @@ class Queue extends Command {
             return;
         }
 
-        const pageCount = Math.ceil((queue.length + 1) / 10);
+        const pageCount = Math.ceil(queue.length / 10);
         const embeds = [];
 
         let queueLength = 0;
@@ -60,8 +60,8 @@ class Queue extends Command {
 
             embeds.push(new EmbedBuilder()
                 .setColor(this.client.config.colors.blue)
-                .setTitle(`${interaction.guild.name} Queue`)
-                .setDescription(tracks.map((track, j) => `${j === 0 ? `↳ ` : ``}**${(i + 1) * (j + 1)}.** [${track.title}](${track.uri!}) - [${numToDurationFormat(track.duration!)}]`).join(`\n`))
+                .setTitle(`Server Queue`)
+                .setDescription(tracks.map((track, j) => `${i === 0 && j === 0 ? `↳ ` : ``}**${(10 * i) + (j + 1)}.** [${track.title}](${track.uri!}) - [${numToDurationFormat(track.duration!)}]`).join(`\n`))
                 .setFields([
                     {
                         name: `Queue Size`,
@@ -79,12 +79,12 @@ class Queue extends Command {
                         inline: true
                     }
                 ])
-                .setThumbnail(tracks[0].artworkUrl ?? tracks[0].thumbnail ?? ``)
+                .setThumbnail(queue[0].artworkUrl ?? queue[0].thumbnail ?? ``)
                 .setTimestamp()
                 .setFooter({ text: `ID: ${interaction.user.id}` }));
         }
 
-        if (embeds.length === 0) await interaction.followUp({ embeds: [embeds[0]] });
+        if (embeds.length === 1) await interaction.followUp({ embeds: [embeds[0]] });
         else {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const paginator = new Paginator(this.client, interaction, interaction.user, embeds);

@@ -87,6 +87,8 @@ export class DiscordBot extends Client<true> {
                 }
             });
 
+            let killPlayers: NodeJS.Timeout;
+
             this.lavalinkManager.on(`nodeConnect`, node => {
                 if (this.lavalinkManager.nodes.has(node.options.identifier!)) return;
                 this.logger.info(`Lavalink Manager`, `Connected to node "${node.options.identifier}".`);
@@ -94,11 +96,18 @@ export class DiscordBot extends Client<true> {
 
             this.lavalinkManager.on(`nodeDisconnect`, node => {
                 this.logger.warn(`Lavalink Manager`, `Disconnected from "${node.options.identifier}".`);
-                this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.destroy());
+
+                // Kill all players after 30 seconds.
+                killPlayers = setTimeout(() => {
+                    this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.destroy());
+                }, 3e4);
             });
 
             this.lavalinkManager.on(`nodeReconnect`, node => {
                 this.logger.info(`Lavalink Manager`, `Reconnected to "${node.options.identifier}".`);
+
+                // Reset and restart all players.
+                clearInterval(killPlayers);
                 this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.restart());
             });
 
@@ -109,7 +118,7 @@ export class DiscordBot extends Client<true> {
             this.lavalinkManager.on(`queueEnd`, player => {
                 const channel = this.channels.cache.get(player.textChannel!) as TextBasedChannel | null;
 
-                void channel?.send({ embeds: [this.createEmbed(player.guild, `The queue has ended.`)] });
+                void channel?.send({ embeds: [this.createEmbed(player.guild, `The queue has ended.`).setColor(this.config.colors.blue)] });
                 player.destroy();
             });
         }

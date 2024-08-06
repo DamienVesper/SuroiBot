@@ -51,8 +51,8 @@ export class Paginator {
         const FIRST = this.createButton(`pageFirst`, `⏮`, ButtonStyle.Secondary, true);
         const PREV = this.createButton(`pagePrev`, `◀️`, ButtonStyle.Secondary, true);
         const COUNT = this.createButton(`pageCount`, `${this.currentPage + 1} / ${this.pages.length}`, ButtonStyle.Secondary, true);
-        const NEXT = this.createButton(`pageNext`, `▶️`, ButtonStyle.Secondary);
-        const LAST = this.createButton(`pageLast`, `⏭`, ButtonStyle.Secondary);
+        const NEXT = this.createButton(`pageNext`, `▶️`, ButtonStyle.Secondary, false);
+        const LAST = this.createButton(`pageLast`, `⏭`, ButtonStyle.Secondary, false);
 
         this.actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents([FIRST, PREV, COUNT, NEXT, LAST]);
         const message = this.interaction.replied || this.interaction.deferred
