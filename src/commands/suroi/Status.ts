@@ -42,15 +42,10 @@ class Status extends Command {
             desc += `${translateSuroiStatus(saRes[1])} **South America**${saRes[0] > -1 ? ` (${saRes[0]} players)` : ``}\n`;
             desc += `${translateSuroiStatus(asRes[1])} **Asia**${asRes[0] > -1 ? ` (${asRes[0]} players)` : ``}\n`;
 
-            if (interaction.guild?.id === this.client.config.customData.guild) {
-                desc += `### Discord Bots`;
-                desc += `${(await interaction.guild.members.fetch(this.client.config.customData.bots.suroiBot)).presence?.status !== `offline` ? this.client.config.emojis.checkmark : this.client.config.emojis.xmark} SuroiBot`;
-                desc += `${(await interaction.guild.members.fetch(this.client.config.customData.bots.suroiWatcher)).presence?.status !== `offline` ? this.client.config.emojis.checkmark : this.client.config.emojis.xmark} Suroi Watcher`;
-            }
-
             const sEmbed = new EmbedBuilder()
                 .setColor(this.client.config.colors.orange)
                 .setDescription(desc)
+                .setThumbnail(interaction.guild?.iconURL() ?? null)
                 .setTimestamp()
                 .setFooter({ text: `ID: ${interaction.user.id}` });
 

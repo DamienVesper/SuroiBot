@@ -253,7 +253,7 @@ export class DiscordBot extends Client<true> {
                 .setFields([
                     {
                         name: `Requester`,
-                        value: song.requester?.displayName ?? song.requester?.tag ?? `John Doe`,
+                        value: song.requester?.displayName ?? song.requester?.tag ?? `Unknown User`,
                         inline: true
                     },
                     {

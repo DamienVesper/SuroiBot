@@ -79,7 +79,7 @@ class Queue extends Command {
                         inline: true
                     }
                 ])
-                .setThumbnail(queue[0].artworkUrl ?? queue[0].thumbnail ?? ``)
+                .setThumbnail(queue[0].artworkUrl ?? queue[0].thumbnail ?? null)
                 .setTimestamp()
                 .setFooter({ text: `ID: ${interaction.user.id}` }));
         }
