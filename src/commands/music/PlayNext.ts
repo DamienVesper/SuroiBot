@@ -68,7 +68,11 @@ class PlayNext extends Command {
                 ? player.queue.add(track)
                 : player.queue.unshift(track);
 
-            if (player.stopped || (!player.playing && !player.paused && !player.queue.size)) await player.play();
+            if (player.stopped || (!player.playing && !player.paused && !player.queue.size)) {
+                await player.play();
+                player.stopped = false;
+            }
+
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Added **${track.title}** to the start of the queue.`)] });
         }
     };

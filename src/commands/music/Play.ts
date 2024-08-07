@@ -61,7 +61,11 @@ class Play extends Command {
             const track = res.tracks[0];
             player.queue.add(track);
 
-            if (player.stopped || (!player.playing && !player.paused && !player.queue.size)) await player.play();
+            if (player.stopped || (!player.playing && !player.paused && !player.queue.size)) {
+                await player.play();
+                player.stopped = false;
+            }
+
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Queued **${track.title}**.`)] });
         }
     };
