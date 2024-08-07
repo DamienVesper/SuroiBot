@@ -65,7 +65,7 @@ export class Paginator {
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 (interaction.replied || interaction.deferred)
                     ? void interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You did not invoke this command!`)], ephemeral: interaction.ephemeral ?? true })
-                    : void interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You did not invoke this command!`)], ephemeral: true })
+                    : void interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You did not invoke this command!`)], ephemeral: true });
                 return;
             }
 

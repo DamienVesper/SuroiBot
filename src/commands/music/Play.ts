@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class Play extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`play`)
-        .addStringOption(option => option.setName(`name`).setDescription(`The name or link to the song.`).setRequired(true))
+        .addStringOption(option => option.setName(`query`).setDescription(`The name or link to the song, file, or playlist.`).setRequired(true))
         .setDescription(`Play a song, audio file, or playlist.`)
         .setDMPermission(false);
 
@@ -29,7 +29,7 @@ class Play extends Command {
             return;
         }
 
-        const songInput = interaction.options.getString(`name`, true);
+        const songInput = interaction.options.getString(`query`, true);
         const res = await this.client.lavalinkManager.search(songInput, interaction.user as any);
 
         if (res.loadType === `error`) {
@@ -61,7 +61,7 @@ class Play extends Command {
             player.queue.add(track);
 
             if (!player.playing && !player.paused && !player.queue.size) await player.play();
-            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${track.title}** has been added to the queue!`)] });
+            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Queued **${track.title}**.`)] });
         }
     };
 }
