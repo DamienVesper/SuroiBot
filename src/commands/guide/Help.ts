@@ -7,6 +7,7 @@ import {
 import { Command } from '../../classes/Command.js';
 
 import { Paginator } from '../../modules/Paginator.js';
+
 import { capitalize, createUsageExample } from '../../utils/utils.js';
 
 class Help extends Command {

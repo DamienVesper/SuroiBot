@@ -9,6 +9,9 @@ import {
 
 import { Command } from '../../classes/Command.js';
 
+/**
+ * Rules text, in markdown.
+ */
 const rulesText = `
 ## Suroi Rules
 ### Server Rules
