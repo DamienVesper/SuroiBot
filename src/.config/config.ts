@@ -24,12 +24,9 @@ export const config = {
     },
 
     modules: {
-        logging: {
-            enabled: false
-        },
         music: {
             enabled: true,
-            lavalinkNodes: [{
+            nodes: [{
                 host: process.env.LAVALINK_HOST!,
                 identifier: `0`,
                 password: process.env.LAVALINK_TOKEN,
@@ -39,7 +36,15 @@ export const config = {
                 resumeStatus: true,
                 resumeTimeout: 3e4,
                 secure: false
-            }]
+            }],
+            options: {
+                maxFilter: 100,
+                equalizerBands: 15,
+                trebleIntensityMultiplier: 0.15,
+                bassIntensityMultiplier: 0.15,
+                tremoloVibratoFequency: 5,
+                voiceTimeout: 3e4
+            }
         }
     },
 
@@ -47,7 +52,7 @@ export const config = {
 
     colors,
     emojis
-} satisfies Config as Config;
+} as const satisfies Config as Config;
 
 interface Config {
     /**
@@ -80,11 +85,11 @@ interface Config {
         /**
          * Logging
          */
-        logging: Module<LoggingModule>
+        logging?: Module<LoggingModule>
         /**
          * Music Player
          */
-        music: Module<MusicModule>
+        music?: Module<MusicModule>
     }
 
     /**
@@ -96,9 +101,9 @@ interface Config {
     emojis: typeof emojis
 }
 
-type Module<ModuleTypeNarrowing, enabled = boolean> = enabled extends true ? ModuleTypeNarrowing & { enabled: enabled } : { enabled: enabled };
+type Module<ModuleTypeNarrowing> = ModuleTypeNarrowing & { enabled: boolean };
 
-interface LoggingModule {
+export interface LoggingModule {
     channels: {
         modLog: Snowflake
         punishmentLog: Snowflake
@@ -107,8 +112,16 @@ interface LoggingModule {
     events: Array<keyof ClientEvents>
 }
 
-interface MusicModule {
-    lavalinkNodes: NodeOptions[]
+export interface MusicModule {
+    nodes: NodeOptions[]
+    options: {
+        maxFilter: number
+        equalizerBands: number
+        trebleIntensityMultiplier: number
+        bassIntensityMultiplier: number
+        tremoloVibratoFequency: number
+        voiceTimeout: number
+    }
 }
 
 interface Args {

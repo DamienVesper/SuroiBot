@@ -91,10 +91,10 @@ export class DiscordBot extends Client<true> {
             }
         });
 
-        if (this.config.modules.music.enabled) {
+        if (this.config.modules.music?.enabled) {
             Structure.extend(`Player`, Player => MusicPlayer);
             this.lavalink = new Manager({
-                nodes: this.config.modules.music.lavalinkNodes,
+                nodes: this.config.modules.music.nodes,
                 send: (id, payload) => {
                     const guild = this.guilds.cache.get(id);
                     if (guild) guild.shard.send(payload);

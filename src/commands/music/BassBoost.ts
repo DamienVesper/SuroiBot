@@ -1,0 +1,48 @@
+import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+
+import { Command } from '../../classes/Command.js';
+
+class BassBoost extends Command {
+    cmd = new SlashCommandBuilder()
+        .setName(`bassboost`)
+        .addNumberOption(option => option.setName(`value`).setDescription(`The value to bassboost by.`).setMinValue(0).setMaxValue(10))
+        .setDescription(`Boost the player's bass.`)
+        .setDMPermission(false);
+
+    run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
+        if (interaction.guild === null) {
+            await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
+            return;
+        }
+
+        const voiceChannel = (await interaction.guild.members.fetch(interaction.user.id)).voice.channel;
+        if (voiceChannel === null) {
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in a voice channel to use that command!`)], ephemeral: true });
+            return;
+        }
+
+        const bassboost = interaction.options.getNumber(`value`);
+        await interaction.deferReply();
+
+        const player = this.client.lavalink.players.get(interaction.guild.id);
+        if (player === undefined) {
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I am not currently in a voice channel!`)] });
+            return;
+        } else if (player !== undefined && voiceChannel.id !== player.voiceChannel) {
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in the same voice channel as the bot to use that command!`)] });
+            return;
+        }
+
+        if (!this.client.config.modules.music?.enabled) throw new Error(`Music configuration was not specified or enabled.`);
+        player.filters.setEqualizer((player.filters.equalizer?.filter(v => v.band > 2) ?? []).concat((bassboost ?? 0) === 0
+            ? []
+            : new Array(3).fill(null).map((_, i) => ({
+                band: i,
+                gain: (bassboost ?? 0) * this.client.config.modules.music!.options.bassIntensityMultiplier
+            }))));
+
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, bassboost !== null ? `Set bassboost to **${bassboost}**.` : `Disabled bassboost filter.`)] });
+    };
+}
+
+export default BassBoost;
