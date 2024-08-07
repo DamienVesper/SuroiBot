@@ -52,13 +52,19 @@ class PlayNext extends Command {
         player.connect();
 
         if (res.loadType === `playlist` && res.playlist !== undefined) {
-            player.queue.unshift(...res.playlist.tracks);
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            player.queue.length === 0
+                ? player.queue.add(res.playlist.tracks)
+                : player.queue.unshift(...res.playlist.tracks);
             if (!player.playing && !player.paused && player.queue.size === res.playlist.tracks.length) await player.play();
 
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Added **${res.playlist.tracks.length}** songs to the start of the queue.`)] });
         } else {
             const track = res.tracks[0];
-            player.queue.unshift(track);
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            player.queue.length === 0
+                ? player.queue.add(track)
+                : player.queue.unshift(track);
 
             if (!player.playing && !player.paused && !player.queue.size) await player.play();
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Added **${track.title}** to the start of the queue.`)] });
