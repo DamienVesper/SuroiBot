@@ -5,7 +5,8 @@ import { Command } from '../../classes/Command.js';
 class Queue extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`skip`)
-        .setDescription(`Skip the current song.`)
+        .setDescription(`Skip one or more songs.`)
+        .addIntegerOption(option => option.setName(`count`).setDescription(`The number of songs to skip.`).setMinValue(1))
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -36,8 +37,10 @@ class Queue extends Command {
             return;
         }
 
-        player.stop(1);
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Skipped the current song.`)] });
+        const skipCount = interaction.options.getInteger(`count`) ?? 1;
+        player.stop(skipCount);
+
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Skipped ${skipCount > 1 ? `**${skipCount}** songs` : `the current song`}.`)] });
     };
 }
 

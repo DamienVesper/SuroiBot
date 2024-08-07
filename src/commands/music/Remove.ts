@@ -5,8 +5,9 @@ import { Command } from '../../classes/Command.js';
 class Remove extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`remove`)
-        .addIntegerOption(option => option.setName(`id`).setDescription(`The position of the song in the queue.`).setMinValue(1).setRequired(true))
-        .setDescription(`Remove a song from the queue.`)
+        .addIntegerOption(option => option.setName(`start`).setDescription(`The position of the song in the queue to start removing at.`).setMinValue(1).setRequired(true))
+        .addIntegerOption(option => option.setName(`end`).setDescription(`The position of the song in the queue to stop removing at.`).setMinValue(2))
+        .setDescription(`Remove one or multiple songs from the queue.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -32,19 +33,24 @@ class Remove extends Command {
             return;
         }
 
-        const songID = interaction.options.getInteger(`id`, true) - 1;
-        if (songID > player.queue.length) {
+        const start = interaction.options.getInteger(`start`, true) - 2;
+        const end = (interaction.options.getInteger(`end`) ?? (start + 3)) - 2;
+
+        if (start > player.queue.length || end > player.queue.length) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There are only **${player.queue.length + 1}** songs in the queue!`)] });
             return;
-        } else if (songID === 0) {
-            const song = player.queue.current!;
-            player.stop(1);
+        } else if ((end - start) === 1) {
+            const song = start === 0 ? player.queue.current! : player.queue.splice(start, end)[0];
+            if (start === 0) player.stop();
 
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${song.title}** from the queue.`)] });
-            await interaction.channel?.send(this.client.createNowPlayingDetails(player, true));
+            if (start === 0 && player.queue.current !== null) await interaction.channel?.send(this.client.createNowPlayingDetails(player, true));
         } else {
-            const song = player.queue.splice(songID - 1, songID)[0];
-            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${song.title}** from the queue.`)] });
+            if (start === 0) player.stop();
+            const songs = player.queue.splice(start, end);
+
+            await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${songs.length}** songs from the queue.`)] });
+            if (start === 0 && player.queue.current !== null) await interaction.channel?.send(this.client.createNowPlayingDetails(player, true));
         }
     };
 }

@@ -6,7 +6,7 @@ class Volume extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`volume`)
         .addIntegerOption(option => option.setName(`value`).setDescription(`The value to set the volume to.`).setMinValue(1).setMaxValue(200).setRequired(true))
-        .setDescription(`View the current song being played.`)
+        .setDescription(`Set the volume of the player.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
