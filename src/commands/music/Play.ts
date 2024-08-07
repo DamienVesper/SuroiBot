@@ -23,14 +23,14 @@ class Play extends Command {
 
         await interaction.deferReply();
 
-        const guildPlayer = this.client.lavalinkManager.players.get(interaction.guild.id);
+        const guildPlayer = this.client.lavalink.players.get(interaction.guild.id);
         if (guildPlayer !== undefined && voiceChannel.id !== guildPlayer.voiceChannel) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in the same voice channel as the bot to use that command!`)] });
             return;
         }
 
         const songInput = interaction.options.getString(`query`, true);
-        const res = await this.client.lavalinkManager.search(songInput, interaction.user as any);
+        const res = await this.client.lavalink.search(songInput, interaction.user as any);
 
         if (res.loadType === `error`) {
             this.client.logger.debug(`Lavalink Node ${guildPlayer?.node.options.identifier}`, res);
@@ -41,7 +41,7 @@ class Play extends Command {
             return;
         }
 
-        const player = this.client.lavalinkManager.create({
+        const player = this.client.lavalink.create({
             guild: interaction.guild.id,
             voiceChannel: voiceChannel.id,
             textChannel: interaction.channel.id,

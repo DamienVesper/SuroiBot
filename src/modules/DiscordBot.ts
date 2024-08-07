@@ -54,7 +54,7 @@ export class DiscordBot extends Client<true> {
     buttons = new Collection<string, Command>();
     modals = new Collection<string, Command>();
 
-    lavalinkManager!: Manager;
+    lavalink!: Manager;
 
     constructor () {
         super({
@@ -93,7 +93,7 @@ export class DiscordBot extends Client<true> {
 
         if (this.config.modules.music.enabled) {
             Structure.extend(`Player`, Player => MusicPlayer);
-            this.lavalinkManager = new Manager({
+            this.lavalink = new Manager({
                 nodes: this.config.modules.music.lavalinkNodes,
                 send: (id, payload) => {
                     const guild = this.guilds.cache.get(id);
@@ -103,37 +103,37 @@ export class DiscordBot extends Client<true> {
 
             let killPlayers: NodeJS.Timeout;
 
-            this.lavalinkManager.on(`nodeConnect`, node => {
+            this.lavalink.on(`nodeConnect`, node => {
                 this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
             });
 
-            this.lavalinkManager.on(`nodeDisconnect`, node => {
+            this.lavalink.on(`nodeDisconnect`, node => {
                 this.logger.warn(`Lavalink Manager`, `Disconnected from node ${node.options.identifier}.`);
 
                 // Kill all players after 30 seconds.
                 killPlayers = setTimeout(() => {
-                    this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.destroy());
+                    this.lavalink.players.filter(player => player.node === node).forEach(player => player.destroy());
                 }, 3e4);
             });
 
-            this.lavalinkManager.on(`nodeReconnect`, node => {
+            this.lavalink.on(`nodeReconnect`, node => {
                 // Reset and restart all players.
                 clearInterval(killPlayers);
-                this.lavalinkManager.players.filter(player => player.node === node).forEach(player => player.pause(false));
+                this.lavalink.players.filter(player => player.node === node).forEach(player => player.pause(false));
             });
 
-            this.lavalinkManager.on(`nodeError`, (node, error) => {
+            this.lavalink.on(`nodeError`, (node, error) => {
                 this.logger.error(`Lavalink Manager`, `Node ${node.options.identifier} encountered an error:`, error.message);
             });
 
-            this.lavalinkManager.on(`queueEnd`, player => {
+            this.lavalink.on(`queueEnd`, player => {
                 const channel = this.channels.cache.get(player.textChannel!) as TextBasedChannel | null;
 
                 void channel?.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
                 player.destroy();
             });
 
-            this.lavalinkManager.on(`trackStart`, (player, track) => {
+            this.lavalink.on(`trackStart`, (player, track) => {
                 this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}".`);
                 if (player.queue.length !== 0 && player.textChannel !== null) {
                     void this.channels.fetch(player.textChannel).then(channel => {

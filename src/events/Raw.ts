@@ -9,7 +9,7 @@ class Raw extends Event {
     };
 
     run: (data: any) => Promise<void> = async data => {
-        await this.client.lavalinkManager.updateVoiceState(data);
+        await this.client.lavalink.updateVoiceState(data);
     };
 }
 
