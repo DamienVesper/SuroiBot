@@ -42,7 +42,7 @@ class Vibrato extends Command {
             frequency: (vibratoFrequency ?? player.filters.vibrato?.frequency) ?? this.client.config.modules.music.options.tremoloVibratoFrequency
         });
 
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Set vibrato to ${vibratoFrequency !== null ? `**${vibrato}%**` : `default`} ${vibratoFrequency !== null ? `with a frequency of **${vibratoFrequency}** Hz` : `at the default frequency`}.`)] });
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Set vibrato to ${vibrato !== null ? `**${vibrato}%**` : `default`} ${vibratoFrequency !== null ? `with a frequency of **${vibratoFrequency}** Hz` : `at the default frequency`}.`)] });
     };
 }
 
