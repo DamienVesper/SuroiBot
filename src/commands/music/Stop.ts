@@ -2,6 +2,8 @@ import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.j
 
 import { Command } from '../../classes/Command.js';
 
+import type { MusicPlayer } from '../../modules/MusicPlayer.js';
+
 class Stop extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`stop`)
@@ -22,7 +24,7 @@ class Stop extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guild.id) as MusicPlayer;
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I am not currently in a voice channel!`)] });
             return;
@@ -34,6 +36,9 @@ class Stop extends Command {
         player.queue.clear();
         player.pause(true);
         player.stop(1);
+        player.pause(true);
+
+        player.stopped = true;
 
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Stopped the queue.`)] });
     };

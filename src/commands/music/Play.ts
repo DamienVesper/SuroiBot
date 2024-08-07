@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
+import type { MusicPlayer } from '../../modules/MusicPlayer.js';
 
 class Play extends Command {
     cmd = new SlashCommandBuilder()
@@ -47,7 +48,7 @@ class Play extends Command {
             textChannel: interaction.channel.id,
             volume: 75,
             selfDeafen: true
-        });
+        }) as MusicPlayer;
 
         player.connect();
 
@@ -60,7 +61,7 @@ class Play extends Command {
             const track = res.tracks[0];
             player.queue.add(track);
 
-            if (!player.playing && !player.paused && !player.queue.size) await player.play();
+            if (player.stopped || (!player.playing && !player.paused && !player.queue.size)) await player.play();
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Queued **${track.title}**.`)] });
         }
     };

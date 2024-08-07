@@ -128,9 +128,10 @@ export class DiscordBot extends Client<true> {
 
             this.lavalink.on(`queueEnd`, player => {
                 const channel = this.channels.cache.get(player.textChannel!) as TextBasedChannel | null;
-
-                void channel?.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
-                player.destroy();
+                if (!player.paused && player.playing) {
+                    void channel?.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
+                    player.destroy();
+                }
             });
 
             this.lavalink.on(`trackStart`, (player, track) => {
