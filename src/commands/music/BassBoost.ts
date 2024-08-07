@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class BassBoost extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`bassboost`)
-        .addNumberOption(option => option.setName(`value`).setDescription(`The value to bassboost by.`).setMinValue(0).setMaxValue(10))
+        .addNumberOption(option => option.setName(`value`).setDescription(`The value to bassboost by. Leave blank for default.`).setMinValue(0).setMaxValue(10))
         .setDescription(`Boost the player's bass.`)
         .setDMPermission(false);
 

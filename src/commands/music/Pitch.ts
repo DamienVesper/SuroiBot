@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class Pitch extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`pitch`)
-        .addIntegerOption(option => option.setName(`value`).setDescription(`The pitch to set the audio to, as a percentage.`).setMinValue(1).setMaxValue(1e3))
+        .addIntegerOption(option => option.setName(`value`).setDescription(`The pitch (%) to set the audio to. Leave blank for default.`).setMinValue(1).setMaxValue(1e3))
         .setDescription(`Set the pitch of the player.`)
         .setDMPermission(false);
 

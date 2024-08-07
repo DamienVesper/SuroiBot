@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class TrebleBoost extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`trebleboost`)
-        .addNumberOption(option => option.setName(`value`).setDescription(`The value to trebleboost by.`).setMinValue(0).setMaxValue(10))
+        .addNumberOption(option => option.setName(`value`).setDescription(`The value to trebleboost by. Leave blank for default.`).setMinValue(0).setMaxValue(10))
         .setDescription(`Boost the player's treble.`)
         .setDMPermission(false);
 

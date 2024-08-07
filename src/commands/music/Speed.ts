@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class Speed extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`speed`)
-        .addIntegerOption(option => option.setName(`value`).setDescription(`The speed to set the audio to, as a multipler.`).setMinValue(1).setMaxValue(10))
+        .addIntegerOption(option => option.setName(`value`).setDescription(`The speed to set the audio to, as a multipler. Leave blank for default.`).setMinValue(1).setMaxValue(10))
         .setDescription(`Set the speed of the player.`)
         .setDMPermission(false);
 

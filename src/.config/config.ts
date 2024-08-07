@@ -42,7 +42,7 @@ export const config = {
                 equalizerBands: 15,
                 trebleIntensityMultiplier: 0.15,
                 bassIntensityMultiplier: 0.15,
-                tremoloVibratoFequency: 5,
+                tremoloVibratoFrequency: 5,
                 voiceTimeout: 3e4
             }
         }
@@ -119,7 +119,7 @@ export interface MusicModule {
         equalizerBands: number
         trebleIntensityMultiplier: number
         bassIntensityMultiplier: number
-        tremoloVibratoFequency: number
+        tremoloVibratoFrequency: number
         voiceTimeout: number
     }
 }
