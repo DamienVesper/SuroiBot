@@ -18,9 +18,14 @@ import {
     ButtonStyle,
     type BaseMessageOptions
 } from 'discord.js';
-import { Manager, Structure, type Player, type Track } from 'magmastream';
+import {
+    Manager,
+    Structure,
+    type Player,
+    type Track
+} from 'magmastream';
 
-import { resolve } from 'path';
+import { basename, dirname, resolve } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { readdirSync } from 'fs';
 
@@ -175,7 +180,12 @@ export class DiscordBot extends Client<true> {
             const command = new ClientCommand(this);
 
             if (command.config.isSubcommand) this.subcommands.set(command.config.parent, command);
-            else this.commands.set(command.cmd.name, command);
+            else {
+                const category = basename(dirname(resolve(file.parentPath, file.name)));
+                command.category = category;
+
+                this.commands.set(command.cmd.name, command);
+            }
         }
     };
 

@@ -84,16 +84,10 @@ class InteractionCreate extends Event {
             }
         } else if (interaction.isButton()) {
             const button = this.client.buttons.get(interaction.customId);
-            if (button === undefined) {
-                await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `This button is outdated.`)], ephemeral: true });
-                return;
-            }
+            if (button === undefined) return;
         } else if (interaction.isModalSubmit()) {
             const modal = this.client.modals.get(interaction.customId);
-            if (modal === undefined) {
-                await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `This modal is outdated.`)], ephemeral: true });
-                return;
-            }
+            if (modal === undefined) return;
         } // else if (interaction.isUserContextMenuCommand()) {}
     };
 }

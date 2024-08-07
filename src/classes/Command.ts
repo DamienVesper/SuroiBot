@@ -22,6 +22,8 @@ export class Command {
         cooldown: 0
     };
 
+    category: string | undefined;
+
     constructor (client: DiscordBot) {
         this.client = client;
     }

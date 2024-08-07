@@ -1,5 +1,7 @@
-import type { Player, Track } from 'magmastream';
 import { config } from '../.config/config.js';
+
+import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import type { Player, Track } from 'magmastream';
 
 /**
  * Translate Suroi HTTP response.
@@ -75,4 +77,9 @@ export const createTrackBar = (player: Player): string => {
     const COUNT = Math.floor((track.isStream ? 0 : (player.position ?? 0) / track.duration) * MAX_LENGTH);
 
     return `${numToDurationFormat(player.position)} ${`⎯`.repeat(COUNT)}◯${`⎯`.repeat(MAX_LENGTH - (COUNT + 1))} ${numToDurationFormat(track.duration)}`;
+};
+
+export const createUsageExample = (command: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder): string => {
+    const commandOptions = command.options.map(option => option.toJSON());
+    return `/${command.name}${command.options.length > 0 ? ` ${commandOptions.map(option => option.required ? `<${option.name}>` : `[${option.name}]`).join(` `)}` : ``}`;
 };
