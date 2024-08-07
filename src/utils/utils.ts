@@ -26,10 +26,11 @@ export const numToDurationFormat = (num: number): string => {
     const seconds = (Math.trunc(num / 1e3) % 60).toString().padStart(2, `0`);
     const minutes = (Math.trunc(num / 6e4) % 60).toString().padStart(2, `0`);
     const hours = Math.trunc(num / 36e5);
-
-    return hours > 0
-        ? `${hours}:${minutes}:${seconds}`
-        : `${minutes}:${seconds}`;
+    return num > 1e12
+        ? `Infinite`
+        : hours > 0
+            ? `${hours}:${minutes}:${seconds}`
+            : `${minutes}:${seconds}`;
 };
 
 /**

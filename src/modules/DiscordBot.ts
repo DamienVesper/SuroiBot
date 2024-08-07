@@ -259,7 +259,7 @@ export class DiscordBot extends Client<true> {
                 .setDescription(`### Now Playing\n**${song.title}**`);
         } else {
             sEmbed
-                .setDescription(`### Now Playing\n**${song.title}**\n\n${createTrackBar(player)}`)
+                .setDescription(`### Now Playing\n**${song.title}**\n\n${song.duration > 1e12 ? `:red_circle: LIVE` : createTrackBar(player)}`)
                 .setFields([
                     {
                         name: `Requester`,
