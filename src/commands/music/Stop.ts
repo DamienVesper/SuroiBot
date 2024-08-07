@@ -31,11 +31,6 @@ class Stop extends Command {
             return;
         }
 
-        if (player.queue.length === 0) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There are no songs to clear in the queue!`)] });
-            return;
-        }
-
         player.queue.clear();
         player.pause(true);
         player.stop(1);
