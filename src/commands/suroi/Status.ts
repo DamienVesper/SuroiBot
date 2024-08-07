@@ -52,7 +52,7 @@ class Status extends Command {
             const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Play Suroi`).setURL(`https://${this.client.config.customData.domain}`),
                 new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Wiki`).setURL(`https://wiki.${this.client.config.customData.domain}`),
-                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`GitHub`).setURL(`https://github.com/${this.client.config.customData.github}`),
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`GitHub`).setURL(`https://github.com/${this.client.config.customData.github.repo}`),
                 new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Report a problem`).setURL(`https://discord.com/users/${this.client.config.customData.users.hasanger}`)
             );
 

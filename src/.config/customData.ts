@@ -9,7 +9,10 @@ const customData = {
     },
 
     domain: `suroi.io`,
-    github: `HasangerGames/suroi`
+    github: {
+        repo: `HasangerGames/suroi`,
+        wikiRepo: `HasangerGames/suroi-wiki`
+    }
 };
 
 export default customData;

@@ -34,7 +34,7 @@ class Rules extends Command {
         const sEmbed = new EmbedBuilder()
             .setColor(this.client.config.colors.orange)
             .setDescription(rulesText)
-            .setThumbnail(interaction.guild!.iconURL())
+            .setThumbnail(interaction.guild?.iconURL() ?? null)
             .setImage(`https://i.kym-cdn.com/entries/icons/original/000/033/153/therules.jpg`)
             .setTimestamp()
             .setFooter({ text: `ID: ${interaction.user.id}` });
