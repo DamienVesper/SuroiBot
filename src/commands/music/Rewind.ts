@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class Rewind extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`rewind`)
-        .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to rewind.`).setMinValue(1).setRequired(true))
+        .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to rewind. If not specified, defaults to the beginning of the song.`).setMinValue(1))
         .setDescription(`Rewind the current song.`)
         .setDMPermission(false);
 
@@ -40,7 +40,7 @@ class Rewind extends Command {
             return;
         }
 
-        const seekPos = Math.max(player.position - interaction.options.getInteger(`time`, true) * 1e3, 0);
+        const seekPos = Math.max(player.position - (interaction.options.getInteger(`time`) ?? (player.position / 1e3) * 1e3), 0);
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Rewound the current track by **${Math.round((player.position - seekPos) / 1e3)}** seconds.`)] });
 
         player.seek(seekPos);
