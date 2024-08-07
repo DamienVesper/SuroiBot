@@ -6,7 +6,7 @@ class Remove extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`remove`)
         .addIntegerOption(option => option.setName(`id`).setDescription(`The position of the song in the queue.`).setMinValue(1).setRequired(true))
-        .setDescription(`Remove a track from the queue.`)
+        .setDescription(`Remove a song from the queue.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {

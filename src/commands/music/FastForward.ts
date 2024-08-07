@@ -6,7 +6,7 @@ class FastForward extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`fastforward`)
         .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to fast-forward.`).setMinValue(1).setRequired(true))
-        .setDescription(`Fast-forward the track.`)
+        .setDescription(`Fast-forward the current song.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {

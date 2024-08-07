@@ -8,7 +8,7 @@ class Seek extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`seek`)
         .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to seek to.`).setMinValue(0).setRequired(true))
-        .setDescription(`Seek a certain position in a track.`)
+        .setDescription(`Seek a certain position in the current song.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {

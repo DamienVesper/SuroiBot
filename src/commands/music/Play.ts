@@ -6,7 +6,7 @@ class Play extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`play`)
         .addStringOption(option => option.setName(`name`).setDescription(`The name or link to the song.`).setRequired(true))
-        .setDescription(`Play a track.`)
+        .setDescription(`Play a song, audio file, or playlist.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {

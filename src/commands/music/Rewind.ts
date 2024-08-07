@@ -6,7 +6,7 @@ class Rewind extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`rewind`)
         .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to rewind.`).setMinValue(1).setRequired(true))
-        .setDescription(`Rewind the track.`)
+        .setDescription(`Rewind the current song.`)
         .setDMPermission(false);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
