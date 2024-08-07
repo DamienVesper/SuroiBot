@@ -2,7 +2,7 @@ import colors from './colors.js';
 import customData from './customData.js';
 import emojis from './emojis.js';
 
-import type { Snowflake } from 'discord.js';
+import type { ClientEvents, Snowflake } from 'discord.js';
 import type { NodeOptions } from 'magmastream';
 
 import yargs from 'yargs';
@@ -24,6 +24,9 @@ export const config = {
     },
 
     modules: {
+        logging: {
+            enabled: false
+        },
         music: {
             enabled: true,
             lavalinkNodes: [{
@@ -75,6 +78,10 @@ interface Config {
      */
     modules: {
         /**
+         * Logging
+         */
+        logging: Module<LoggingModule>
+        /**
          * Music Player
          */
         music: Module<MusicModule>
@@ -90,6 +97,15 @@ interface Config {
 }
 
 type Module<ModuleTypeNarrowing, enabled = boolean> = enabled extends true ? ModuleTypeNarrowing & { enabled: enabled } : { enabled: enabled };
+
+interface LoggingModule {
+    channels: {
+        modLog: Snowflake
+        punishmentLog: Snowflake
+    }
+
+    events: Array<keyof ClientEvents>
+}
 
 interface MusicModule {
     lavalinkNodes: NodeOptions[]

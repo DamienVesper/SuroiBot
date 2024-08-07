@@ -82,7 +82,19 @@ class InteractionCreate extends Event {
                     ? await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There was an error executing this command.`)], ephemeral: interaction.ephemeral ?? true })
                     : await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `There was an error executing this command.`)], ephemeral: true });
             }
-        }
+        } else if (interaction.isButton()) {
+            const button = this.client.buttons.get(interaction.customId);
+            if (button === undefined) {
+                await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `This button is outdated.`)], ephemeral: true });
+                return;
+            }
+        } else if (interaction.isModalSubmit()) {
+            const modal = this.client.modals.get(interaction.customId);
+            if (modal === undefined) {
+                await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `This modal is outdated.`)], ephemeral: true });
+                return;
+            }
+        } // else if (interaction.isUserContextMenuCommand()) {}
     };
 }
 
