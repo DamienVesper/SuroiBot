@@ -9,7 +9,7 @@ import { Command } from '../../classes/Command.js';
 import { Paginator } from '../../modules/Paginator.js';
 import { capitalize, createUsageExample } from '../../utils/utils.js';
 
-class Queue extends Command {
+class Help extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`help`)
         .setDescription(`View the help menu.`);
@@ -45,4 +45,4 @@ class Queue extends Command {
     };
 }
 
-export default Queue;
+export default Help;
