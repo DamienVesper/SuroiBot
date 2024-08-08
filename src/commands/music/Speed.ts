@@ -5,7 +5,7 @@ import { Command } from '../../classes/Command.js';
 class Speed extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`speed`)
-        .addIntegerOption(option => option.setName(`value`).setDescription(`The speed to set the audio to, as a multipler. Leave blank for default.`).setMinValue(1).setMaxValue(10))
+        .addNumberOption(option => option.setName(`value`).setDescription(`The speed to set the audio to, as a multipler. Leave blank for default.`).setMinValue(0.01).setMaxValue(10))
         .setDescription(`Set the speed of the player.`)
         .setDMPermission(false);
 
@@ -21,7 +21,7 @@ class Speed extends Command {
             return;
         }
 
-        const speed = interaction.options.getInteger(`value`);
+        const speed = interaction.options.getNumber(`value`);
         await interaction.deferReply();
 
         const player = this.client.lavalink.players.get(interaction.guild.id);
@@ -34,7 +34,7 @@ class Speed extends Command {
         }
 
         player.filters.setTimescale({ speed: speed ?? 1 });
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, speed !== null ? `Set the player speed to **${speed}x**.` : `Reset the player speed.`)] });
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, speed !== null ? `Set the player speed to **${speed * 100}%**.` : `Reset the player speed.`)] });
     };
 }
 
