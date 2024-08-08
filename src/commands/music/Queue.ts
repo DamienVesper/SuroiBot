@@ -54,10 +54,7 @@ class Queue extends Command {
         const channel = await this.client.channels.fetch(player.voiceChannel!) as VoiceChannel;
 
         for (let i = 0; i < pageCount * 10; i += 10) {
-            const tracks = i + 10 > queue.length
-                ? queue.slice(i, queue.length)
-                : queue.slice(i, i + 10);
-
+            const tracks = queue.slice(i, Math.min(i + 10, queue.length));
             embeds.push(new EmbedBuilder()
                 .setColor(this.client.config.colors.blue)
                 .setTitle(`Server Queue`)
