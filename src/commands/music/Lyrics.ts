@@ -38,7 +38,7 @@ class Lyrics extends Command {
         }
 
         // @ts-expect-error SessionID is private.
-        const lyrics: Partial<SongLyrics> | null = await player.node.rest.get(`/v4/sessions/${player.node.rest.sessionId}/players/${interaction.guild.id}/track/lyrics`);
+        const lyrics: Partial<SongLyrics> | null = await player.node.rest.get(`/v4/sessions/${player.node.rest.sessionId}/players/${interaction.guild.id}/track/lyrics?skipTrackSource=true`);
         if (lyrics?.lines === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I could not find any lyrics for that track!`)] });
             return;
@@ -51,6 +51,7 @@ class Lyrics extends Command {
                 .setDescription([
                     `### Lyrics for "${player.queue.current.title}"`
                 ].concat(lyrics.lines.slice(i, Math.min(i + 20, lyrics.lines.length)).map(line => line.line)).join(`\n`))
+                .setThumbnail((player.queue.current.artworkUrl ?? player.queue.current.thumbnail) ?? null)
                 .setTimestamp()
                 .setFooter({ text: `ID: ${interaction.user.id}` });
             embeds.push(sEmbed);
