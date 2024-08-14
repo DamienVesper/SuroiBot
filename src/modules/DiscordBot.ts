@@ -11,12 +11,12 @@ import {
     EmbedBuilder,
     type Snowflake,
     type User,
-    type TextBasedChannel,
     TextChannel,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    type BaseMessageOptions
+    type BaseMessageOptions,
+    ChannelType
 } from 'discord.js';
 import {
     Manager,
@@ -127,9 +127,9 @@ export class DiscordBot extends Client<true> {
             });
 
             this.lavalink.on(`queueEnd`, player => {
-                const channel = this.channels.cache.get(player.textChannel!) as TextBasedChannel | null;
-                if (!player.paused && player.playing) {
-                    void channel?.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
+                const channel = this.channels.cache.get(player.textChannel!);
+                if (channel?.type === ChannelType.GuildText && !player.paused && player.playing) {
+                    void channel.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
                     player.destroy();
                 }
             });
