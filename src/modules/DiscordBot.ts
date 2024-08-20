@@ -27,7 +27,7 @@ import {
 
 import { basename, dirname, resolve } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { readdirSync } from 'fs';
+import { readdir } from 'fs/promises';
 
 import { Logger } from './Logger.js';
 import { MusicPlayer } from './MusicPlayer.js';
@@ -36,6 +36,7 @@ import { Command } from '../classes/Command.js';
 import type { Event } from '../classes/Event.js';
 
 import { createTrackBar } from '../utils/utils.js';
+import { PrismaClient } from '@prisma/client';
 
 export class DiscordBot extends Client<true> {
     config = config;
@@ -55,6 +56,8 @@ export class DiscordBot extends Client<true> {
     modals = new Collection<string, Command>();
 
     lavalink!: Manager;
+
+    db: PrismaClient;
 
     constructor () {
         super({
@@ -91,6 +94,10 @@ export class DiscordBot extends Client<true> {
             }
         });
 
+        // Instantiate the database ORM.
+        this.db = new PrismaClient();
+
+        // Prepare the Lavalink client.
         if (this.config.modules.music?.enabled) {
             Structure.extend(`Player`, Player => MusicPlayer);
             this.lavalink = new Manager({
@@ -150,10 +157,10 @@ export class DiscordBot extends Client<true> {
      * @param dir The directory to load events from.
      */
     loadEvents = async (dir: string): Promise<void> => {
-        const files = readdirSync(dir, {
+        const files = (await readdir(dir, {
             recursive: true,
             withFileTypes: true
-        }).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
+        })).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
 
         for (const file of files) {
             const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default as typeof Event;
@@ -170,10 +177,10 @@ export class DiscordBot extends Client<true> {
      */
     loadCommands = async (dir: string): Promise<void> => {
         // Get all the files (commands and subcommands).
-        const files = readdirSync(dir, {
+        const files = (await readdir(dir, {
             recursive: true,
             withFileTypes: true
-        }).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
+        })).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
 
         for (const file of files) {
             const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default as typeof Command;
