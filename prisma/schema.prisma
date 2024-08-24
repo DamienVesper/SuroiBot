@@ -10,5 +10,91 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URI")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  discordId String @unique
+  guildId   String
+
+  banned Boolean @default(false)
+
+  role Role @default(User)
+
+  xp    Int @default(0)
+  level Int @default(0)
+
+  balance Float @default(0)
+
+  guild Guild? @relation(fields: [guildId], references: [discordId])
+
+  cases    Case[] @relation(name: "targetUser")
+  modCases Case[] @relation(name: "perpetratorUser")
+
+  Case Case[]
+  
+  cooldowns Cooldowns? @relation(fields: [discordId], references: [discordId])
+}
+
+model Cooldowns {
+  id Int @id @default(autoincrement())
+  discordId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  daily DateTime
+
+  user User?
+}
+
+model Guild {
+  id        Int    @id @default(autoincrement())
+  discordId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users User[]
+  cases Case[]
+}
+
+model Case {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guildId       String
+  perpetratorId String
+  targetId      String
+
+  guild       Guild? @relation(fields: [guildId], references: [discordId])
+  perpetrator User?  @relation(name: "perpetratorUser", fields: [perpetratorId], references: [discordId])
+  target      User?  @relation(name: "targetUser", fields: [targetId], references: [discordId])
+
+  action Action @default(Warn)
+  reason String @default("No reason provided")
+
+  users User[]
+}
+
+enum Role {
+  User
+  Dev
+}
+
+enum Action {
+  Warn
+  Mute
+  Unmute
+  Kick
+  Softban
+  Ban
+  Unban
 }

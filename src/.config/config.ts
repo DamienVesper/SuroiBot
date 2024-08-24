@@ -24,6 +24,22 @@ export const config = {
     },
 
     modules: {
+        logging: {
+            enabled: false
+        },
+        leveling: {
+            enabled: true,
+            xp: {
+                min: 5,
+                max: 30
+            },
+            level: {
+                min: 0,
+                max: 1e3
+            },
+            xpCooldown: 60,
+            levelUpMessages: `none`
+        },
         music: {
             enabled: true,
             nodes: [{
@@ -52,7 +68,7 @@ export const config = {
 
     colors,
     emojis
-} as const satisfies Config as Config;
+} as const satisfies Config as Readonly<Config>;
 
 interface Config {
     /**
@@ -85,11 +101,15 @@ interface Config {
         /**
          * Logging
          */
-        logging?: Module<LoggingModule>
+        logging: Module<LoggingModule>
+        /**
+         * Leveling
+         */
+        leveling: Module<LevelingModule>
         /**
          * Music Player
          */
-        music?: Module<MusicModule>
+        music: Module<MusicModule>
     }
 
     /**
@@ -101,9 +121,11 @@ interface Config {
     emojis: typeof emojis
 }
 
-type Module<ModuleTypeNarrowing> = ModuleTypeNarrowing & { enabled: boolean };
+type Module<ModuleTypeNarrowing> =
+    | { enabled: true } & ModuleTypeNarrowing
+    | { enabled: false };
 
-export interface LoggingModule {
+interface LoggingModule {
     channels: {
         modLog: Snowflake
         punishmentLog: Snowflake
@@ -112,7 +134,15 @@ export interface LoggingModule {
     events: Array<keyof ClientEvents>
 }
 
-export interface MusicModule {
+interface LevelingModule {
+    xp: Record<`min` | `max`, number>
+    level: Record<`min` | `max`, number>
+
+    xpCooldown: number
+    levelUpMessages: `channel` | `dm` | `none`
+}
+
+interface MusicModule {
     nodes: NodeOptions[]
     options: {
         maxFilter: number

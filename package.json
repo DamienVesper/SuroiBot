@@ -26,20 +26,21 @@
   },
   "homepage": "https://github.com/DamienVesper/SuroiBot#readme",
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.6.2",
+    "@stylistic/eslint-plugin": "^2.6.4",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^22.2.0",
+    "@types/node": "^22.4.1",
     "@types/yargs": "^17.0.33",
     "dotenv": "^16.4.5",
     "eslint": "^9.9.0",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.1",
+    "typescript-eslint": "^8.2.0",
     "yargs": "^17.7.2"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.53",
-    "axios": "^1.7.3",
+    "@napi-rs/canvas": "^0.1.54",
+    "@prisma/client": "5.18.0",
+    "axios": "^1.7.4",
     "discord.js": "^14.15.3",
     "magmastream": "^2.5.11",
     "prisma": "^5.18.0"

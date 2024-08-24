@@ -98,7 +98,7 @@ export class DiscordBot extends Client<true> {
         this.db = new PrismaClient();
 
         // Prepare the Lavalink client.
-        if (this.config.modules.music?.enabled) {
+        if (this.config.modules.music.enabled) {
             Structure.extend(`Player`, Player => MusicPlayer);
             this.lavalink = new Manager({
                 nodes: this.config.modules.music.nodes,
