@@ -34,11 +34,15 @@ class TrebleBoost extends Command {
         }
 
         if (!this.client.config.modules.music?.enabled) throw new Error(`Music configuration was not specified or enabled.`);
-        player.filters.setEqualizer(player.filters.equalizer.filter(v => v.band < (this.client.config.modules.music!.options.equalizerBands - 3) || []).concat((trebleboost ?? 0) === 0
+
+        const equalizerBands = this.client.config.modules.music.options.equalizerBands;
+        const mult = this.client.config.modules.music.options.trebleIntensityMultiplier;
+
+        player.filters.setEqualizer(player.filters.equalizer.filter(v => v.band < (equalizerBands - 3) || []).concat((trebleboost ?? 0) === 0
             ? []
             : new Array(3).fill(null).map((_, i) => ({
-                band: this.client.config.modules.music!.options.equalizerBands - (i + 1),
-                gain: (trebleboost ?? 0) * this.client.config.modules.music!.options.trebleIntensityMultiplier
+                band: equalizerBands - (i + 1),
+                gain: (trebleboost ?? 0) * mult
             }))));
 
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, trebleboost !== null ? `Set trebleboost to **${trebleboost}**.` : `Disabled trebleboost filter.`)] });

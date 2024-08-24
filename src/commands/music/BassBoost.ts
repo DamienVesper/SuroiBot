@@ -34,11 +34,13 @@ class BassBoost extends Command {
         }
 
         if (!this.client.config.modules.music?.enabled) throw new Error(`Music configuration was not specified or enabled.`);
+
+        const mult = this.client.config.modules.music.options.bassIntensityMultiplier;
         player.filters.setEqualizer((player.filters.equalizer?.filter(v => v.band > 2) ?? []).concat((bassboost ?? 0) === 0
             ? []
             : new Array(3).fill(null).map((_, i) => ({
                 band: i,
-                gain: (bassboost ?? 0) * this.client.config.modules.music!.options.bassIntensityMultiplier
+                gain: (bassboost ?? 0) * mult
             }))));
 
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, bassboost !== null ? `Set bassboost to **${bassboost}**.` : `Disabled bassboost filter.`)] });
