@@ -1,16 +1,22 @@
-import { Events, type ClientEvents } from 'discord.js';
+import { Events } from 'discord.js';
 
 import { Event } from '../classes/Event.js';
 
-class ErrorEvent extends Event {
-    config = {
-        name: Events.Error,
-        once: false
-    };
+const EventType = Events.Error;
 
-    run: (...args: ClientEvents[Events.Error]) => Promise<void> = async err => {
-        this.client.logger.error(`Gateway`, err.stack ?? err.message);
-    };
+class ErrorEvent extends Event<typeof EventType> {
+    constructor (client: Event<typeof EventType>[`client`]) {
+        super(client);
+
+        this.config = {
+            name: EventType,
+            once: false
+        };
+
+        this.run = async err => {
+            this.client.logger.error(`Gateway`, err.stack ?? err.message);
+        };
+    }
 }
 
 export default ErrorEvent;

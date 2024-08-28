@@ -4,14 +4,10 @@ import tseslint from 'typescript-eslint';
 
 import stylistic from '@stylistic/eslint-plugin';
 
-/**
- * @todo Add eslint-plugin-import-x, when it has support for Flat configuration.
- */
 export default tseslint.config(
     eslint.configs.recommended,
     ...tseslint.configs.strictTypeChecked,
     ...tseslint.configs.stylisticTypeChecked,
-    // @ts-expect-error Loose typings expected.
     stylistic.configs.customize({
         flat: true,
         indent: 4,
@@ -83,7 +79,8 @@ export default tseslint.config(
             [`@typescript-eslint/no-explicit-any`]: `off`,
             [`@typescript-eslint/no-non-null-assertion`]: `off`,
             [`@typescript-eslint/no-unsafe-argument`]: `off`,
-            [`@typescript-eslint/no-unsafe-member-access`]: `off`
+            [`@typescript-eslint/no-unsafe-member-access`]: `off`,
+            [`@typescript-eslint/no-unnecessary-type-parameters`]: `off`
         }
     },
     {

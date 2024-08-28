@@ -6,10 +6,10 @@ import {
 } from 'discord.js';
 import type { DiscordBot } from '../modules/DiscordBot.js';
 
-export class Command {
+export abstract class Command {
     client: DiscordBot;
 
-    cmd: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder();
+    abstract cmd: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
     config: ConfigType = {
         botPermissions: [
             PermissionFlagsBits.SendMessages,
@@ -22,7 +22,7 @@ export class Command {
         cooldown: 0
     };
 
-    category: string | undefined;
+    category?: string;
 
     constructor (client: DiscordBot) {
         this.client = client;
@@ -32,20 +32,20 @@ export class Command {
      * Executed when receiving the interaction.
      * @param interaction The interaction received.
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    run = async (interaction: ChatInputCommandInteraction): Promise<void> => {};
+    abstract run: (interaction: ChatInputCommandInteraction) => Promise<void>;
 }
 
-export type ConfigType<T = boolean> = T extends true
-    ? {
+export type ConfigType =
+    | {
         botPermissions: bigint[]
         userPermissions: bigint[]
-        isSubcommand: T
+        isSubcommand: true
         parent: SlashCommandBuilder[`name`]
         cooldown: number
-    } : {
+    }
+    | {
         botPermissions: bigint[]
         userPermissions: bigint[]
-        isSubcommand: T
+        isSubcommand: false
         cooldown: number
     };

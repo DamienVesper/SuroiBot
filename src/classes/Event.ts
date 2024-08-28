@@ -1,16 +1,14 @@
-import { Events } from 'discord.js';
-import type { DiscordBot } from '../modules/DiscordBot.js';
+import { ClientEvents } from 'discord.js';
+import { DiscordBot } from '../modules/DiscordBot.js';
 
-export class Event {
+interface EventConfig<T> {
+    name: T
+    once: boolean
+}
+
+export class Event<T extends keyof ClientEvents> {
     client: DiscordBot;
-
-    config: {
-        name: Events
-        once: boolean
-    } = {
-            name: Events.Debug,
-            once: false
-        };
+    config!: EventConfig<T>;
 
     constructor (client: DiscordBot) {
         this.client = client;
@@ -19,6 +17,10 @@ export class Event {
     /**
      * Executed when the event is received.
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    run: (...args: any[]) => Promise<void> = async () => {};
+    run!: (...args: ClientEvents[T]) => Promise<void>;
+
+    /**
+     * For more specific commands.
+     */
+    runUnsafe?: (...args: any[]) => Promise<void>;
 }

@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { config } from '../.config/config.js';
 
 import {
@@ -33,7 +35,6 @@ import { Logger } from './Logger.js';
 import { MusicPlayer } from './MusicPlayer.js';
 
 import { Command } from '../classes/Command.js';
-import type { Event } from '../classes/Event.js';
 
 import { createTrackBar } from '../utils/utils.js';
 import { PrismaClient } from '@prisma/client';
@@ -163,11 +164,11 @@ export class DiscordBot extends Client<true> {
         })).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
 
         for (const file of files) {
-            const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default as typeof Event;
+            const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
             const event = new ClientEvent(this);
 
-            if (event.config.once) this.once(event.config.name as string, event.run.bind(null));
-            else this.on(event.config.name as string, event.run.bind(null));
+            if (event.config.once) this.once(event.config.name as string, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
+            else this.on(event.config.name as string, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
         }
     };
 
@@ -183,8 +184,7 @@ export class DiscordBot extends Client<true> {
         })).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
 
         for (const file of files) {
-            const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default as typeof Command;
-
+            const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
             const command = new ClientCommand(this);
 
             if (command.config.isSubcommand) this.subcommands.set(command.config.parent, command);

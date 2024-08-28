@@ -6,14 +6,13 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx ./src/index.ts",
+    "start": "bun dist/index.js",
+    "dev": "bun ./src/index.ts",
     "lint": "eslint . --fix",
     "lint:ci": "eslint . --max-warnings 0"
   },
   "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=9.7.0"
+    "node": ">=22.0.0"
   },
   "repository": {
     "type": "git",
@@ -28,22 +27,21 @@
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.6.4",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^22.4.1",
+    "@types/node": "^22.5.1",
     "@types/yargs": "^17.0.33",
     "dotenv": "^16.4.5",
-    "eslint": "^9.9.0",
-    "tsx": "^4.17.0",
+    "eslint": "^9.9.1",
+    "tsx": "^4.19.0",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.2.0",
+    "typescript-eslint": "^8.3.0",
     "yargs": "^17.7.2"
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.54",
-    "@prisma/client": "5.18.0",
-    "axios": "^1.7.4",
+    "@prisma/client": "5.19.0",
+    "axios": "^1.7.5",
     "discord.js": "^14.15.3",
-    "magmastream": "^2.5.11",
-    "prisma": "^5.18.0"
-  },
-  "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"
+    "magmastream": "^2.5.13",
+    "prisma": "^5.19.0"
+  }
 }

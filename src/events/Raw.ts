@@ -1,16 +1,20 @@
-import { Events } from 'discord.js';
+import { Events, type ClientEvents } from 'discord.js';
 
 import { Event } from '../classes/Event.js';
 
-class Raw extends Event {
-    config = {
-        name: Events.Raw,
-        once: false
-    };
+const EventType = Events.Raw as unknown as keyof ClientEvents;
 
-    run: (data: any) => Promise<void> = async data => {
-        await this.client.lavalink.updateVoiceState(data);
-    };
+class Raw extends Event<typeof EventType> {
+    constructor (client: Event<typeof EventType>[`client`]) {
+        super(client);
+
+        this.config = {
+            name: EventType,
+            once: false
+        };
+
+        this.runUnsafe = async data => await this.client.lavalink.updateVoiceState(data);
+    }
 }
 
 export default Raw;

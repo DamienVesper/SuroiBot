@@ -1,16 +1,22 @@
-import { Events, type ClientEvents } from 'discord.js';
+import { Events } from 'discord.js';
 
 import { Event } from '../classes/Event.js';
 
-class ErrorEvent extends Event {
-    config = {
-        name: Events.ShardError,
-        once: false
-    };
+const EventType = Events.ShardError;
 
-    run: (...args: ClientEvents[Events.ShardError]) => Promise<void> = async err => {
-        this.client.logger.error(`Gateway`, err.stack ?? err.message);
-    };
+class ShardError extends Event<typeof EventType> {
+    constructor (client: Event<typeof EventType>[`client`]) {
+        super(client);
+
+        this.config = {
+            name: EventType,
+            once: false
+        };
+
+        this.run = async (err, shardId) => {
+            this.client.logger.error(`Shard ${shardId}`, err.stack ?? err.message);
+        };
+    }
 }
 
-export default ErrorEvent;
+export default ShardError;

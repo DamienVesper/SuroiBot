@@ -1,20 +1,26 @@
-import { Events, type ClientEvents } from 'discord.js';
+import { Events } from 'discord.js';
 
 import { Event } from '../classes/Event.js';
 
-class Ready extends Event {
-    config = {
-        name: Events.ClientReady,
-        once: true
-    };
+const EventType = Events.ClientReady;
 
-    run: (...args: ClientEvents[Events.ClientReady]) => Promise<void> = async client => {
-        this.client.logger.info(`Gateway`, `Connected to Discord as "${client.user.tag}" (${client.user.id}).`);
+class Ready extends Event<typeof EventType> {
+    constructor (client: Event<typeof EventType>[`client`]) {
+        super(client);
 
-        this.client.lavalink.init(client.user.id);
+        this.config = {
+            name: EventType,
+            once: false
+        };
 
-        await this.client.deployCommands(this.client.config.mode);
-    };
+        this.run = async client => {
+            this.client.logger.info(`Gateway`, `Connected to Discord as "${client.user.tag}" (${client.user.id}).`);
+
+            this.client.lavalink?.init(client.user.id);
+
+            await this.client.deployCommands(this.client.config.mode);
+        };
+    }
 }
 
 export default Ready;
