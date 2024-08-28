@@ -20,7 +20,7 @@ export class Event<T extends keyof ClientEvents> {
     run!: (...args: ClientEvents[T]) => Promise<void>;
 
     /**
-     * For more specific commands.
+     * For more specific events.
      */
     runUnsafe?: (...args: any[]) => Promise<void>;
 }

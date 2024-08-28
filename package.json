@@ -9,7 +9,7 @@
     "start": "bun dist/index.js",
     "dev": "bun ./src/index.ts",
     "lint": "eslint . --fix",
-    "ci:lint": "eslint . --max-warnings 0"
+    "ci:lint": "eslint . --fix"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -31,7 +31,6 @@
     "@types/yargs": "^17.0.33",
     "dotenv": "^16.4.5",
     "eslint": "^9.9.1",
-    "tsx": "^4.19.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.3.0",
     "yargs": "^17.7.2"
