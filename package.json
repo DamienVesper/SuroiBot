@@ -9,7 +9,7 @@
     "start": "bun dist/index.js",
     "dev": "bun ./src/index.ts",
     "lint": "eslint . --fix",
-    "lint:ci": "eslint . --max-warnings 0"
+    "ci:lint": "eslint . --max-warnings 0"
   },
   "engines": {
     "node": ">=22.0.0"
