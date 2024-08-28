@@ -27,6 +27,7 @@ class Status extends Command {
             axios<any, AxiosResponse<{ playerCount: number }>>({ method: `GET`, url: `https://as.suroi.io/api/serverInfo`, timeout: 5e3, signal: AbortSignal.timeout(5e3) }).then(res => [res.data?.playerCount ?? 0, res.status]).catch((err: AxiosError) => [-1, err.response?.status])
         ]).then(async values => {
             const VALUES = values as unknown as Array<{ value: [number, number] }>;
+
             const naRes = VALUES[0].value;
             const euRes = VALUES[1].value;
             const saRes = VALUES[2].value;
