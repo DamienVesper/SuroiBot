@@ -1,7 +1,10 @@
 import { config } from '../.config/config.js';
 
-import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, Snowflake } from 'discord.js';
 import type { Player, Track } from 'magmastream';
+import type { SKRSContext2D } from '@napi-rs/canvas';
+
+import type { DiscordBot } from '../modules/DiscordBot.js';
 
 /**
  * Translate Suroi HTTP response.
@@ -17,6 +20,50 @@ export const translateSuroiStatus = (code: number | undefined): string => {
             return config.emojis.xmark;
     }
 };
+
+/**
+ * Clean a string of Discord formatting.
+ * @param str The string to clean.
+ */
+export const cleanse = (str: string): string => str.replace(/\*\*\*|\*\*|\*|__|_|~~/g, r => `\\${r}`);
+
+/**
+ * Format a number into a condensed form.
+ * @param num The number to format.
+ */
+export const numToPredicateFormat = (num: number): string =>
+    Math.abs(Number(num)) >= 1e21
+        ? `${(Math.abs(Number(num)) / 1e21).toFixed(2)}S`
+        : Math.abs(Number(num)) >= 1e18
+            ? `${(Math.abs(Number(num)) / 1e18).toFixed(2)}QT`
+            : Math.abs(Number(num)) >= 1e15
+                ? `${(Math.abs(Number(num)) / 1e15).toFixed(2)}Q`
+                : Math.abs(Number(num)) >= 1e12
+                    ? `${(Math.abs(Number(num)) / 1e12).toFixed(2)}T`
+                    : Math.abs(Number(num)) >= 1e9
+                        ? `${(Math.abs(Number(num)) / 1e9).toFixed(2)}B`
+                        : Math.abs(Number(num)) >= 1e6
+                            ? `${(Math.abs(Number(num)) / 1e6).toFixed(2)}M`
+                            : Math.abs(Number(num)) >= 1e3
+                                ? `${(Math.abs(Number(num)) / 1e3).toFixed(2)}K`
+                                : Math.abs(Number(num)).toString();
+
+/**
+ * Format a number by the number of bytes it contains, into a condensed form.
+ * @param num The number to format.
+ */
+export const numToBytesFormat = (num: number): string =>
+    Math.abs(Number(num)) >= 1024 ** 5
+        ? `${(Math.abs(Number(num)) / 1024 ** 5).toFixed(2)}PiB`
+        : Math.abs(Number(num)) >= 1024 ** 4
+            ? `${(Math.abs(Number(num)) / 1024 ** 4).toFixed(2)}TiB`
+            : Math.abs(Number(num)) >= 1024 ** 3
+                ? `${(Math.abs(Number(num)) / 1024 ** 3).toFixed(2)}GiB`
+                : Math.abs(Number(num)) >= 1024 ** 2
+                    ? `${(Math.round(Math.abs(Number(num)) / 1024 ** 2))}MiB`
+                    : Math.abs(Number(num)) >= 1024
+                        ? `${(Math.round(Math.abs(Number(num)) / 1024))}KiB`
+                        : Math.abs(Number(num)).toString();
 
 /**
  * Convert a number to duration form.
@@ -85,3 +132,25 @@ export const createUsageExample = (command: SlashCommandBuilder | SlashCommandOp
     const commandOptions = command.options.map(option => option.toJSON());
     return `/${command.name}${command.options.length > 0 ? ` ${commandOptions.map(option => option.required ? `<${option.name}>` : `[${option.name}]`).join(` `)}` : ``}`;
 };
+
+export const getMaxXP = (level: number): number => Math.floor((100 * Math.E * level) / 2);
+
+export const fitText = (context: SKRSContext2D, text: string, maxFontSize: number, maxWidth: number): string => {
+    let fontSize = maxFontSize;
+    context.font = `${fontSize}px Inter`;
+    while (context.measureText(text).width > maxWidth) context.font = `${fontSize -= 2}px Inter`;
+
+    return context.font;
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const getGuildLeaderboard = async (client: DiscordBot, guildId: Snowflake) => (await client.db.user.findMany({
+    where: {
+        banned: false,
+        guildId: guildId
+    },
+    orderBy: [
+        { level: `desc` },
+        { xp: `desc` }
+    ]
+})).map((x, i) => Object.freeze({ ...x, pos: i }));
