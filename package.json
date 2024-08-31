@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/DamienVesper/SuroiBot#readme",
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.6.4",
+    "@stylistic/eslint-plugin": "^2.7.2",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.5.1",
     "@types/yargs": "^17.0.33",
@@ -38,7 +38,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.54",
     "@prisma/client": "5.19.0",
-    "axios": "^1.7.5",
+    "axios": "^1.7.6",
     "discord.js": "^14.15.3",
     "magmastream": "^2.5.13",
     "prisma": "^5.19.0"
