@@ -38,9 +38,9 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.54",
     "@prisma/client": "5.19.0",
-    "axios": "^1.7.6",
+    "axios": "^1.7.7",
     "discord.js": "^14.15.3",
-    "magmastream": "^2.5.13",
+    "magmastream": "^2.5.14",
     "prisma": "^5.19.0"
   }
 }
