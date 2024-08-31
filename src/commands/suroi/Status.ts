@@ -12,6 +12,20 @@ import { Command } from '../../classes/Command.js';
 
 import { translateSuroiStatus } from '../../utils/utils.js';
 
+/**
+ * Get the server status of an official Suroi server.
+ * @param subdomain The subdomain pointing to the server.
+ */
+const getServerInfo = (subdomain: string): Promise<Array<number | undefined>> =>
+    axios<any, AxiosResponse<{ playerCount: number }>>({
+        method: `GET`,
+        url: `https://${subdomain}.suroi.io/api/serverInfo`,
+        timeout: 5e3,
+        signal: AbortSignal.timeout(5e3)
+    })
+        .then(res => [res.data?.playerCount ?? 0, res.status])
+        .catch((err: AxiosError) => [-1, err.response?.status]);
+
 class Status extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`status`)
@@ -21,10 +35,10 @@ class Status extends Command {
         await interaction.deferReply();
 
         await Promise.allSettled([
-            axios<any, AxiosResponse<{ playerCount: number }>>({ method: `GET`, url: `https://na.suroi.io/api/serverInfo`, timeout: 5e3, signal: AbortSignal.timeout(5e3) }).then(res => [res.data?.playerCount ?? 0, res.status]).catch((err: AxiosError) => [-1, err.response?.status]),
-            axios<any, AxiosResponse<{ playerCount: number }>>({ method: `GET`, url: `https://eu.suroi.io/api/serverInfo`, timeout: 5e3, signal: AbortSignal.timeout(5e3) }).then(res => [res.data?.playerCount ?? 0, res.status]).catch((err: AxiosError) => [-1, err.response?.status]),
-            axios<any, AxiosResponse<{ playerCount: number }>>({ method: `GET`, url: `https://sa.suroi.io/api/serverInfo`, timeout: 5e3, signal: AbortSignal.timeout(5e3) }).then(res => [res.data?.playerCount ?? 0, res.status]).catch((err: AxiosError) => [-1, err.response?.status]),
-            axios<any, AxiosResponse<{ playerCount: number }>>({ method: `GET`, url: `https://as.suroi.io/api/serverInfo`, timeout: 5e3, signal: AbortSignal.timeout(5e3) }).then(res => [res.data?.playerCount ?? 0, res.status]).catch((err: AxiosError) => [-1, err.response?.status])
+            getServerInfo(`na`),
+            getServerInfo(`eu`),
+            getServerInfo(`as`),
+            getServerInfo(`sa`)
         ]).then(async values => {
             const VALUES = values as unknown as Array<{ value: [number, number] }>;
 
