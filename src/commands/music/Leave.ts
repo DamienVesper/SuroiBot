@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -6,7 +6,7 @@ class Leave extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`leave`)
         .setDescription(`Leave the voice channel.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

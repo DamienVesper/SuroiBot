@@ -1,5 +1,6 @@
 import {
     EmbedBuilder,
+    InteractionContextType,
     SlashCommandBuilder,
     type ChatInputCommandInteraction,
     type VoiceChannel
@@ -14,7 +15,7 @@ class Queue extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`queue`)
         .setDescription(`View the current song being played.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

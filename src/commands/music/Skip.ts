@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -7,7 +7,7 @@ class Queue extends Command {
         .setName(`skip`)
         .setDescription(`Skip one or more songs.`)
         .addIntegerOption(option => option.setName(`count`).setDescription(`The number of songs to skip.`).setMinValue(1))
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

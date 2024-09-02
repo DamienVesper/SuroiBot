@@ -70,10 +70,11 @@ class MessageCreate extends Event<typeof EventType> {
                     return;
                 }
 
-                console.log(dbUser.cooldowns);
-                if ((new Date().valueOf() - (dbUser.cooldowns.xp ?? new Date(0)).valueOf()) < this.client.config.modules.leveling.xpCooldown) {
-                    dbUser.xp += Math.floor(Math.random() * this.client.config.modules.leveling.xp.max + this.client.config.modules.leveling.xp.min);
-                    dbUser.cooldowns.xp = new Date();
+                if (dbUser.cooldowns !== null) {
+                    if ((new Date().valueOf() - (dbUser.cooldowns.xp ?? new Date(0)).valueOf()) < this.client.config.modules.leveling.xpCooldown) {
+                        dbUser.xp += Math.floor(Math.random() * this.client.config.modules.leveling.xp.max + this.client.config.modules.leveling.xp.min);
+                        dbUser.cooldowns.xp = new Date();
+                    }
                 }
             }
         };

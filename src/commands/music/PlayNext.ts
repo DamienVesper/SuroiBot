@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -9,7 +9,7 @@ class PlayNext extends Command {
         .setName(`playnext`)
         .addStringOption(option => option.setName(`query`).setDescription(`The name or link to the song, file, or playlist.`).setRequired(true))
         .setDescription(`Insert a song, audio file, or playlist at the front of the queue.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null || interaction.channel === null) {

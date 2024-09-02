@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -9,7 +9,7 @@ class Seek extends Command {
         .setName(`seek`)
         .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to seek to.`).setMinValue(0).setRequired(true))
         .setDescription(`Seek a certain position in the current song.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

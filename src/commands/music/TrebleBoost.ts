@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -7,7 +7,7 @@ class TrebleBoost extends Command {
         .setName(`trebleboost`)
         .addNumberOption(option => option.setName(`value`).setDescription(`The value to trebleboost by. Leave blank for default.`).setMinValue(0).setMaxValue(10))
         .setDescription(`Boost the player's treble.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

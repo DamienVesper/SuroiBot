@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -7,7 +7,7 @@ class Volume extends Command {
         .setName(`volume`)
         .addIntegerOption(option => option.setName(`value`).setDescription(`The value to set the volume to.`).setMinValue(1).setMaxValue(200).setRequired(true))
         .setDescription(`Set the volume of the player.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

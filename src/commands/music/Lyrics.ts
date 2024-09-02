@@ -9,7 +9,7 @@ class Lyrics extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`lyrics`)
         .setDescription(`View the lyrics of the current song.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

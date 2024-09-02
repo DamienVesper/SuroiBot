@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -7,7 +7,7 @@ class Rotation extends Command {
         .setName(`rotation`)
         .addNumberOption(option => option.setName(`value`).setDescription(`The frequency to rotate at.`).setMinValue(0).setMaxValue(10))
         .setDescription(`Set a panning filter to the audio.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

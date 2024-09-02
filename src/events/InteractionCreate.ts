@@ -1,4 +1,4 @@
-import { Collection, Events, PermissionsBitField } from 'discord.js';
+import { Collection, Events, InteractionContextType, PermissionsBitField } from 'discord.js';
 
 import { Event } from '../classes/Event.js';
 
@@ -24,7 +24,8 @@ class InteractionCreate extends Event<typeof EventType> {
                 }
 
                 // There isn't any permissions handling outside of guilds, so we can safely ignore all other interaction sources.
-                if (command.cmd.dm_permission === false && interaction.guild !== null) {
+
+                if (!command.cmd.contexts?.includes(InteractionContextType.BotDM) && interaction.guild !== null) {
                     if (!(this.client.config.dev.overridePermissions && interaction.user.id === this.client.config.dev.userID)) {
                         const member = await interaction.guild.members.fetch(interaction.user.id);
                         const bot = await interaction.guild.members.fetch(this.client.user.id);

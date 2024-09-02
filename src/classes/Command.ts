@@ -2,14 +2,14 @@ import {
     PermissionFlagsBits,
     type ChatInputCommandInteraction,
     SlashCommandBuilder,
-    type SlashCommandOptionsOnlyBuilder
+    type SharedSlashCommand
 } from 'discord.js';
 import type { DiscordBot } from '../modules/DiscordBot.js';
 
 export abstract class Command {
     client: DiscordBot;
 
-    abstract cmd: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
+    abstract cmd: SharedSlashCommand;
     config: ConfigType = {
         botPermissions: [
             PermissionFlagsBits.SendMessages,

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import type { Track } from 'magmastream';
 
 import { Command } from '../../classes/Command.js';
@@ -7,7 +7,7 @@ class NowPlaying extends Command {
     cmd = new SlashCommandBuilder()
         .setName(`nowplaying`)
         .setDescription(`View the current song being played.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

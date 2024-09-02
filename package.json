@@ -36,10 +36,10 @@
     "yargs": "^17.7.2"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.54",
     "@prisma/client": "5.19.0",
     "axios": "^1.7.7",
-    "discord.js": "^14.16.0",
+    "canvacord": "^6.0.2",
+    "discord.js": "^14.16.1",
     "magmastream": "^2.5.14",
     "prisma": "^5.19.1"
   }

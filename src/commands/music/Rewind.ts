@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -7,7 +7,7 @@ class Rewind extends Command {
         .setName(`rewind`)
         .addIntegerOption(option => option.setName(`time`).setDescription(`The time, in seconds, to rewind. If not specified, defaults to the beginning of the song.`).setMinValue(1))
         .setDescription(`Rewind the current song.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

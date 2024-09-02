@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -8,7 +8,7 @@ class Vibrato extends Command {
         .addIntegerOption(option => option.setName(`value`).setDescription(`The vibrato depth (%). Leave blank for default.`).setMinValue(0).setMaxValue(100))
         .addNumberOption(option => option.setName(`frequency`).setDescription(`The frequency of the vibrato. Leave blank for default.`).setMinValue(0.001).setMaxValue(14))
         .setDescription(`Set the vibrato filter.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {

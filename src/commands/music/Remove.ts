@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
 
 import { Command } from '../../classes/Command.js';
 
@@ -8,9 +8,10 @@ class Remove extends Command {
         .addIntegerOption(option => option.setName(`start`).setDescription(`The position to start removing at.`).setMinValue(1).setRequired(true))
         .addIntegerOption(option => option.setName(`end`).setDescription(`The position to stop removing at (exclusive).`).setMinValue(2))
         .setDescription(`Remove one or multiple songs from the queue.`)
-        .setDMPermission(false);
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
+        if (!interaction.channel?.isTextBased() || interaction.channel.isDMBased()) return;
         if (interaction.guild === null) {
             await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
             return;
@@ -44,13 +45,13 @@ class Remove extends Command {
             if (start === 0) player.stop();
 
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${song.title}** from the queue.`)] });
-            if (start === 0 && player.queue.current !== null) await interaction.channel?.send(this.client.createNowPlayingDetails(player, true));
+            if (start === 0 && player.queue.current !== null) await interaction.channel.send(this.client.createNowPlayingDetails(player, true));
         } else {
             if (start === 0) player.stop();
             const songs = player.queue.splice(start - 1, end - start);
 
             await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Removed **${songs.length}** songs from the queue.`)] });
-            if (start === 0 && player.queue.current !== null) await interaction.channel?.send(this.client.createNowPlayingDetails(player, true));
+            if (start === 0 && player.queue.current !== null) await interaction.channel.send(this.client.createNowPlayingDetails(player, true));
         }
     };
 }
