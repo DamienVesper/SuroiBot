@@ -21,8 +21,8 @@ export const config = {
     mode: argv.mode,
     dev: {
         userID: `386940319666667521`,
-        guildID: `1269117681710137504`,
-        overridePermissions: true
+        guildID: `516304983415848961`,
+        overridePermissions: false
     },
 
     modules: {
