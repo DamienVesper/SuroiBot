@@ -29,16 +29,11 @@ model User {
   xp    Int @default(0)
   level Int @default(0)
 
-  balance Float @default(0)
+  balance Float @default(0.00)
 
-  guild Guild? @relation(fields: [guildId], references: [discordId])
+  cooldowns Cooldowns?
 
-  cases    Case[] @relation(name: "targetUser")
-  modCases Case[] @relation(name: "perpetratorUser")
-
-  Case Case[]
-  
-  cooldowns Cooldowns? @relation(fields: [discordId], references: [discordId])
+  guild Guild @relation(fields: [guildId], references: [discordId])
 }
 
 model Cooldowns {
@@ -49,8 +44,9 @@ model Cooldowns {
   updatedAt DateTime @updatedAt
 
   daily DateTime
+  xp DateTime
 
-  user User?
+  user User @relation(fields: [discordId], references: [discordId])
 }
 
 model Guild {
@@ -59,27 +55,6 @@ model Guild {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  users User[]
-  cases Case[]
-}
-
-model Case {
-  id Int @id @default(autoincrement())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  guildId       String
-  perpetratorId String
-  targetId      String
-
-  guild       Guild? @relation(fields: [guildId], references: [discordId])
-  perpetrator User?  @relation(name: "perpetratorUser", fields: [perpetratorId], references: [discordId])
-  target      User?  @relation(name: "targetUser", fields: [targetId], references: [discordId])
-
-  action Action @default(Warn)
-  reason String @default("No reason provided")
 
   users User[]
 }

@@ -32,15 +32,15 @@
     "dotenv": "^16.4.5",
     "eslint": "^9.9.1",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.3.0",
+    "typescript-eslint": "^8.4.0",
     "yargs": "^17.7.2"
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.54",
     "@prisma/client": "5.19.0",
     "axios": "^1.7.7",
-    "discord.js": "^14.15.3",
+    "discord.js": "^14.16.0",
     "magmastream": "^2.5.14",
-    "prisma": "^5.19.0"
+    "prisma": "^5.19.1"
   }
 }
