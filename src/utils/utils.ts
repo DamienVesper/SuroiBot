@@ -1,6 +1,6 @@
 import { config } from '../.config/config.js';
 
-import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, Snowflake } from 'discord.js';
+import type { SharedSlashCommand, Snowflake } from 'discord.js';
 import type { Player, Track } from 'magmastream';
 import type { SKRSContext2D } from '@napi-rs/canvas';
 
@@ -128,7 +128,7 @@ export const createTrackBar = (player: Player): string => {
     return `${numToDurationFormat(player.position)} ${`⎯`.repeat(COUNT)}◯${`⎯`.repeat(MAX_LENGTH - (COUNT + 1))} ${numToDurationFormat(track.duration)}`;
 };
 
-export const createUsageExample = (command: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder): string => {
+export const createUsageExample = (command: SharedSlashCommand): string => {
     const commandOptions = command.options.map(option => option.toJSON());
     return `/${command.name}${command.options.length > 0 ? ` ${commandOptions.map(option => option.required ? `<${option.name}>` : `[${option.name}]`).join(` `)}` : ``}`;
 };

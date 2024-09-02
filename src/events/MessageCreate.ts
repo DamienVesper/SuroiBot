@@ -1,6 +1,7 @@
 import { Events } from 'discord.js';
 
 import { Event } from '../classes/Event.js';
+import { getMaxXP } from '../utils/utils.js';
 
 const EventType = Events.MessageCreate;
 
@@ -71,9 +72,32 @@ class MessageCreate extends Event<typeof EventType> {
                 }
 
                 if (dbUser.cooldowns !== null) {
-                    if ((new Date().valueOf() - (dbUser.cooldowns.xp ?? new Date(0)).valueOf()) < this.client.config.modules.leveling.xpCooldown) {
+                    if ((new Date().valueOf() - (dbUser.cooldowns.xp ?? new Date(0)).valueOf()) > this.client.config.modules.leveling.xpCooldown) {
+                        const maxXP = getMaxXP(dbUser.level);
                         dbUser.xp += Math.floor(Math.random() * this.client.config.modules.leveling.xp.max + this.client.config.modules.leveling.xp.min);
-                        dbUser.cooldowns.xp = new Date();
+
+                        if (dbUser.xp > maxXP) {
+                            dbUser.level++;
+                            dbUser.xp -= maxXP;
+                        }
+
+                        await this.client.db.user.update({
+                            where: {
+                                discordId: message.author.id,
+                                guildId: message.guild.id
+                            },
+                            data: {
+                                xp: dbUser.xp,
+                                level: dbUser.level, // TODO: Check perf to see if this is updated only as needed.
+                                cooldowns: {
+                                    update: {
+                                        data: {
+                                            xp: new Date()
+                                        }
+                                    }
+                                }
+                            }
+                        });
                     }
                 }
             }

@@ -39,7 +39,7 @@ export const config = {
                 min: 0,
                 max: 1e3
             },
-            xpCooldown: 60,
+            xpCooldown: 60, // 6e4,
             levelUpMessages: `none`
         },
         music: {
