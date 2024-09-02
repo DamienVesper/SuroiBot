@@ -3,7 +3,7 @@ import customData from './customData.js';
 import emojis from './emojis.js';
 
 import type { ClientEvents, Snowflake } from 'discord.js';
-import type { NodeOptions } from 'magmastream';
+import type { ManagerOptions } from 'magmastream';
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -14,6 +14,8 @@ dotenvConfig();
 const argv = yargs(hideBin(process.argv)).options({
     mode: { type: `string`, default: `dev` }
 }).argv as Args;
+
+const LAVALINK_HOST = new URL(process.env.LAVALINK_URL ?? `https://example.org`);
 
 export const config = {
     mode: argv.mode,
@@ -43,15 +45,15 @@ export const config = {
         music: {
             enabled: true,
             nodes: [{
-                host: process.env.LAVALINK_HOST!,
+                host: LAVALINK_HOST.hostname,
                 identifier: `0`,
                 password: process.env.LAVALINK_TOKEN,
-                port: Number(process.env.LAVALINK_PORT!),
+                port: Number(LAVALINK_HOST.port || (LAVALINK_HOST.protocol === `https` ? 443 : 80)),
                 retryAmount: 10,
                 retryDelay: 1e4,
                 resumeStatus: true,
                 resumeTimeout: 3e4,
-                secure: false
+                secure: LAVALINK_HOST.protocol === `https`
             }],
             options: {
                 maxFilter: 100,
@@ -142,8 +144,7 @@ interface LevelingModule {
     levelUpMessages: `channel` | `dm` | `none`
 }
 
-interface MusicModule {
-    nodes: NodeOptions[]
+interface MusicModule extends Partial<ManagerOptions> {
     options: {
         maxFilter: number
         equalizerBands: number
