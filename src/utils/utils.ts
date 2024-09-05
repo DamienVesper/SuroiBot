@@ -2,7 +2,7 @@ import { config } from '../.config/config.js';
 
 import type { SharedSlashCommand, Snowflake } from 'discord.js';
 import type { Player, Track } from 'magmastream';
-import type { SKRSContext2D } from '@napi-rs/canvas';
+import type { Canvas, SKRSContext2D } from '@napi-rs/canvas';
 
 import type { DiscordBot } from '../modules/DiscordBot.js';
 
