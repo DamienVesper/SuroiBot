@@ -17,7 +17,7 @@ class MessageCreate extends Event<typeof EventType> {
         this.run = async message => {
             if (message.author.bot || message.guild === null) return;
 
-            let dbUser = await this.client.db.user.findUnique({
+            let dbUser = await this.client.db.user.findFirst({
                 where: {
                     discordId: message.author.id,
                     guildId: message.guild.id
@@ -27,7 +27,7 @@ class MessageCreate extends Event<typeof EventType> {
                 }
             });
 
-            let guild = await this.client.db.guild.findUnique({ where: { discordId: message.guild.id } });
+            let guild = await this.client.db.guild.findFirst({ where: { discordId: message.guild.id } });
 
             if (guild === null) {
                 this.client.logger.info(`Database`, `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
@@ -47,6 +47,7 @@ class MessageCreate extends Event<typeof EventType> {
                         level: this.client.config.modules.leveling.enabled ? this.client.config.modules.leveling.level.min : 0,
                         cooldowns: {
                             create: {
+                                discordId: message.author.id,
                                 daily: new Date(0),
                                 xp: new Date(0)
                             }
@@ -54,7 +55,7 @@ class MessageCreate extends Event<typeof EventType> {
                     }
                 });
 
-                dbUser = await this.client.db.user.findUnique({
+                dbUser = await this.client.db.user.findFirst({
                     where: {
                         discordId: message.author.id,
                         guildId: message.guild.id
@@ -82,10 +83,7 @@ class MessageCreate extends Event<typeof EventType> {
                         }
 
                         await this.client.db.user.update({
-                            where: {
-                                discordId: message.author.id,
-                                guildId: message.guild.id
-                            },
+                            where: { id: dbUser.id },
                             data: {
                                 xp: dbUser.xp,
                                 level: dbUser.level, // TODO: Check perf to see if this is updated only as needed.

@@ -22,7 +22,7 @@ class Rank extends Command {
         if (interaction.guild === null) return;
         await interaction.deferReply();
 
-        const dbUser = await this.client.db.user.findUnique({
+        const dbUser = await this.client.db.user.findFirst({
             where: {
                 discordId: interaction.user.id,
                 guildId: interaction.guild.id

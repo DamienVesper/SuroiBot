@@ -19,7 +19,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  discordId String @unique
+  discordId String
   guildId   String
 
   banned Boolean @default(false)
@@ -34,11 +34,13 @@ model User {
   cooldowns Cooldowns?
 
   guild Guild @relation(fields: [guildId], references: [discordId])
+
+  @@unique ([discordId, guildId])
 }
 
 model Cooldowns {
   id Int @id @default(autoincrement())
-  discordId String @unique
+  discordId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,7 +48,7 @@ model Cooldowns {
   daily DateTime
   xp DateTime
 
-  user User @relation(fields: [discordId], references: [discordId])
+  user User @relation(fields: [id], references: [id])
 }
 
 model Guild {
