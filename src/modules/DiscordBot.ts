@@ -38,14 +38,15 @@ import { Command } from '../classes/Command.js';
 
 import { createTrackBar } from '../utils/utils.js';
 import { PrismaClient } from '@prisma/client';
+import { Font, FontFactory } from 'canvacord';
 
 export class DiscordBot extends Client<true> {
     config = config;
 
     logger = new Logger({
         files: {
-            log: resolve(fileURLToPath(import.meta.url), `../../logs/console.log`),
-            errorLog: resolve(fileURLToPath(import.meta.url), `../../logs/error.log`)
+            log: resolve(fileURLToPath(import.meta.url), `../../../logs/console.log`),
+            errorLog: resolve(fileURLToPath(import.meta.url), `../../../logs/error.log`)
         },
         handleExceptions: true
     });
@@ -94,6 +95,9 @@ export class DiscordBot extends Client<true> {
                 }]
             }
         });
+
+        // Load canvacord font.
+        if (!FontFactory.size) Font.fromFileSync(resolve(fileURLToPath(import.meta.url), `../../../assets/fonts/Inter-Regular.ttf`));
 
         // Instantiate the database ORM.
         this.db = new PrismaClient();

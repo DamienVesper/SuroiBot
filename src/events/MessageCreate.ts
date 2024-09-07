@@ -72,7 +72,7 @@ class MessageCreate extends Event<typeof EventType> {
                 }
 
                 if (dbUser.cooldowns !== null) {
-                    if ((new Date().valueOf() - (dbUser.cooldowns.xp ?? new Date(0)).valueOf()) > this.client.config.modules.leveling.xpCooldown) {
+                    if ((Date.now() - (dbUser.cooldowns.xp ?? new Date(0)).valueOf()) > this.client.config.modules.leveling.xpCooldown) {
                         const maxXP = getMaxXP(dbUser.level);
                         dbUser.xp += Math.floor(Math.random() * this.client.config.modules.leveling.xp.max + this.client.config.modules.leveling.xp.min);
 

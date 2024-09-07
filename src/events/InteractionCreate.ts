@@ -71,9 +71,9 @@ class InteractionCreate extends Event<typeof EventType> {
                     }
 
                     const cmdCooldown = cooldowns.get(command.cmd.name);
-                    if (cmdCooldown === undefined || (new Date().valueOf() - cmdCooldown > command.config.cooldown)) cooldowns.set(command.cmd.name, new Date().valueOf());
+                    if (cmdCooldown === undefined || (Date.now() - cmdCooldown > command.config.cooldown)) cooldowns.set(command.cmd.name, Date.now());
                     else {
-                        await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must wait another \`${numToCooldownFormat(command.config.cooldown - (new Date().valueOf() - cmdCooldown))}\` before using that command.`)], ephemeral: true });
+                        await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must wait another \`${numToCooldownFormat(command.config.cooldown - (Date.now() - cmdCooldown))}\` before using that command.`)], ephemeral: true });
                         return;
                     }
                 }

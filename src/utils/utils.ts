@@ -2,7 +2,7 @@ import { config } from '../.config/config.js';
 
 import type { SharedSlashCommand, Snowflake } from 'discord.js';
 import type { Player, Track } from 'magmastream';
-import type { Canvas, SKRSContext2D } from '@napi-rs/canvas';
+import type { SKRSContext2D } from '@napi-rs/canvas';
 
 import type { DiscordBot } from '../modules/DiscordBot.js';
 
@@ -134,6 +134,11 @@ export const createUsageExample = (command: SharedSlashCommand): string => {
 };
 
 export const getMaxXP = (level: number): number => Math.floor((100 * Math.E * level) / 2);
+
+export const getTotalXP = (level: number, xp: number): number => {
+    for (let i = 0; i < level; i++) xp += getMaxXP(i);
+    return xp;
+};
 
 export const fitText = (context: SKRSContext2D, text: string, maxFontSize: number, maxWidth: number): string => {
     let fontSize = maxFontSize;
