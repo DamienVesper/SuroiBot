@@ -1,6 +1,6 @@
-import { exec } from 'child_process';
-import os from 'os';
-import { promisify } from 'util';
+import { exec } from "child_process";
+import os from "os";
+import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
@@ -14,12 +14,12 @@ export const freeMemPercentage = os.freemem() / os.totalmem();
 /**
  * Get a breakdown of the free memory in the system.
  */
-export const freeCommand = async (): Promise<Record<`used` | `cached`, number>> => {
-    const { stdout } = await execAsync(`free -m`, { encoding: `utf-8` });
+export const freeCommand = async (): Promise<Record<"used" | "cached", number>> => {
+    const { stdout } = await execAsync("free -m", { encoding: "utf-8" });
 
-    const lines = stdout.split(`\n`);
-    const strMemInfo = lines[1].replace(/[\s\n\r]+/g, ` `);
-    const memInfo = strMemInfo.split(` `);
+    const lines = stdout.split("\n");
+    const strMemInfo = lines[1].replace(/[\s\n\r]+/g, " ");
+    const memInfo = strMemInfo.split(" ");
 
     const totalMem = parseInt(memInfo[1]);
     const freeMem = parseInt(memInfo[3]);
@@ -33,16 +33,16 @@ export const freeCommand = async (): Promise<Record<`used` | `cached`, number>> 
     };
 };
 
-export const harddrive = async (): Promise<Record<`total` | `used` | `free`, number>> => {
-    const { stdout } = await execAsync(`df -k`, { encoding: `utf-8` });
+export const harddrive = async (): Promise<Record<"total" | "used" | "free", number>> => {
+    const { stdout } = await execAsync("df -k", { encoding: "utf-8" });
 
     let total = 0;
     let used = 0;
     let free = 0;
 
-    const lines = stdout.split(`\n`);
-    const strDiskInfo = lines[1].replace(/[\s\n\r]+/g, ` `);
-    const diskInfo = strDiskInfo.split(` `).map(x => Number(x));
+    const lines = stdout.split("\n");
+    const strDiskInfo = lines[1].replace(/[\s\n\r]+/g, " ");
+    const diskInfo = strDiskInfo.split(" ").map(x => Number(x));
 
     total = Math.ceil((diskInfo[1] * 1024) / Math.pow(1024, 2));
     used = Math.ceil(diskInfo[2] * 1024 / Math.pow(1024, 2));
@@ -56,16 +56,16 @@ export const harddrive = async (): Promise<Record<`total` | `used` | `free`, num
 };
 
 export const getProcesses = async (): Promise<string> => {
-    const { stdout } = await execAsync(`ps -eo pcpu,pmem,time,args | sort -k 1 -r | head -n10`, { encoding: `utf-8` });
+    const { stdout } = await execAsync("ps -eo pcpu,pmem,time,args | sort -k 1 -r | head -n10", { encoding: "utf-8" });
 
-    const lines = stdout.split(`\n`);
+    const lines = stdout.split("\n");
 
     lines.shift();
     lines.pop();
 
-    let result = ``;
+    let result = "";
     lines.forEach((_item, _i) => {
-        const str = _item.replace(/[\s\n\r]+/g, ` `).split(` `);
+        const str = _item.replace(/[\s\n\r]+/g, " ").split(" ");
         // result += _str[10]+" "+_str[9]+" "+_str[2]+" "+_str[3]+"\n";  // process
         result += `${str[1]} ${str[2]} ${str[3]} ${str[4].substring((str[4].length - 25))}\n`; // process
     });
@@ -125,7 +125,7 @@ export const getCPUUsage = async (free: boolean): Promise<number> => {
         : 1 - perc;
 };
 
-export const getCPUInfo = (): Record<`idle` | `total`, number> => {
+export const getCPUInfo = (): Record<"idle" | "total", number> => {
     const cpus = os.cpus();
 
     let user = 0;

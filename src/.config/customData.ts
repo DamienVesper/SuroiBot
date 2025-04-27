@@ -1,17 +1,18 @@
 const customData = {
-    guild: `1077043833621184563`,
+    guild: "1077043833621184563",
     users: {
-        hasanger: `753029976474779760`
+        damienvesper: "386940319666667521",
+        hasanger: "753029976474779760"
     },
     bots: {
-        suroiBot: `659582297871220766`,
-        suroiWatcher: `1237567483850920058`
+        suroiBot: "659582297871220766"
     },
 
-    domain: `suroi.io`,
+    domain: "suroi.io",
     github: {
-        repo: `HasangerGames/suroi`,
-        wikiRepo: `HasangerGames/suroi-wiki`
+        repo: "HasangerGames/suroi",
+        botRepo: "DamienVesper/SuroiBot",
+        wikiRepo: "HasangerGames/suroi-wiki"
     }
 };
 

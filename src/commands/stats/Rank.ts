@@ -3,24 +3,24 @@ import {
     InteractionContextType,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
-} from 'discord.js';
+} from "discord.js";
 
-import { Command } from '../../classes/Command.js';
-import { fitText, getMaxXP, numToPredicateFormat } from '../../utils/utils.js';
-import { fileURLToPath } from 'url';
-import { resolve } from 'path';
-import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
+import { Command } from "../../classes/Command.js";
+import { fitText, getMaxXP, numToPredicateFormat } from "../../utils/utils.js";
+import { fileURLToPath } from "url";
+import { resolve } from "path";
+import { createCanvas, GlobalFonts, loadImage } from "@napi-rs/canvas";
 
 class Rank extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`rank`)
-        .addUserOption(option => option.setName(`user`).setDescription(`The user to check.`))
-        .setDescription(`View a person's server rank.`)
+        .setName("rank")
+        .addUserOption(option => option.setName("user").setDescription("The user to check."))
+        .setDescription("View a person's server rank.")
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {
-            await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
+            await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
@@ -34,18 +34,18 @@ class Rank extends Command {
         });
 
         if (dbUser === null) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `No account exists for that user!`)] });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "No account exists for that user!")] });
             return;
         };
 
         const member = await interaction.guild.members.fetch(dbUser.discordId);
         if (member === null) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `That user could not be found!`)] });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "That user could not be found!")] });
             return;
         }
 
         const canvas = createCanvas(934, 282);
-        const ctx = canvas.getContext(`2d`);
+        const ctx = canvas.getContext("2d");
 
         const role = member.roles.highest.color === 0x000000
             ? member.roles.hoist?.color == 0x000000
@@ -57,11 +57,11 @@ class Rank extends Command {
         const roleIsDefaultColor = role.color === 0x000000;
 
         // Fonts.
-        GlobalFonts.registerFromPath(resolve(fileURLToPath(import.meta.url), `../../../../assets/fonts/Inter-Regular.ttf`), `Inter`);
+        GlobalFonts.registerFromPath(resolve(fileURLToPath(import.meta.url), "../../../../assets/fonts/Inter-Regular.ttf"), "Inter");
 
         // Background.
-        const bgImg = await loadImage(resolve(fileURLToPath(import.meta.url), `../../../../assets/img/background.jpg`));
-        const avatar = await loadImage(member.user.displayAvatarURL({ extension: `jpg` }));
+        const bgImg = await loadImage(resolve(fileURLToPath(import.meta.url), "../../../../assets/img/background.jpg"));
+        const avatar = await loadImage(member.user.displayAvatarURL({ extension: "jpg" }));
 
         ctx.imageSmoothingEnabled = true;
 
@@ -71,7 +71,7 @@ class Rank extends Command {
 
         // Inner background.
         ctx.beginPath();
-        ctx.fillStyle = `#000000`;
+        ctx.fillStyle = "#000000";
         ctx.globalAlpha = 0.8;
 
         ctx.roundRect(40, 40, canvas.width - 80, canvas.height - 80, 8);
@@ -82,13 +82,13 @@ class Rank extends Command {
 
         // Experience bar.
         ctx.beginPath();
-        ctx.fillStyle = `#111111`;
+        ctx.fillStyle = "#111111";
         ctx.roundRect(canvas.height - 40, canvas.height - 100, canvas.width - canvas.height - 20, 35, 16);
         ctx.fill();
         ctx.closePath();
 
         ctx.beginPath();
-        ctx.fillStyle = `#${roleIsDefaultColor ? `ffffff` : roleColor}`;
+        ctx.fillStyle = `#${roleIsDefaultColor ? "ffffff" : roleColor}`;
         ctx.roundRect(canvas.height - 40, canvas.height - 100, (canvas.width - canvas.height - 20) * (dbUser.xp / getMaxXP(dbUser.level)), 35, 16);
         ctx.fill();
         ctx.closePath();
@@ -96,7 +96,7 @@ class Rank extends Command {
         // Username.
         ctx.beginPath();
         ctx.font = fitText(ctx, member.user.displayName, 44, 325);
-        ctx.fillStyle = `#ffffff`;
+        ctx.fillStyle = "#ffffff";
 
         ctx.fillText(member.user.displayName, canvas.height - 36, roleIsDefaultColor ? canvas.height - 120 : canvas.height - 150); // 170
         ctx.closePath();
@@ -110,37 +110,37 @@ class Rank extends Command {
         }
 
         // Experience Text
-        ctx.font = `28px Inter`;
-        ctx.textAlign = `right`;
+        ctx.font = "28px Inter";
+        ctx.textAlign = "right";
 
         const xpRequiredTxt = ` / ${numToPredicateFormat(getMaxXP(dbUser.level))} XP`;
 
-        ctx.fillStyle = `#ffffff`;
+        ctx.fillStyle = "#ffffff";
         ctx.fillText(numToPredicateFormat(Math.round(dbUser.xp)), canvas.width - ctx.measureText(xpRequiredTxt).width - 62.5, canvas.height - 110);
 
-        ctx.fillStyle = `#444444`;
+        ctx.fillStyle = "#444444";
         ctx.fillText(xpRequiredTxt, canvas.width - 60, canvas.height - 110);
 
         // Level text.
         ctx.fillStyle = `#${roleColor}`;
 
-        ctx.font = `48px Inter`;
+        ctx.font = "48px Inter";
 
         const levelWidth = ctx.measureText(dbUser.level.toString()).width;
         const rankWidth = ctx.measureText(`#${(dbUser as any)?.spot ?? 0}`).width;
 
         ctx.fillText(dbUser.level.toString(), canvas.width - 60, 90);
-        ctx.font = `26px Inter`;
+        ctx.font = "26px Inter";
 
-        const levelTxtWidth = ctx.measureText(` Level `).width;
-        ctx.fillText(` Level `, canvas.width - levelWidth - 60, 90);
+        const levelTxtWidth = ctx.measureText(" Level ").width;
+        ctx.fillText(" Level ", canvas.width - levelWidth - 60, 90);
 
-        ctx.font = `48px Inter`;
-        ctx.fillStyle = `#ffffff`;
+        ctx.font = "48px Inter";
+        ctx.fillStyle = "#ffffff";
         ctx.fillText(`#${(dbUser as any)?.spot ?? 0}`, canvas.width - levelTxtWidth - levelWidth - 62.5, 90);
 
-        ctx.font = `26px Inter`;
-        ctx.fillText(` Rank `, canvas.width - levelTxtWidth - levelWidth - rankWidth - 62.5, 90);
+        ctx.font = "26px Inter";
+        ctx.fillText(" Rank ", canvas.width - levelTxtWidth - levelWidth - rankWidth - 62.5, 90);
 
         ctx.closePath();
 
@@ -152,8 +152,8 @@ class Rank extends Command {
 
         // Avatar.
         ctx.drawImage(avatar, 60, 60, canvas.height - 120, canvas.height - 120);
-        await canvas.encode(`png`).then(async img => {
-            const profileCard = new AttachmentBuilder(img, { name: `card.png` });
+        await canvas.encode("png").then(async img => {
+            const profileCard = new AttachmentBuilder(img, { name: "card.png" });
             await interaction.followUp({ files: [profileCard] });
         });
     };

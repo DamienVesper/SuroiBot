@@ -1,58 +1,59 @@
-import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from "discord.js";
 
-import { Command } from '../../classes/Command.js';
-import type { MusicPlayer } from '../../modules/MusicPlayer.js';
+import { Command } from "../../classes/Command.js";
+import type { MusicPlayer } from "../../modules/MusicPlayer.js";
+import { LoadTypes } from "magmastream";
 
 class Play extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`play`)
-        .addStringOption(option => option.setName(`query`).setDescription(`The name or link to the song, file, or playlist.`).setRequired(true))
-        .setDescription(`Play a song, audio file, or playlist.`)
+        .setName("play")
+        .addStringOption(option => option.setName("query").setDescription("The name or link to the song, file, or playlist.").setRequired(true))
+        .setDescription("Play a song, audio file, or playlist.")
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null || interaction.channel === null) {
-            await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
+            await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
         const voiceChannel = (await interaction.guild.members.fetch(interaction.user.id)).voice.channel;
         if (voiceChannel === null) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in a voice channel to use that command!`)], ephemeral: true });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], ephemeral: true });
             return;
         }
 
         await interaction.deferReply();
 
         const guildPlayer = this.client.lavalink.players.get(interaction.guild.id);
-        if (guildPlayer !== undefined && voiceChannel.id !== guildPlayer.voiceChannel) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in the same voice channel as the bot to use that command!`)] });
+        if (guildPlayer !== undefined && voiceChannel.id !== guildPlayer.voiceChannelId) {
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
         }
 
-        const songInput = interaction.options.getString(`query`, true);
+        const songInput = interaction.options.getString("query", true);
         const res = await this.client.lavalink.search(songInput, interaction.user as any);
 
-        if (res.loadType === `error`) {
+        if (res.loadType === LoadTypes.Error) {
             this.client.logger.debug(`Lavalink Node ${guildPlayer?.node.options.identifier}`, res);
-            this.client.logger.error(`Lavalink Node ${guildPlayer?.node.options.identifier}`, `There was an error queuing a track.`);
+            this.client.logger.error(`Lavalink Node ${guildPlayer?.node.options.identifier}`, "There was an error queuing a track.");
             return;
-        } else if (res.loadType === `empty`) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I could not find any songs with the provided query.`)] });
+        } else if (res.loadType === LoadTypes.Empty) {
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I could not find any songs with the provided query.")] });
             return;
         }
 
         const player = this.client.lavalink.create({
-            guild: interaction.guild.id,
-            voiceChannel: voiceChannel.id,
-            textChannel: interaction.channel.id,
+            guildId: interaction.guild.id,
+            voiceChannelId: voiceChannel.id,
+            textChannelId: interaction.channel.id,
             volume: 75,
             selfDeafen: true
         }) as MusicPlayer;
 
         player.connect();
 
-        if (res.loadType === `playlist` && res.playlist !== undefined) {
+        if (res.loadType === LoadTypes.Playlist && res.playlist !== undefined) {
             player.queue.add(res.playlist.tracks);
             if (!player.playing && !player.paused && player.queue.size === res.playlist.tracks.length) await player.play();
 

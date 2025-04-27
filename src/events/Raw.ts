@@ -1,11 +1,11 @@
-import { Events, type ClientEvents } from 'discord.js';
+import { Events, type ClientEvents } from "discord.js";
 
-import { Event } from '../classes/Event.js';
+import { Event } from "../classes/Event.js";
 
 const EventType = Events.Raw as unknown as keyof ClientEvents;
 
 class Raw extends Event<typeof EventType> {
-    constructor (client: Event<typeof EventType>[`client`]) {
+    constructor (client: Event<typeof EventType>["client"]) {
         super(client);
 
         this.config = {

@@ -1,12 +1,12 @@
-import { Events } from 'discord.js';
+import { Events } from "discord.js";
 
-import { Event } from '../classes/Event.js';
-import { getMaxXP } from '../utils/utils.js';
+import { Event } from "../classes/Event.js";
+import { getMaxXP } from "../utils/utils.js";
 
 const EventType = Events.MessageCreate;
 
 class MessageCreate extends Event<typeof EventType> {
-    constructor (client: Event<typeof EventType>[`client`]) {
+    constructor (client: Event<typeof EventType>["client"]) {
         super(client);
 
         this.config = {
@@ -30,7 +30,7 @@ class MessageCreate extends Event<typeof EventType> {
             let guild = await this.client.db.guild.findFirst({ where: { discordId: message.guild.id } });
 
             if (guild === null) {
-                this.client.logger.debug(`Database`, `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
+                this.client.logger.debug("Database", `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
                 guild = await this.client.db.guild.create({
                     data: {
                         discordId: message.guild.id
@@ -39,7 +39,7 @@ class MessageCreate extends Event<typeof EventType> {
             }
 
             if (dbUser === null) {
-                this.client.logger.debug(`Database`, `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
+                this.client.logger.debug("Database", `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                 await this.client.db.user.create({
                     data: {
                         discordId: message.author.id,
@@ -68,7 +68,7 @@ class MessageCreate extends Event<typeof EventType> {
 
             if (this.client.config.modules.leveling.enabled) {
                 if (guild === null || dbUser === null) {
-                    this.client.logger.error(`Database`, `Guild or User were found null for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
+                    this.client.logger.error("Database", `Guild or User were found null for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                     return;
                 }
 

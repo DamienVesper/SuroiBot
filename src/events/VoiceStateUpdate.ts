@@ -1,11 +1,11 @@
-import { ChannelType, Events } from 'discord.js';
+import { ChannelType, Events } from "discord.js";
 
-import { Event } from '../classes/Event.js';
+import { Event } from "../classes/Event.js";
 
 const EventType = Events.VoiceStateUpdate;
 
 class VoiceStateUpdate extends Event<typeof EventType> {
-    constructor (client: Event<typeof EventType>[`client`]) {
+    constructor (client: Event<typeof EventType>["client"]) {
         super(client);
 
         this.config = {
@@ -17,13 +17,13 @@ class VoiceStateUpdate extends Event<typeof EventType> {
             const oldChannel = oldState.channel;
             if (oldChannel !== null) {
                 const player = this.client.lavalink.get(oldState.guild.id);
-                if (player?.textChannel && player?.voiceChannel === oldChannel.id && oldChannel.members.size === 1) {
-                    const channel = await this.client.channels.fetch(player.textChannel);
+                if (player?.textChannelId && player?.voiceChannelId === oldChannel.id && oldChannel.members.size === 1) {
+                    const channel = await this.client.channels.fetch(player.textChannelId);
                     if (channel?.type === ChannelType.GuildText) {
-                        this.client.logger.info(`Gateway`, `Left voice channel "${oldChannel.name}" (${oldChannel.id}).`);
+                        this.client.logger.info("Gateway", `Left voice channel "${oldChannel.name}" (${oldChannel.id}).`);
 
-                        await channel.send({ embeds: [this.client.createEmbed(player.guild, `Leaving channel as there are no listeners.`).setColor(this.client.config.colors.blue)] });
-                        player.destroy();
+                        await channel.send({ embeds: [this.client.createEmbed(player.guildId, "Leaving channel as there are no listeners.").setColor(this.client.config.colors.blue)] });
+                        await player.destroy();
                     }
                 }
             }

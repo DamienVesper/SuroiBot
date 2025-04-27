@@ -2,18 +2,18 @@ import {
     EmbedBuilder,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
-} from 'discord.js';
+} from "discord.js";
 
-import { Command } from '../../classes/Command.js';
+import { Command } from "../../classes/Command.js";
 
-import { Paginator } from '../../modules/Paginator.js';
+import { Paginator } from "../../modules/Paginator.js";
 
-import { capitalize, createUsageExample } from '../../utils/utils.js';
+import { capitalize, createUsageExample } from "../../utils/utils.js";
 
 class Help extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`help`)
-        .setDescription(`View the help menu.`);
+        .setName("help")
+        .setDescription("View the help menu.");
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         await interaction.deferReply();
@@ -27,8 +27,8 @@ class Help extends Command {
         const embeds = [
             new EmbedBuilder()
                 .setColor(this.client.config.colors.purple)
-                .setTitle(`Help`)
-                .setDescription(`View help for a specific command. Available categories are:\n${Object.keys(commandsByCategory).map(key => `- **${capitalize(key)}**`).join(`\n`)}`)
+                .setTitle("Help")
+                .setDescription(`View help for a specific command. Available categories are:\n${Object.keys(commandsByCategory).map(key => `- **${capitalize(key)}**`).join("\n")}`)
                 .setTimestamp()
                 .setFooter({ text: `ID: ${interaction.user.id}` })
         ];
@@ -37,7 +37,7 @@ class Help extends Command {
             embeds.push(new EmbedBuilder()
                 .setColor(this.client.config.colors.purple)
                 .setTitle(`Help | ${capitalize(category)}`)
-                .setDescription(commands.map(command => `\`${createUsageExample(command.cmd)}\` - ${command.cmd.description}`).join(`\n`))
+                .setDescription(commands.map(command => `\`${createUsageExample(command.cmd)}\` - ${command.cmd.description}`).join("\n"))
             );
         }
 

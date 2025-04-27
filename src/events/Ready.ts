@@ -1,11 +1,11 @@
-import { Events } from 'discord.js';
+import { Events } from "discord.js";
 
-import { Event } from '../classes/Event.js';
+import { Event } from "../classes/Event.js";
 
 const EventType = Events.ClientReady;
 
 class Ready extends Event<typeof EventType> {
-    constructor (client: Event<typeof EventType>[`client`]) {
+    constructor (client: Event<typeof EventType>["client"]) {
         super(client);
 
         this.config = {
@@ -14,7 +14,7 @@ class Ready extends Event<typeof EventType> {
         };
 
         this.run = async client => {
-            this.client.logger.info(`Gateway`, `Connected to Discord as "${client.user.tag}" (${client.user.id}).`);
+            this.client.logger.info("Gateway", `Connected to Discord as "${client.user.tag}" (${client.user.id}).`);
 
             this.client.lavalink?.init(client.user.id);
 

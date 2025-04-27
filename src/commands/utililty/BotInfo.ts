@@ -2,17 +2,17 @@ import {
     EmbedBuilder,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
-} from 'discord.js';
+} from "discord.js";
 
-import { Command } from '../../classes/Command.js';
+import { Command } from "../../classes/Command.js";
 
-import { numToCooldownFormat } from '../../utils/utils.js';
-import { getCPUUsage } from '../../utils/os.js';
+import { numToCooldownFormat } from "../../utils/utils.js";
+import { getCPUUsage } from "../../utils/os.js";
 
 class BotInfo extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`botinfo`)
-        .setDescription(`View bot statistics.`);
+        .setName("botinfo")
+        .setDescription("View bot statistics.");
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         await interaction.deferReply();
@@ -22,12 +22,12 @@ class BotInfo extends Command {
         const sEmbed = new EmbedBuilder()
             .setColor(this.client.config.colors.orange)
             .setDescription([
-                `### Bot Information`,
+                "### Bot Information",
                 `${this.client.config.emojis.network} **Latency:** \`${this.client.ws.ping} ms\``,
                 `⏰ **Uptime:** \`${numToCooldownFormat(this.client.uptime)}\``,
                 `${this.client.config.emojis.processor} **CPU:** \`${(cpuUsage * 100).toFixed(2)}%\``,
                 `${this.client.config.emojis.memory} **Memory:** \`${Math.trunc(process.memoryUsage().rss / (1024 ** 2))} MiB\``
-            ].join(`\n`))
+            ].join("\n"))
             .setThumbnail(interaction.guild?.iconURL() ?? null)
             .setTimestamp()
             .setFooter({ text: `ID: ${interaction.user.id}` });

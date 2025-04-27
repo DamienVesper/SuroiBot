@@ -7,11 +7,10 @@ import {
     User,
     type ButtonInteraction,
     type EmbedBuilder,
-    type InteractionCollector,
-    type Message
-} from 'discord.js';
+    type InteractionCollector
+} from "discord.js";
 
-import type { DiscordBot } from './DiscordBot.js';
+import type { DiscordBot } from "./DiscordBot.js";
 
 const COLLECTOR_TIMEOUT = 3e4;
 
@@ -47,41 +46,48 @@ export class Paginator {
     /**
      * Setup the paginator.
      */
-    setup = async (): Promise<Message> => {
-        const FIRST = this.createButton(`pageFirst`, `⏮`, ButtonStyle.Secondary, true);
-        const PREV = this.createButton(`pagePrev`, `◀`, ButtonStyle.Secondary, true);
-        const COUNT = this.createButton(`pageCount`, `${this.currentPage + 1} / ${this.pages.length}`, ButtonStyle.Secondary, true);
-        const NEXT = this.createButton(`pageNext`, `▶`, ButtonStyle.Secondary, false);
-        const LAST = this.createButton(`pageLast`, `⏭`, ButtonStyle.Secondary, false);
+    setup = async (): Promise<void> => {
+        const FIRST = this.createButton("pageFirst", "⏮", ButtonStyle.Secondary, true);
+        const PREV = this.createButton("pagePrev", "◀", ButtonStyle.Secondary, true);
+        const COUNT = this.createButton("pageCount", `${this.currentPage + 1} / ${this.pages.length}`, ButtonStyle.Secondary, true);
+        const NEXT = this.createButton("pageNext", "▶", ButtonStyle.Secondary, false);
+        const LAST = this.createButton("pageLast", "⏭", ButtonStyle.Secondary, false);
 
         this.actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents([FIRST, PREV, COUNT, NEXT, LAST]);
-        const message = this.interaction.replied || this.interaction.deferred
-            ? await this.interaction.followUp({ embeds: [this.pages[this.currentPage]], components: [this.actionRow], fetchReply: true })
-            : await this.interaction.reply({ embeds: [this.pages[this.currentPage]], components: [this.actionRow], fetchReply: true });
 
-        this.collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, time: COLLECTOR_TIMEOUT });
-        this.collector.on(`collect`, interaction => {
+        /**
+         * We love Discord.js breaking my code with every new version.
+         */
+        if (this.interaction.replied || this.interaction.deferred) {
+            const res = await this.interaction.followUp({ embeds: [this.pages[this.currentPage]], components: [this.actionRow], withResponse: true });
+            this.collector = res.createMessageComponentCollector({ componentType: ComponentType.Button, time: COLLECTOR_TIMEOUT });
+        } else {
+            const res = await this.interaction.reply({ embeds: [this.pages[this.currentPage]], components: [this.actionRow], withResponse: true });
+            this.collector = res.resource?.message?.createMessageComponentCollector({ componentType: ComponentType.Button, time: COLLECTOR_TIMEOUT });
+        }
+
+        this.collector?.on("collect", interaction => {
             if (interaction.user.id !== this.user.id) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 (interaction.replied || interaction.deferred)
-                    ? void interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You did not invoke this command!`)], ephemeral: interaction.ephemeral ?? true })
-                    : void interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You did not invoke this command!`)], ephemeral: true });
+                    ? void interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You did not invoke this command!")], ephemeral: interaction.ephemeral ?? true })
+                    : void interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You did not invoke this command!")], ephemeral: true });
                 return;
             }
 
             switch (interaction.customId) {
-                case `pageFirst`:
+                case "pageFirst":
                     this.currentPage = 0;
                     break;
-                case `pagePrev`:
+                case "pagePrev":
                     this.currentPage--;
                     this.currentPage = Math.max(0, this.currentPage);
                     break;
-                case `pageNext`:
+                case "pageNext":
                     this.currentPage++;
                     this.currentPage = Math.min(this.pages.length - 1, this.currentPage);
                     break;
-                case `pageLast`:
+                case "pageLast":
                     this.currentPage = this.pages.length - 1;
                     break;
             }
@@ -93,19 +99,17 @@ export class Paginator {
 
             COUNT.setLabel(`${this.currentPage + 1} / ${this.pages.length}`);
             void interaction.update({ embeds: [this.pages[this.currentPage]], components: [this.actionRow!] }).catch(() => {
-                this.client.logger.warn(`Gateway`, `Failed to update paginator: Message was deleted.`);
+                this.client.logger.warn("Gateway", "Failed to update paginator: Message was deleted.");
             });
 
             this.collector!.resetTimer();
         });
 
-        this.collector.on(`end`, () => {
+        this.collector?.on("end", () => {
             void this.interaction.editReply({ embeds: [this.pages[this.currentPage]], components: [] }).catch(() => {
-                this.client.logger.warn(`Gateway`, `Failed to update paginator: Message was deleted.`);
+                this.client.logger.warn("Gateway", "Failed to update paginator: Message was deleted.");
             });
         });
-
-        return message;
     };
 
     /**

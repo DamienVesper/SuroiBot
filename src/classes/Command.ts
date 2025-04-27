@@ -3,8 +3,8 @@ import {
     type ChatInputCommandInteraction,
     SlashCommandBuilder,
     type SharedSlashCommand
-} from 'discord.js';
-import type { DiscordBot } from '../modules/DiscordBot.js';
+} from "discord.js";
+import type { DiscordBot } from "../modules/DiscordBot.js";
 
 export abstract class Command {
     client: DiscordBot;
@@ -40,7 +40,7 @@ export type ConfigType =
         botPermissions: bigint[]
         userPermissions: bigint[]
         isSubcommand: true
-        parent: SlashCommandBuilder[`name`]
+        parent: SlashCommandBuilder["name"]
         cooldown: number
     }
     | {

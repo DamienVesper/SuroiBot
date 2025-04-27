@@ -1,5 +1,5 @@
-import { ClientEvents } from 'discord.js';
-import { DiscordBot } from '../modules/DiscordBot.js';
+import type { ClientEvents } from "discord.js";
+import { DiscordBot } from "../modules/DiscordBot.js";
 
 interface EventConfig<T> {
     name: T

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { config } from '../.config/config.js';
+import { config } from "../.config/config.js";
 
 import {
     ActivityType,
@@ -19,41 +19,41 @@ import {
     ButtonStyle,
     type BaseMessageOptions,
     ChannelType
-} from 'discord.js';
+} from "discord.js";
 import {
     Manager,
+    ManagerEventTypes,
     Structure,
-    type Player,
-    type Track
-} from 'magmastream';
+    type Player
+} from "magmastream";
 
-import { basename, dirname, resolve } from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { readdir } from 'fs/promises';
+import { basename, dirname, resolve } from "path";
+import { fileURLToPath, pathToFileURL } from "url";
+import { readdir } from "fs/promises";
 
-import { Logger } from './Logger.js';
-import { MusicPlayer } from './MusicPlayer.js';
+import { Logger } from "./Logger.js";
+import { MusicPlayer } from "./MusicPlayer.js";
 
-import { Command } from '../classes/Command.js';
+import { Command } from "../classes/Command.js";
 
-import { createTrackBar } from '../utils/utils.js';
-import { PrismaClient } from '@prisma/client';
-import { Font, FontFactory } from 'canvacord';
+import { createTrackBar } from "../utils/utils.js";
+import { PrismaClient } from "@prisma/client";
+import { Font, FontFactory } from "canvacord";
 
 export class DiscordBot extends Client<true> {
     config = config;
 
     logger = new Logger({
         files: {
-            log: resolve(fileURLToPath(import.meta.url), `../../../logs/console.log`),
-            errorLog: resolve(fileURLToPath(import.meta.url), `../../../logs/error.log`)
+            log: resolve(fileURLToPath(import.meta.url), "../../../logs/console.log"),
+            errorLog: resolve(fileURLToPath(import.meta.url), "../../../logs/error.log")
         },
         handleExceptions: true
     });
 
-    commands = new Collection<Command[`cmd`][`name`], Command>();
-    subcommands = new Collection<Command[`cmd`][`name`], Command>();
-    cooldowns = new Collection<Snowflake, Collection<Command[`cmd`][`name`], number>>();
+    commands = new Collection<Command["cmd"]["name"], Command>();
+    subcommands = new Collection<Command["cmd"]["name"], Command>();
+    cooldowns = new Collection<Snowflake, Collection<Command["cmd"]["name"], number>>();
     buttons = new Collection<string, Command>();
     modals = new Collection<string, Command>();
 
@@ -75,7 +75,7 @@ export class DiscordBot extends Client<true> {
                 GatewayIntentBits.AutoModerationConfiguration,
                 GatewayIntentBits.AutoModerationExecution,
                 GatewayIntentBits.DirectMessages,
-                GatewayIntentBits.GuildEmojisAndStickers,
+                GatewayIntentBits.GuildExpressions,
                 GatewayIntentBits.GuildInvites,
                 GatewayIntentBits.GuildMembers,
                 GatewayIntentBits.GuildModeration,
@@ -87,25 +87,26 @@ export class DiscordBot extends Client<true> {
                 GatewayIntentBits.MessageContent
             ],
             presence: {
-                status: `dnd`,
+                status: "dnd",
                 activities: [{
                     type: ActivityType.Watching,
-                    name: `Suroi.io`,
-                    url: `https://discord.gg/suroi`
+                    name: "Suroi.io",
+                    url: "https://discord.gg/suroi"
                 }]
             }
         });
 
         // Load canvacord font.
-        if (!FontFactory.size) Font.fromFileSync(resolve(fileURLToPath(import.meta.url), `../../../assets/fonts/Inter-Regular.ttf`));
+        if (!FontFactory.size) Font.fromFileSync(resolve(fileURLToPath(import.meta.url), "../../../assets/fonts/Inter-Regular.ttf"));
 
         // Instantiate the database ORM.
         this.db = new PrismaClient();
 
         // Prepare the Lavalink client.
         if (this.config.modules.music.enabled) {
-            Structure.extend(`Player`, Player => MusicPlayer);
+            Structure.extend("Player", Player => MusicPlayer);
             this.lavalink = new Manager({
+                lastFmApiKey: this.config.modules.music.lastFmApiKey,
                 nodes: this.config.modules.music.nodes,
                 send: (id, payload) => {
                     const guild = this.guilds.cache.get(id);
@@ -115,41 +116,41 @@ export class DiscordBot extends Client<true> {
 
             let killPlayers: NodeJS.Timeout;
 
-            this.lavalink.on(`nodeConnect`, node => {
-                this.logger.info(`Lavalink Manager`, `Connected to node ${node.options.identifier}.`);
+            this.lavalink.on(ManagerEventTypes.NodeConnect, node => {
+                this.logger.info("Lavalink Manager", `Connected to node ${node.options.identifier}.`);
             });
 
-            this.lavalink.on(`nodeDisconnect`, node => {
-                this.logger.warn(`Lavalink Manager`, `Disconnected from node ${node.options.identifier}.`);
+            this.lavalink.on(ManagerEventTypes.NodeDisconnect, node => {
+                this.logger.warn("Lavalink Manager", `Disconnected from node ${node.options.identifier}.`);
 
                 // Kill all players after 30 seconds.
                 killPlayers = setTimeout(() => {
-                    this.lavalink.players.filter(player => player.node === node).forEach(player => player.destroy());
+                    this.lavalink.players.filter(player => player.node === node).forEach(player => void player.destroy());
                 }, 3e4);
             });
 
-            this.lavalink.on(`nodeReconnect`, node => {
+            this.lavalink.on(ManagerEventTypes.NodeReconnect, node => {
                 // Reset and restart all players.
                 clearInterval(killPlayers);
-                this.lavalink.players.filter(player => player.node === node).forEach(player => player.pause(false));
+                this.lavalink.players.filter(player => player.node === node).forEach(player => void player.pause(false));
             });
 
-            this.lavalink.on(`nodeError`, (node, error) => {
-                this.logger.error(`Lavalink Manager`, `Node ${node.options.identifier} encountered an error:`, error.message);
+            this.lavalink.on(ManagerEventTypes.NodeError, (node, error) => {
+                this.logger.error("Lavalink Manager", `Node ${node.options.identifier} encountered an error:`, error.message);
             });
 
-            this.lavalink.on(`queueEnd`, player => {
-                const channel = this.channels.cache.get(player.textChannel);
+            this.lavalink.on(ManagerEventTypes.QueueEnd, player => {
+                const channel = this.channels.cache.get(player.textChannelId!);
                 if (channel?.type === ChannelType.GuildText && !player.paused && player.playing) {
-                    void channel.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
-                    player.destroy();
+                    void channel.send({ embeds: [this.createEmbed(player.guildId, "Leaving channel as the queue has ended.").setColor(this.config.colors.blue)] });
+                    void player.destroy();
                 }
             });
 
-            this.lavalink.on(`trackStart`, (player, track) => {
+            this.lavalink.on(ManagerEventTypes.TrackStart, (player, track) => {
                 this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}".`);
-                if (player.queue.length !== 0 && player.textChannel !== null) {
-                    void this.channels.fetch(player.textChannel).then(channel => {
+                if (player.queue.length !== 0 && player.textChannelId !== null) {
+                    void this.channels.fetch(player.textChannelId).then(channel => {
                         if (channel !== null && channel instanceof TextChannel) void channel.send(this.createNowPlayingDetails(player, true));
                     });
                 }
@@ -165,7 +166,7 @@ export class DiscordBot extends Client<true> {
         const files = (await readdir(dir, {
             recursive: true,
             withFileTypes: true
-        })).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
+        })).filter(file => file.name.endsWith(".ts") || file.name.endsWith(".js"));
 
         for (const file of files) {
             const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
@@ -185,7 +186,7 @@ export class DiscordBot extends Client<true> {
         const files = (await readdir(dir, {
             recursive: true,
             withFileTypes: true
-        })).filter(file => file.name.endsWith(`.ts`) || file.name.endsWith(`.js`));
+        })).filter(file => file.name.endsWith(".ts") || file.name.endsWith(".js"));
 
         for (const file of files) {
             const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
@@ -207,15 +208,15 @@ export class DiscordBot extends Client<true> {
      */
     deployCommands = async (mode: typeof this.config.mode): Promise<void> => {
         try {
-            this.logger.info(`Gateway`, `Deployed ${this.commands.size} commands.`);
+            this.logger.info("Gateway", `Deployed ${this.commands.size} commands.`);
 
             const commands = this.commands.map(command => command.cmd.toJSON());
-            await this.rest.put(mode === `dev`
+            await this.rest.put(mode === "dev"
                 ? Routes.applicationGuildCommands(this.user.id, config.dev.guildID)
                 : Routes.applicationCommands(this.user.id)
             , { body: commands });
         } catch (err: any) {
-            this.logger.error(`Gateway`, err.stack ?? err.message);
+            this.logger.error("Gateway", err.stack ?? err.message);
         }
     };
 
@@ -271,22 +272,22 @@ export class DiscordBot extends Client<true> {
                 .setDescription(`### Now Playing\n**${song.title}**`);
         } else {
             sEmbed
-                .setDescription(`### Now Playing\n**${song.title}**\n\n${song.duration > 1e12 ? `:red_circle: LIVE` : createTrackBar(player)}`)
+                .setDescription(`### Now Playing\n**${song.title}**\n\n${song.duration > 1e12 ? ":red_circle: LIVE" : createTrackBar(player)}`)
                 .setFields([
                     {
-                        name: `Requester`,
-                        value: song.requester?.displayName ?? song.requester?.tag ?? `Unknown User`,
+                        name: "Requester",
+                        value: song.requester?.displayName ?? song.requester?.tag ?? "Unknown User",
                         inline: true
                     },
                     {
-                        name: `Voice Channel`,
-                        value: `<#${player.voiceChannel}>`,
+                        name: "Voice Channel",
+                        value: `<#${player.voiceChannelId}>`,
                         inline: true
                     }
                 ]);
         }
 
-        const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Track Info`).setURL(song.uri));
+        const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Track Info").setURL(song.uri));
 
         return {
             embeds: [sEmbed],

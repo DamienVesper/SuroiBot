@@ -1,27 +1,27 @@
-import colors from './colors.js';
-import customData from './customData.js';
-import emojis from './emojis.js';
+import colors from "./colors.js";
+import customData from "./customData.js";
+import emojis from "./emojis.js";
 
-import type { ClientEvents, Snowflake } from 'discord.js';
-import type { ManagerOptions } from 'magmastream';
+import type { ClientEvents, Snowflake } from "discord.js";
+import type { ManagerOptions } from "magmastream";
 
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
-import { config as dotenvConfig } from 'dotenv';
+import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 
 const argv = yargs(hideBin(process.argv)).options({
-    mode: { type: `string`, default: `dev` }
+    mode: { type: "string", default: "dev" }
 }).argv as Args;
 
-const LAVALINK_HOST = new URL(process.env.LAVALINK_URL ?? `https://example.org`);
+const LAVALINK_HOST = new URL(process.env.LAVALINK_URL ?? "https://example.org");
 
 export const config = {
     mode: argv.mode,
     dev: {
-        userID: `386940319666667521`,
-        guildID: `516304983415848961`,
+        users: ["386940319666667521"],
+        guildID: "516304983415848961",
         overridePermissions: false
     },
 
@@ -40,21 +40,22 @@ export const config = {
                 max: 1e3
             },
             xpCooldown: 60, // 6e4,
-            levelUpMessages: `none`
+            levelUpMessages: "none"
         },
         music: {
             enabled: true,
             nodes: [{
                 host: LAVALINK_HOST.hostname,
-                identifier: `0`,
+                identifier: "0",
                 password: process.env.LAVALINK_TOKEN,
-                port: Number(LAVALINK_HOST.port || (LAVALINK_HOST.protocol === `https` ? 443 : 80)),
+                port: Number(LAVALINK_HOST.port || (LAVALINK_HOST.protocol === "https" ? 443 : 80)),
                 retryAmount: 10,
                 retryDelay: 1e4,
                 resumeStatus: true,
                 resumeTimeout: 3e4,
-                secure: LAVALINK_HOST.protocol === `https`
+                secure: LAVALINK_HOST.protocol === "https"
             }],
+            lastFmApiKey: process.env.LAVALINK_LASTFM_APIKEY!,
             options: {
                 maxFilter: 100,
                 equalizerBands: 15,
@@ -76,22 +77,22 @@ interface Config {
     /**
      * Mode to run the bot in.
      */
-    mode: Args[`mode`]
+    mode: Args["mode"]
 
     /**
      * Development module.
      */
     dev: {
         /**
-         * The user to be given full access to the bot in developer mode.
+         * The user(s) to be given full access to the bot in developer mode.
          */
-        userID: Snowflake
+        users: Snowflake[]
         /**
          * The guild where slash commands should be applied, and where the bot is usable in developer mode.
          */
         guildID: Snowflake
         /**
-         * Whether to override the built-in permissions checker.
+         * Enabling this will use the permissions in the config file, rather than Discord permissions.
          */
         overridePermissions?: boolean
     }
@@ -137,14 +138,15 @@ interface LoggingModule {
 }
 
 interface LevelingModule {
-    xp: Record<`min` | `max`, number>
-    level: Record<`min` | `max`, number>
+    xp: Record<"min" | "max", number>
+    level: Record<"min" | "max", number>
 
     xpCooldown: number
-    levelUpMessages: `channel` | `dm` | `none`
+    levelUpMessages: "channel" | "dm" | "none"
 }
 
 interface MusicModule extends Partial<ManagerOptions> {
+    lastFmApiKey: string
     options: {
         maxFilter: number
         equalizerBands: number
@@ -156,5 +158,5 @@ interface MusicModule extends Partial<ManagerOptions> {
 }
 
 interface Args {
-    mode: `prod` | `dev`
+    mode: "prod" | "dev"
 }

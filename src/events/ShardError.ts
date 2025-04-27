@@ -1,11 +1,11 @@
-import { Events } from 'discord.js';
+import { Events } from "discord.js";
 
-import { Event } from '../classes/Event.js';
+import { Event } from "../classes/Event.js";
 
 const EventType = Events.ShardError;
 
 class ShardError extends Event<typeof EventType> {
-    constructor (client: Event<typeof EventType>[`client`]) {
+    constructor (client: Event<typeof EventType>["client"]) {
         super(client);
 
         this.config = {

@@ -5,9 +5,9 @@ import {
     EmbedBuilder,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
-} from 'discord.js';
+} from "discord.js";
 
-import { Command } from '../../classes/Command.js';
+import { Command } from "../../classes/Command.js";
 
 /**
  * Rules text, in markdown.
@@ -30,22 +30,22 @@ const rulesText = `
 
 class Rules extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`rules`)
-        .setDescription(`View server rules.`);
+        .setName("rules")
+        .setDescription("View server rules.");
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         const sEmbed = new EmbedBuilder()
             .setColor(this.client.config.colors.orange)
             .setDescription(rulesText)
             .setThumbnail(interaction.guild?.iconURL() ?? null)
-            .setImage(`https://i.kym-cdn.com/entries/icons/original/000/033/153/therules.jpg`)
+            .setImage("https://i.kym-cdn.com/entries/icons/original/000/033/153/therules.jpg")
             .setTimestamp()
             .setFooter({ text: `ID: ${interaction.user.id}` });
 
         const sRow = new ActionRowBuilder<ButtonBuilder>();
 
-        if (interaction.guild?.rulesChannelId != null) sRow.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Server Rules`).setURL(`https://discord.com/channels/${interaction.guild.id}/${interaction.guild.rulesChannelId}`));
-        sRow.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(`Game Rules`).setURL(`https://${this.client.config.customData.domain}/rules/`));
+        if (interaction.guild?.rulesChannelId != null) sRow.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Server Rules").setURL(`https://discord.com/channels/${interaction.guild.id}/${interaction.guild.rulesChannelId}`));
+        sRow.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Game Rules").setURL(`https://${this.client.config.customData.domain}/rules/`));
 
         await interaction.reply({ embeds: [sEmbed], components: [sRow] });
     };

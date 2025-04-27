@@ -1,51 +1,51 @@
-import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from "discord.js";
 
-import { Command } from '../../classes/Command.js';
+import { Command } from "../../classes/Command.js";
 
 class TrebleBoost extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`trebleboost`)
-        .addNumberOption(option => option.setName(`value`).setDescription(`The value to trebleboost by. Leave blank for default.`).setMinValue(0).setMaxValue(10))
-        .setDescription(`Boost the player's treble.`)
+        .setName("trebleboost")
+        .addNumberOption(option => option.setName("value").setDescription("The value to trebleboost by. Leave blank for default.").setMinValue(0).setMaxValue(10))
+        .setDescription("Boost the player's treble.")
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {
-            await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
+            await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
         const voiceChannel = (await interaction.guild.members.fetch(interaction.user.id)).voice.channel;
         if (voiceChannel === null) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in a voice channel to use that command!`)], ephemeral: true });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], ephemeral: true });
             return;
         }
 
-        const trebleboost = interaction.options.getNumber(`value`);
+        const trebleboost = interaction.options.getNumber("value");
         await interaction.deferReply();
 
         const player = this.client.lavalink.players.get(interaction.guild.id);
         if (player === undefined) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I am not currently in a voice channel!`)] });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;
-        } else if (player !== undefined && voiceChannel.id !== player.voiceChannel) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in the same voice channel as the bot to use that command!`)] });
+        } else if (player !== undefined && voiceChannel.id !== player.voiceChannelId) {
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
         }
 
-        if (!this.client.config.modules.music?.enabled) throw new Error(`Music configuration was not specified or enabled.`);
+        if (!this.client.config.modules.music?.enabled) throw new Error("Music configuration was not specified or enabled.");
 
         const equalizerBands = this.client.config.modules.music.options.equalizerBands;
         const mult = this.client.config.modules.music.options.trebleIntensityMultiplier;
 
-        player.filters.setEqualizer(player.filters.equalizer.filter(v => v.band < (equalizerBands - 3) || []).concat((trebleboost ?? 0) === 0
+        await player.filters.setEqualizer(player.filters.equalizer.filter(v => v.band < (equalizerBands - 3) || []).concat((trebleboost ?? 0) === 0
             ? []
             : new Array(3).fill(null).map((_, i) => ({
                 band: equalizerBands - (i + 1),
                 gain: (trebleboost ?? 0) * mult
             }))));
 
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, trebleboost !== null ? `Set trebleboost to **${trebleboost}**.` : `Disabled trebleboost filter.`)] });
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, trebleboost !== null ? `Set trebleboost to **${trebleboost}**.` : "Disabled trebleboost filter.")] });
     };
 }
 

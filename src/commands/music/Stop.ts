@@ -1,24 +1,24 @@
-import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from "discord.js";
 
-import { Command } from '../../classes/Command.js';
+import { Command } from "../../classes/Command.js";
 
-import type { MusicPlayer } from '../../modules/MusicPlayer.js';
+import type { MusicPlayer } from "../../modules/MusicPlayer.js";
 
 class Stop extends Command {
     cmd = new SlashCommandBuilder()
-        .setName(`stop`)
-        .setDescription(`Stop the player and clear queue.`)
+        .setName("stop")
+        .setDescription("Stop the player and clear queue.")
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (interaction.guild === null) {
-            await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
+            await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
         const voiceChannel = (await interaction.guild.members.fetch(interaction.user.id)).voice.channel;
         if (voiceChannel === null) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in a voice channel to use that command!`)], ephemeral: true });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], ephemeral: true });
             return;
         }
 
@@ -26,21 +26,21 @@ class Stop extends Command {
 
         const player = this.client.lavalink.players.get(interaction.guild.id) as MusicPlayer;
         if (player === undefined) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `I am not currently in a voice channel!`)] });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;
-        } else if (player !== undefined && voiceChannel.id !== player.voiceChannel) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `You must be in the same voice channel as the bot to use that command!`)] });
+        } else if (player !== undefined && voiceChannel.id !== player.voiceChannelId) {
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
         }
 
         player.queue.clear();
-        player.pause(true);
-        player.stop(1);
-        player.pause(true);
+        await player.pause(true);
+        await player.stop(1);
+        await player.pause(true);
 
         player.stopped = true;
 
-        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Stopped the queue.`)] });
+        await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, "Stopped the queue.")] });
     };
 }
 

@@ -5,8 +5,8 @@ import {
     mkdirSync,
     rmSync,
     type WriteStream
-} from 'fs';
-import { dirname, resolve } from 'path';
+} from "fs";
+import { dirname, resolve } from "path";
 
 /**
  * @link https://github.com/chalk/chalk/blob/main/source/vendor/ansi-styles/index.js
@@ -98,11 +98,11 @@ export class Logger {
 
         // Handle exceptions, if applicable.
         if (this.config.handleExceptions) {
-            process.on(`uncaughtException`, (err, origin) => {
-                this.error(`System`, err.stack ?? err.message);
+            process.on("uncaughtException", (err, origin) => {
+                this.error("System", err.stack ?? err.message);
             });
-            process.on(`unhandledRejection`, (err: any, origin) => {
-                this.error(`System`, err?.stack ?? err);
+            process.on("unhandledRejection", (err: any, origin) => {
+                this.error("System", err?.stack ?? err);
             });
         }
     }
@@ -121,10 +121,10 @@ export class Logger {
     reset = (): void => {
         if (this.#logStream !== undefined
             || this.#errorLogStream !== undefined)
-            return this.error(`Logger`, `Failed clearing log file: write stream not closed.`);
+            return this.error("Logger", "Failed clearing log file: write stream not closed.");
 
         if (this.#logFilePath === undefined || this.#errorLogFilePath === undefined)
-            return this.error(`Logger`, `Failed clearing log file: file paths not specified.`);
+            return this.error("Logger", "Failed clearing log file: file paths not specified.");
 
         rmSync(this.#logFilePath, { force: true });
         if (this.#logFilePath !== this.#errorLogFilePath) rmSync(this.#errorLogFilePath, { force: true });
@@ -136,25 +136,25 @@ export class Logger {
      * @param name The system the log originated from.
      * @param args The message to log.
      */
-    log = (level: `info` | `warn` | `error` | `debug`, system: string, ...args: any[]): void => {
+    log = (level: "info" | "warn" | "error" | "debug", system: string, ...args: any[]): void => {
         /**
          * Message to log to the console (stdout).
          */
         const logMsg = [
             this.format(this.styles.dim, this.createTimestamp()),
-            this.format(this.styles.bold, this.format(this.styles.dim, `|`)),
-            this.format(this.styles.bold, level === `info`
-                ? this.format(this.styles.cyan, `INFO`)
-                : level === `warn`
-                    ? this.format(this.styles.yellow, `WARN`)
-                    : level === `error`
-                        ? this.format(this.styles.red, `ERROR`)
-                        : this.format(this.styles.white, `DEBUG`)
+            this.format(this.styles.bold, this.format(this.styles.dim, "|")),
+            this.format(this.styles.bold, level === "info"
+                ? this.format(this.styles.cyan, "INFO")
+                : level === "warn"
+                    ? this.format(this.styles.yellow, "WARN")
+                    : level === "error"
+                        ? this.format(this.styles.red, "ERROR")
+                        : this.format(this.styles.white, "DEBUG")
             ),
-            this.format(this.styles.bold, this.format(this.styles.dim, `|`)),
+            this.format(this.styles.bold, this.format(this.styles.dim, "|")),
             this.format(this.styles.bold, system),
-            this.format(this.styles.bold, this.format(this.styles.dim, `|`)),
-            this.format(this.styles.reset, this.normalizedArgs(args).join(` `))
+            this.format(this.styles.bold, this.format(this.styles.dim, "|")),
+            this.format(this.styles.reset, this.normalizedArgs(args).join(" "))
         ];
 
         /**
@@ -162,26 +162,26 @@ export class Logger {
          */
         const logEntryMsg = [
             this.createTimestamp(),
-            `|`,
+            "|",
             level.toUpperCase(),
-            `|`,
+            "|",
             system,
-            `|`,
+            "|",
             ...this.normalizedArgs(args),
-            `\n`
+            "\n"
         ];
 
         // Log the message.
         console.log(...logMsg);
 
-        if (this.#errorLogStream !== undefined && level === `error`) this.#errorLogStream.write(logEntryMsg.join(` `));
-        else if (this.#logStream !== undefined) this.#logStream.write(logEntryMsg.join(` `));
+        if (this.#errorLogStream !== undefined && level === "error") this.#errorLogStream.write(logEntryMsg.join(" "));
+        else if (this.#logStream !== undefined) this.#logStream.write(logEntryMsg.join(" "));
     };
 
-    info = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log(`info`, system, ...args);
-    warn = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log(`warn`, system, ...args);
-    error = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log(`error`, system, ...args);
-    debug = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log(`debug`, system, ...args);
+    info = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log("info", system, ...args);
+    warn = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log("warn", system, ...args);
+    error = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log("error", system, ...args);
+    debug = (system: string, ...args: any[]): ReturnType<typeof this.log> => this.log("debug", system, ...args);
 
     /**
      * Format a console string.
@@ -189,14 +189,14 @@ export class Logger {
      * @param args The message to format.
      * @returns
      */
-    format = (style: typeof this.styles.reset, ...args: string[]): string => `\x1b[${style[0]}m${this.normalizedArgs(args).join(` `)}\x1b[${style[1]}m`;
+    format = (style: typeof this.styles.reset, ...args: string[]): string => `\x1b[${style[0]}m${this.normalizedArgs(args).join(" ")}\x1b[${style[1]}m`;
 
     /**
      * Normalize arguments to return string equivalents.
      * @param args The arguments to normalize.
      */
     private normalizedArgs = (args: any[]): typeof args => args.map(arg => {
-        if (typeof arg === `object`) return JSON.stringify(arg);
+        if (typeof arg === "object") return JSON.stringify(arg);
         else return arg;
     });
 
@@ -207,8 +207,8 @@ export class Logger {
         // Set timing variables.
         const time = new Date();
 
-        const second = time.getSeconds().toString().padStart(2, `0`);
-        const minute = time.getMinutes().toString().padStart(2, `0`);
+        const second = time.getSeconds().toString().padStart(2, "0");
+        const minute = time.getMinutes().toString().padStart(2, "0");
         const hour = (this.config.padding
             ? time.getHours()
             : (time.getHours() % 12 === 0 ? 12 : time.getHours() % 12)
@@ -219,7 +219,7 @@ export class Logger {
         const year = time.getFullYear().toString();
 
         return this.config.padding
-            ? `${month.padStart(2, `0`)}/${day.padStart(2, `0`)}/${year.padStart(2, `0`)} ${hour.padStart(2, `0`)}:${minute}:${second}`
-            : `${month}/${day}/${year} ${hour}:${minute}:${second} ${time.getHours() > 12 ? `PM` : `AM`}`;
+            ? `${month.padStart(2, "0")}/${day.padStart(2, "0")}/${year.padStart(2, "0")} ${hour.padStart(2, "0")}:${minute}:${second}`
+            : `${month}/${day}/${year} ${hour}:${minute}:${second} ${time.getHours() > 12 ? "PM" : "AM"}`;
     };
 }

@@ -1,8 +1,8 @@
-import type { SharedSlashCommand, Snowflake } from 'discord.js';
-import type { Player, Track } from 'magmastream';
-import type { SKRSContext2D } from '@napi-rs/canvas';
+import type { SharedSlashCommand, Snowflake } from "discord.js";
+import type { Player } from "magmastream";
+import type { SKRSContext2D } from "@napi-rs/canvas";
 
-import type { DiscordBot } from '../modules/DiscordBot.js';
+import type { DiscordBot } from "../modules/DiscordBot.js";
 
 /**
  * Clean a string of Discord formatting.
@@ -15,7 +15,7 @@ export const cleanse = (str: string): string => str.replace(/\*\*\*|\*\*|\*|__|_
  * @param date The date in question.
  * @param type The type of the date. Can be of type t, T, d, D, f, F, and R.
  */
-export const timestamp = (date: Date, type?: string): string => `<t:${Math.floor(date.getTime() / 1e3)}:${type ?? `R`}>`;
+export const timestamp = (date: Date, type?: string): string => `<t:${Math.floor(date.getTime() / 1e3)}:${type ?? "R"}>`;
 
 /**
  * Format a number into a condensed form.
@@ -60,11 +60,11 @@ export const numToBytesFormat = (num: number): string =>
  * @param num The number.
  */
 export const numToDurationFormat = (num: number): string => {
-    const seconds = (Math.trunc(num / 1e3) % 60).toString().padStart(2, `0`);
-    const minutes = (Math.trunc(num / 6e4) % 60).toString().padStart(2, `0`);
+    const seconds = (Math.trunc(num / 1e3) % 60).toString().padStart(2, "0");
+    const minutes = (Math.trunc(num / 6e4) % 60).toString().padStart(2, "0");
     const hours = Math.trunc(num / 36e5);
     return num > 1e12
-        ? `Infinite`
+        ? "Infinite"
         : hours > 0
             ? `${hours}:${minutes}:${seconds}`
             : `${minutes}:${seconds}`;
@@ -82,7 +82,7 @@ export const numToCooldownFormat = (num: number): string => {
         ? Math.ceil(((num / 1e3) % 60))
         : ((num / 1e3) % 60).toFixed(3);
 
-    return `${days > 0 ? `${days}d ` : ``}${hours > 0 ? `${hours}h ` : ``}${minutes > 0 ? `${minutes}m ` : ``}${seconds}s`;
+    return `${days > 0 ? `${days}d ` : ""}${hours > 0 ? `${hours}h ` : ""}${minutes > 0 ? `${minutes}m ` : ""}${seconds}s`;
 };
 
 /**
@@ -97,30 +97,30 @@ export const capitalize = (str: string): string => str.charAt(0).toUpperCase() +
  * @param max The maximum position.
  */
 export const createProgressBar = (position: number, max: number): string => {
-    const FILLED = `▰`;
-    const EMPTY = `▱`;
+    const FILLED = "▰";
+    const EMPTY = "▱";
 
     const BAR_LENGTH = 8;
 
     const barStr = [];
     for (let i = 0; i < BAR_LENGTH; i++) barStr.push((position / max) > ((i + 1) / BAR_LENGTH) ? FILLED : EMPTY);
 
-    return barStr.join(``);
+    return barStr.join("");
 };
 
 export const createTrackBar = (player: Player): string => {
-    const track = player.queue.current as Track | null;
-    if (track === null) return `ERROR`;
+    const track = player.queue.current;
+    if (track === null) return "ERROR";
 
     const MAX_LENGTH = 20;
     const COUNT = Math.floor((track.isStream ? 0 : (player.position ?? 0) / track.duration) * MAX_LENGTH);
 
-    return `${numToDurationFormat(player.position)} ${`⎯`.repeat(COUNT)}◯${`⎯`.repeat(MAX_LENGTH - (COUNT + 1))} ${numToDurationFormat(track.duration)}`;
+    return `${numToDurationFormat(player.position)} ${"⎯".repeat(COUNT)}◯${"⎯".repeat(MAX_LENGTH - (COUNT + 1))} ${numToDurationFormat(track.duration)}`;
 };
 
 export const createUsageExample = (command: SharedSlashCommand): string => {
     const commandOptions = command.options.map(option => option.toJSON());
-    return `/${command.name}${command.options.length > 0 ? ` ${commandOptions.map(option => option.required ? `<${option.name}>` : `[${option.name}]`).join(` `)}` : ``}`;
+    return `/${command.name}${command.options.length > 0 ? ` ${commandOptions.map(option => option.required ? `<${option.name}>` : `[${option.name}]`).join(" ")}` : ""}`;
 };
 
 export const getMaxXP = (level: number): number => Math.floor((100 * Math.E * level) / 2);
@@ -145,7 +145,7 @@ export const getGuildLeaderboard = async (client: DiscordBot, guildId: Snowflake
         guildId: guildId
     },
     orderBy: [
-        { level: `desc` },
-        { xp: `desc` }
+        { level: "desc" },
+        { xp: "desc" }
     ]
 })).map((x, i) => Object.freeze({ ...x, pos: i }));
