@@ -33,7 +33,7 @@ class NowPlaying extends Command {
         }
 
         // Check for a property in song that is nulled by the other types.
-        const song = player.queue.current as Track | null;
+        const song = player.queue.current;
         if (!song?.sourceName) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `No song is currently being played!`)] });
             return;

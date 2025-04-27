@@ -22,7 +22,11 @@ class Leaderboard extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) return;
+        if (interaction.guild === null) {
+            await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
+            return;
+        }
+
         await interaction.deferReply();
 
         const users = await this.client.db.user.findMany({
@@ -51,7 +55,9 @@ class Leaderboard extends Command {
         const lb = new LeaderboardBuilder()
             .setHeader({
                 title: interaction.guild.name,
-                image: interaction.guild.iconURL() ?? `https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico`,
+                image: interaction.guild.iconURL()?.endsWith(`.gif`)
+                    ? ``
+                    : interaction.guild.iconURL({ forceStatic: true }) ?? ``,
                 subtitle: `${interaction.guild.memberCount} members`
             })
             .setPlayers(members.map(({ user, member }, i) => ({
@@ -62,8 +68,7 @@ class Leaderboard extends Command {
                 xp: getTotalXP(user.level, user.xp),
                 rank: i + 1
             })))
-            .setBackground(await readFile(resolve(fileURLToPath(import.meta.url), `../../../../assets/img/background.jpg`)))
-            .setVariant(`horizontal`);
+            .setBackground(await readFile(resolve(fileURLToPath(import.meta.url), `../../../../assets/img/background.jpg`)));
 
         await interaction.followUp({ files: [await lb.build({ format: `png` })] });
     };

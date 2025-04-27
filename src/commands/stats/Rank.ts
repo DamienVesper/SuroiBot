@@ -19,7 +19,11 @@ class Rank extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) return;
+        if (interaction.guild === null) {
+            await interaction.reply({ content: `This command can only be used in a guild!`, ephemeral: true });
+            return;
+        }
+
         await interaction.deferReply();
 
         const dbUser = await this.client.db.user.findFirst({

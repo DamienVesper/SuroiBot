@@ -30,7 +30,7 @@ class MessageCreate extends Event<typeof EventType> {
             let guild = await this.client.db.guild.findFirst({ where: { discordId: message.guild.id } });
 
             if (guild === null) {
-                this.client.logger.info(`Database`, `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
+                this.client.logger.debug(`Database`, `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
                 guild = await this.client.db.guild.create({
                     data: {
                         discordId: message.guild.id
@@ -39,7 +39,7 @@ class MessageCreate extends Event<typeof EventType> {
             }
 
             if (dbUser === null) {
-                this.client.logger.info(`Database`, `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
+                this.client.logger.debug(`Database`, `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                 await this.client.db.user.create({
                     data: {
                         discordId: message.author.id,

@@ -1,5 +1,3 @@
-import { config } from '../.config/config.js';
-
 import type { SharedSlashCommand, Snowflake } from 'discord.js';
 import type { Player, Track } from 'magmastream';
 import type { SKRSContext2D } from '@napi-rs/canvas';
@@ -7,25 +5,17 @@ import type { SKRSContext2D } from '@napi-rs/canvas';
 import type { DiscordBot } from '../modules/DiscordBot.js';
 
 /**
- * Translate Suroi HTTP response.
- * @param code The HTTP response.
- */
-export const translateSuroiStatus = (code: number | undefined): string => {
-    switch (code) {
-        case 200:
-        case 301:
-        case 302:
-            return config.emojis.checkmark;
-        default:
-            return config.emojis.xmark;
-    }
-};
-
-/**
  * Clean a string of Discord formatting.
  * @param str The string to clean.
  */
 export const cleanse = (str: string): string => str.replace(/\*\*\*|\*\*|\*|__|_|~~/g, r => `\\${r}`);
+
+/**
+ * Get a Discord timestamp of a date.
+ * @param date The date in question.
+ * @param type The type of the date. Can be of type t, T, d, D, f, F, and R.
+ */
+export const timestamp = (date: Date, type?: string): string => `<t:${Math.floor(date.getTime() / 1e3)}:${type ?? `R`}>`;
 
 /**
  * Format a number into a condensed form.

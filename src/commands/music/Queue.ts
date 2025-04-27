@@ -40,7 +40,7 @@ class Queue extends Command {
             return;
         }
 
-        const queue = [player.queue.current!].concat(player.queue);
+        const queue = [player.queue.current].concat(player.queue).filter(x => x !== null);
         if (queue.length === 0) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There is no song currently in the queue!`)] });
             return;
@@ -52,14 +52,14 @@ class Queue extends Command {
         let queueLength = 0;
         for (const track of queue) queueLength += track.duration ?? 0;
 
-        const channel = await this.client.channels.fetch(player.voiceChannel!) as VoiceChannel;
+        const channel = await this.client.channels.fetch(player.voiceChannel) as VoiceChannel;
 
         for (let i = 0; i < pageCount * 10; i += 10) {
             const tracks = queue.slice(i, Math.min(i + 10, queue.length));
             embeds.push(new EmbedBuilder()
                 .setColor(this.client.config.colors.blue)
                 .setTitle(`Server Queue`)
-                .setDescription(tracks.map((track, j) => `${i === 0 && j === 0 ? `↳ ` : ``}**${i + j + 1}.** [${track.title}](${track.uri!}) - \`[${numToDurationFormat(track.duration!)}]\``).join(`\n`))
+                .setDescription(tracks.map((track, j) => `${i === 0 && j === 0 ? `↳ ` : ``}**${i + j + 1}.** [${track.title}](${track.uri}) - \`[${numToDurationFormat(track.duration)}]\``).join(`\n`))
                 .setFields([
                     {
                         name: `Queue Size`,

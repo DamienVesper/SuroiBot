@@ -34,8 +34,19 @@ class Remove extends Command {
             return;
         }
 
-        const start = interaction.options.getInteger(`start`, true) - 1;
-        const end = (interaction.options.getInteger(`end`) ?? (start + 2)) - 1;
+        /**
+         * The queue does not include the current song, but the queue embed does. So we deduct 1 from the start position to account for this.
+         * Unless there is no currently active song, in which we then use the normal length.
+         */
+        const start = interaction.options.getInteger(`start`, true) - (player.queue.current !== null ? 1 : 0);
+
+        /**
+         * The same thing with the end of the queue.
+         * If none is specified, defaults to start + 1.
+         */
+        const end = player.queue.current !== null
+            ? interaction.options.getInteger(`end`) ?? (start + 2) - 1
+            : interaction.options.getInteger(`end`) ?? (start + 1);
 
         if (start > player.queue.length || end > player.queue.length) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `There are only **${player.queue.length + 1}** songs in the queue!`)] });

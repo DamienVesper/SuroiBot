@@ -139,7 +139,7 @@ export class DiscordBot extends Client<true> {
             });
 
             this.lavalink.on(`queueEnd`, player => {
-                const channel = this.channels.cache.get(player.textChannel!);
+                const channel = this.channels.cache.get(player.textChannel);
                 if (channel?.type === ChannelType.GuildText && !player.paused && player.playing) {
                     void channel.send({ embeds: [this.createEmbed(player.guild, `Leaving channel as the queue has ended.`).setColor(this.config.colors.blue)] });
                     player.destroy();
@@ -255,7 +255,7 @@ export class DiscordBot extends Client<true> {
      */
     createNowPlayingDetails = (player: Player, isAutoMessage?: boolean): BaseMessageOptions => {
         // Assumes you have done the necessary type guarding for this.
-        const song = player.queue.current! as Track;
+        const song = player.queue.current!;
 
         let queueLength = 0;
         player.queue.concat(player.queue.current!).forEach(queue => queueLength += queue.duration ?? 0);

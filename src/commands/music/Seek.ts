@@ -42,7 +42,7 @@ class Seek extends Command {
             return;
         }
 
-        const seekPos = Math.min(Math.max(interaction.options.getInteger(`time`, true) * 1e3, 0), player.queue.current.duration! - 1e3);
+        const seekPos = Math.min(Math.max(interaction.options.getInteger(`time`, true) * 1e3, 0), player.queue.current.duration - 1e3);
         player.seek(seekPos);
 
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Seeked to **${numToDurationFormat(seekPos)}** in the current track.`)] });

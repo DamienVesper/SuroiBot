@@ -32,6 +32,17 @@ class ClearFilters extends Command {
         }
 
         await player.filters.clearFilters();
+
+        /**
+         * Override because above doesn't work.
+         */
+        player.setVolume(100);
+        player.filters.setTimescale({
+            pitch: 1,
+            speed: 1
+        });
+        player.filters.setEqualizer();
+
         await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Reset all filters.`)] });
     };
 }
