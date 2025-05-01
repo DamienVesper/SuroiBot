@@ -1,8 +1,7 @@
-import type { SharedSlashCommand, Snowflake } from "discord.js";
+import type { SharedSlashCommand } from "discord.js";
 import type { Player } from "magmastream";
 import type { SKRSContext2D } from "@napi-rs/canvas";
-
-import type { DiscordBot } from "../modules/DiscordBot.js";
+import { CaseAction } from "../models/Case.js";
 
 /**
  * Clean a string of Discord formatting.
@@ -89,7 +88,7 @@ export const numToCooldownFormat = (num: number): string => {
  * Capitalize a string
  * @param str The string to capitalize.
  */
-export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
+export const capitalize = (string: string): string => string.toString().replace(/^\w/, f => f.toUpperCase()).split(/(?=[A-Z])/).join(" ");
 
 /**
  * Create a progress bar.
@@ -138,14 +137,23 @@ export const fitText = (context: SKRSContext2D, text: string, maxFontSize: numbe
     return context.font;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const getGuildLeaderboard = async (client: DiscordBot, guildId: Snowflake) => (await client.db.user.findMany({
-    where: {
-        banned: false,
-        guildId: guildId
-    },
-    orderBy: [
-        { level: "desc" },
-        { xp: "desc" }
-    ]
-})).map((x, i) => Object.freeze({ ...x, pos: i }));
+/**
+ * Convert an action to a string.
+ */
+export const caseActionToStr = (action: CaseAction, log?: boolean): string => {
+    switch (action) {
+        case CaseAction.Warn: return "warned";
+        case CaseAction.Unwarn: return "unwarned";
+        case CaseAction.Mute:
+            return log
+                ? "muted for {{TIMEOUT_LENGTH}}"
+                : "muted";
+        case CaseAction.Unmute: return "unmuted";
+        case CaseAction.Kick: return "kicked from the server.";
+        case CaseAction.Softban: return "softbanned from the server";
+        case CaseAction.Hackban: return "hackbanned from the server";
+        case CaseAction.Tempban: return "temporarily banned from the server";
+        case CaseAction.Ban: return "banned from the server";
+        case CaseAction.Unban: return "unbanned from the server";
+    }
+};

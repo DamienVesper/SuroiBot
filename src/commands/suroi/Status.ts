@@ -74,7 +74,6 @@ class Status extends Command {
             const sEmbed = new EmbedBuilder()
                 .setColor(this.client.config.colors.orange)
                 .setDescription(desc.join("\n"))
-                .setThumbnail(interaction.guild?.iconURL() ?? null)
                 .setTimestamp()
                 .setFooter({ text: `ID: ${interaction.user.id}` });
 

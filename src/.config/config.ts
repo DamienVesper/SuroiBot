@@ -20,9 +20,14 @@ const LAVALINK_HOST = new URL(process.env.LAVALINK_URL ?? "https://example.org")
 export const config = {
     mode: argv.mode,
     dev: {
-        users: ["386940319666667521"],
+        users: ["386940319666667521", "753029976474779760"],
         guildID: "516304983415848961",
         overridePermissions: false
+    },
+
+    db: {
+        connectionString: process.env.DATABASE_URL!,
+        ssl: false
     },
 
     modules: {
@@ -39,7 +44,7 @@ export const config = {
                 min: 0,
                 max: 1e3
             },
-            xpCooldown: 60, // 6e4,
+            xpCooldown: 6e4,
             levelUpMessages: "none"
         },
         music: {
@@ -95,6 +100,17 @@ interface Config {
          * Enabling this will use the permissions in the config file, rather than Discord permissions.
          */
         overridePermissions?: boolean
+    }
+
+    db: {
+        /**
+         * The database connection string.
+         */
+        connectionString: string
+        /**
+         * Whether to use SSL.
+         */
+        ssl: boolean
     }
 
     /**

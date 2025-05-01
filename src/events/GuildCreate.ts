@@ -1,6 +1,8 @@
 import { Events } from "discord.js";
+import { eq } from "drizzle-orm";
 
 import { Event } from "../classes/Event.js";
+import { Guild } from "../models/Guild.js";
 
 const EventType = Events.GuildCreate;
 
@@ -14,14 +16,12 @@ class GuildCreate extends Event<typeof EventType> {
         };
 
         this.run = async guild => {
-            const guildDoc = await this.client.db.guild.findUnique({ where: { discordId: guild.id } });
-            if (guildDoc === null) {
+            const guildQuery = await this.client.db.select().from(Guild).where(eq(Guild.discordId, guild.id)).limit(1);
+            if (guildQuery.length === 0) {
                 this.client.logger.info("Database", `Created entry for guild "${guild.name}" (${guild.id}).`);
-                await this.client.db.guild.create({
-                    data: {
-                        discordId: guild.id
-                    }
-                });
+                await this.client.db.insert(Guild).values({
+                    discordId: guild.id
+                } satisfies typeof Guild.$inferInsert);
             }
         };
     }

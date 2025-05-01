@@ -2,6 +2,9 @@ import { Events } from "discord.js";
 
 import { Event } from "../classes/Event.js";
 import { getMaxXP } from "../utils/utils.js";
+import { and, eq } from "drizzle-orm";
+import { User } from "../models/User.js";
+import { Guild } from "../models/Guild.js";
 
 const EventType = Events.MessageCreate;
 
@@ -17,53 +20,33 @@ class MessageCreate extends Event<typeof EventType> {
         this.run = async message => {
             if (message.author.bot || message.guild === null) return;
 
-            let dbUser = await this.client.db.user.findFirst({
-                where: {
-                    discordId: message.author.id,
-                    guildId: message.guild.id
-                },
-                include: {
-                    cooldowns: true
-                }
-            });
+            const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, message.author.id), eq(User.guildId, message.guildId!))).limit(1);
+            const guildQuery = await this.client.db.select().from(Guild).where(eq(Guild.discordId, message.guildId!)).limit(1);
 
-            let guild = await this.client.db.guild.findFirst({ where: { discordId: message.guild.id } });
+            let dbUser: typeof User.$inferSelect | null = userQuery.length !== 0 ? userQuery[0] : null;
+            let guild: typeof Guild.$inferSelect | null = guildQuery.length !== 0 ? guildQuery[0] : null;
 
             if (guild === null) {
                 this.client.logger.debug("Database", `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
-                guild = await this.client.db.guild.create({
-                    data: {
-                        discordId: message.guild.id
-                    }
-                });
+                guild = (await this.client.db.insert(Guild).values({
+                    discordId: message.guildId!
+                } satisfies typeof Guild.$inferInsert).returning())[0];
             }
 
             if (dbUser === null) {
                 this.client.logger.debug("Database", `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
-                await this.client.db.user.create({
-                    data: {
-                        discordId: message.author.id,
-                        guildId: message.guild.id,
-                        level: this.client.config.modules.leveling.enabled ? this.client.config.modules.leveling.level.min : 0,
-                        cooldowns: {
-                            create: {
-                                discordId: message.author.id,
-                                daily: new Date(0),
-                                xp: new Date(0)
-                            }
-                        }
-                    }
-                });
-
-                dbUser = await this.client.db.user.findFirst({
-                    where: {
-                        discordId: message.author.id,
-                        guildId: message.guild.id
-                    },
-                    include: {
-                        cooldowns: true
-                    }
-                });
+                dbUser = (await this.client.db.insert(User).values({
+                    discordId: message.author.id,
+                    guildId: message.guildId!,
+                    level: this.client.config.modules.leveling.enabled ? this.client.config.modules.leveling.level.min : 0 // ,
+                    // cooldowns: {
+                    //     create: {
+                    //         discordId: message.author.id,
+                    //         daily: new Date(0),
+                    //         xp: new Date(0)
+                    //     }
+                    // }
+                } satisfies typeof User.$inferInsert).returning())[0];
             }
 
             if (this.client.config.modules.leveling.enabled) {

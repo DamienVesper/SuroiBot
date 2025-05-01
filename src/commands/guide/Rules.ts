@@ -15,17 +15,20 @@ import { Command } from "../../classes/Command.js";
 const rulesText = `
 ## Suroi Rules
 ### Server Rules
-- **Be nice.** Don't be racist, disrespectful of people's situation, etc. Swearing is allowed, except for slurs (e.g. the N-word).
+- **Be nice.** Remember, there are humans at the other end of the screen. Racism, sexism, homophobia, anti-LGBTQ, and the like are not tolerated in this server. Swearing is allowed, __except for slurs__ (e.g. the N-word).
 - **This server is English only.** It's OK to say a few words in another language, but conversations in other languages are not allowed.
-- **No NSFW content.** Adult and suggestive content is prohibited.
-- **No politics!** Discussion of controversial topics like politics, gender, and religion is prohibited, except in the #politics channel. If you'd like access to the #politics channel, ask a moderator.
-- **No advertising.** Advertising is allowed only in the advertisements channel. If you want permission to advertise, ask a moderator.
-- **Don't be annoying.** The mods reserve the right to time out, kick or ban you for any reason, within reason.
+- **Keep it PG.** NSFW or overly explicit content, content containing sexual intent, suggestive/sexual poses, and / or scantily dressed people are prohibited.
+- **No politics!** Discussion of controversial topics like politics, gender, and religion is forbidden.
+- **No advertising.** Advertising is allowed only in <#1086269974647144490>. If you want permission to advertise, ask a moderator.
+- **Don't be annoying.** The mods reserve the right to warn, time out, kick, or ban you for any reason, within reason. They have the final say in how the rules are interpreted.
+- **Play by the rules.**  You're not a lawyer, don't try to exploit or debate loopholes in these rules. Using alt accounts to evade punishment will result in a permanent ban of all your accounts.
+- **Respect fair play!** If you are found to be using hacks, cheats, etc., in Suroi, or join any server related to them, you will be banned immediately without warning.
+- **No spamming.** Flooding chat with walls of text is not allowed. Message chains are permitted, as long as they're not disruptive.
 ### Game Rules
-- **No teaming in solos.** Allying with other solo players for extended periods of time is not allowed.
-- **No hacking.** The use of scripts, plugins, extensions, etc. to modify the game in order to gain an advantage over opponents is strictly forbidden. An advantage is anything that reveals information that would not be available to a normal player or anything that automates player actions.
-- **No inappropriate usernames.** Our blocklists are very lenient, but some words or phrases are still blocked. Trying to evade filters for these specific words will incur consequences.
-- **No presence in cheat related servers.** Attempting to "minimod" or "go undercover" in any cheat related servers is strictly prohibited and will get your discord, as well as your connection banned.
+- **Play fairly.** Game modifications or external software that allows you to gain an advantage over opponents is strictly forbidden.
+- **No teaming.** Allying with other players not on your team, is not allowed.
+- **No inappropriate usernames.** Usernames containing slurs and other hateful language are prohibited.
+- **No VPNs / proxies.** If you need an exemption, contact us through [email](mailto:support@suroi.io) or Discord.
 `;
 
 class Rules extends Command {

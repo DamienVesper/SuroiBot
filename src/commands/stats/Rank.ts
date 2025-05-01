@@ -4,12 +4,15 @@ import {
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";
+import { createCanvas, GlobalFonts, loadImage } from "@napi-rs/canvas";
+import { and, eq } from "drizzle-orm";
 
-import { Command } from "../../classes/Command.js";
-import { fitText, getMaxXP, numToPredicateFormat } from "../../utils/utils.js";
 import { fileURLToPath } from "url";
 import { resolve } from "path";
-import { createCanvas, GlobalFonts, loadImage } from "@napi-rs/canvas";
+
+import { Command } from "../../classes/Command.js";
+import { User } from "../../models/User.js";
+import { fitText, getMaxXP, numToPredicateFormat } from "../../utils/utils.js";
 
 class Rank extends Command {
     cmd = new SlashCommandBuilder()
@@ -26,12 +29,8 @@ class Rank extends Command {
 
         await interaction.deferReply();
 
-        const dbUser = await this.client.db.user.findFirst({
-            where: {
-                discordId: interaction.user.id,
-                guildId: interaction.guild.id
-            }
-        });
+        const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, interaction.user.id), eq(User.guildId, interaction.guildId!))).limit(1);
+        const dbUser = userQuery.length !== 0 ? userQuery[0] : null;
 
         if (dbUser === null) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "No account exists for that user!")] });

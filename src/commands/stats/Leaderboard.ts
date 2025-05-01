@@ -5,13 +5,14 @@ import {
     type GuildMember
 } from "discord.js";
 import { LeaderboardBuilder } from "canvacord";
+import { asc, desc } from "drizzle-orm";
 
 import { resolve } from "path";
 import { fileURLToPath } from "url";
 import { readFile } from "fs/promises";
 
 import { Command } from "../../classes/Command.js";
-
+import { User } from "../../models/User.js";
 import { getTotalXP } from "../../utils/utils.js";
 import type { Unpacked } from "../../utils/types.js";
 
@@ -29,16 +30,7 @@ class Leaderboard extends Command {
 
         await interaction.deferReply();
 
-        const users = await this.client.db.user.findMany({
-            take: 10,
-            where: { guildId: interaction.guild.id },
-            orderBy: [
-                { level: "desc" },
-                { xp: "desc" },
-                { discordId: "asc" }
-            ]
-        });
-
+        const users = await this.client.db.select().from(User).orderBy(desc(User.level), desc(User.xp), asc(User.discordId)).limit(10);
         if (users.length === 0) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There are no users in the leaderboard!")] });
             return;

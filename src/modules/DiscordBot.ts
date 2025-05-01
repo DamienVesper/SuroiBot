@@ -18,7 +18,9 @@ import {
     ButtonBuilder,
     ButtonStyle,
     type BaseMessageOptions,
-    ChannelType
+    ChannelType,
+    User as DiscordUser,
+    Guild
 } from "discord.js";
 import {
     Manager,
@@ -26,6 +28,8 @@ import {
     Structure,
     type Player
 } from "magmastream";
+import { Font, FontFactory } from "canvacord";
+import { drizzle } from "drizzle-orm/node-postgres";
 
 import { basename, dirname, resolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -36,9 +40,16 @@ import { MusicPlayer } from "./MusicPlayer.js";
 
 import { Command } from "../classes/Command.js";
 
-import { createTrackBar } from "../utils/utils.js";
-import { PrismaClient } from "@prisma/client";
-import { Font, FontFactory } from "canvacord";
+import { capitalize, caseActionToStr, cleanse, createTrackBar } from "../utils/utils.js";
+import { Case, CaseAction } from "../models/Case.js";
+import { Cooldown } from "../models/Cooldowns.js";
+
+interface DrizzleSchema extends Record<string, unknown> {
+    guild: typeof Guild
+    user: typeof User
+    case: typeof Case
+    cooldown: typeof Cooldown
+}
 
 export class DiscordBot extends Client<true> {
     config = config;
@@ -54,12 +65,12 @@ export class DiscordBot extends Client<true> {
     commands = new Collection<Command["cmd"]["name"], Command>();
     subcommands = new Collection<Command["cmd"]["name"], Command>();
     cooldowns = new Collection<Snowflake, Collection<Command["cmd"]["name"], number>>();
-    buttons = new Collection<string, Command>();
-    modals = new Collection<string, Command>();
+    buttons = new Collection<string, null>();
+    modals = new Collection<string, null>();
 
     lavalink!: Manager;
 
-    db: PrismaClient;
+    db: ReturnType<typeof drizzle<DrizzleSchema>>;
 
     constructor () {
         super({
@@ -99,13 +110,14 @@ export class DiscordBot extends Client<true> {
         // Load canvacord font.
         if (!FontFactory.size) Font.fromFileSync(resolve(fileURLToPath(import.meta.url), "../../../assets/fonts/Inter-Regular.ttf"));
 
-        // Instantiate the database ORM.
-        this.db = new PrismaClient();
+        // Instantiate the database connection.
+        this.db = drizzle<DrizzleSchema>({ connection: config.db });
 
         // Prepare the Lavalink client.
         if (this.config.modules.music.enabled) {
             Structure.extend("Player", Player => MusicPlayer);
             this.lavalink = new Manager({
+                autoPlay: true,
                 lastFmApiKey: this.config.modules.music.lastFmApiKey,
                 nodes: this.config.modules.music.nodes,
                 send: (id, payload) => {
@@ -225,15 +237,13 @@ export class DiscordBot extends Client<true> {
      * @param id The ID to display.
      * @param text The text to display.
      */
-    createEmbed = (id: Snowflake, text: string): EmbedBuilder => {
-        const sEmbed = new EmbedBuilder()
+    createEmbed = (id: Snowflake, text: string): EmbedBuilder => (
+        new EmbedBuilder()
             .setColor(this.config.colors.gray)
             .setDescription(text)
             .setTimestamp()
-            .setFooter({ text: `ID: ${id}` });
-
-        return sEmbed;
-    };
+            .setFooter({ text: `ID: ${id}` })
+    );
 
     /**
      * Create a deny embed.
@@ -248,6 +258,79 @@ export class DiscordBot extends Client<true> {
      * @param text The text to display.
      */
     createApproveEmbed = (user: User, text: string): EmbedBuilder => this.createEmbed(user.id, `${this.config.emojis.checkmark} ${text}`).setColor(this.config.colors.green);
+
+    /**
+     * Create a case embed to DM to the victim.
+     * @param id The ID of the case.
+     * @param action The action the moderator took.
+     * @param moderator The moderator who took action.
+     * @param reason The reason for the action.
+     */
+    createDMCaseEmbed = (id: number, action: CaseAction, guild: Guild, moderator: DiscordUser, reason: string): EmbedBuilder => (
+        new EmbedBuilder()
+            .setColor(this.config.colors.red)
+            .setDescription([
+                `You were ${action}${action.endsWith("n") ? "ned" : action.endsWith("e") ? "d" : "ed"} from **${cleanse(guild.name)}**.`,
+                `**Reason:** ${cleanse(reason)}`
+            ].join("\n"))
+            .setTimestamp()
+            .setFooter({ text: `Case #${id} | Moderator: ${moderator.username}` })
+    );
+
+    /**
+     * Create a case embed to reply to the interaction invoker.
+     * @param id The ID of the case.
+     * @param action The action the moderator took.
+     * @param victim The victim of the action.
+     * @param guild The guild the action is invoked from.
+     */
+    createReplyCaseEmbed = (id: number, action: CaseAction, victim: DiscordUser, guild: Guild): EmbedBuilder => (
+        this.createApproveEmbed(victim, `**${cleanse(victim.displayName)} was ${action}${action.endsWith("n") ? "ned" : action.endsWith("e") ? "d" : "ed"} from **${cleanse(guild.name)}**.`)
+    );
+
+    createCaseEmbed = (id: number, action: CaseAction, moderator: DiscordUser, target: DiscordUser, reason: string): EmbedBuilder => (
+        new EmbedBuilder()
+            .setColor(this.config.colors.orange)
+            .setAuthor({ name: `${capitalize(action)} | Case #${id}` })
+            .addFields([
+                {
+                    name: "User",
+                    value: `${target.tag} (<@${target.id}>)`
+                },
+                {
+                    name: "Moderator",
+                    value: `${moderator.tag} (<@${moderator.id}>)`
+                },
+                {
+                    name: "Reason",
+                    value: reason
+                }
+            ])
+            .setThumbnail(target.avatarURL() ?? target.defaultAvatarURL)
+            .setTimestamp()
+            .setFooter({ text: `ID: ${target.id}` })
+    );
+
+    createLogEmbed = (id: number, action: CaseAction, perpetrator: User, target: User, reason: string): EmbedBuilder => {
+        const actionStr = caseActionToStr(action);
+
+        const sEmbed = new EmbedBuilder()
+            .setAuthor({ name: target.tag, iconURL: target.avatarURL() ?? target.defaultAvatarURL })
+            .setDescription([
+                `**${cleanse(target.tag)} (<@${target.id}>) was ${actionStr}**.`,
+                "",
+                "**Responsible Moderator**",
+                `<@${perpetrator.id}>`,
+                "",
+                "**Reason**",
+                `\`\`\`${cleanse(reason)}\`\`\``
+            ].join("\n"))
+            .setThumbnail(target.avatarURL() ?? target.defaultAvatarURL)
+            .setTimestamp()
+            .setFooter({ text: `ID: ${target.id} | Case #${id}` });
+
+        return sEmbed;
+    };
 
     /**
      * Create an embed and action row component for the currently playing song.
