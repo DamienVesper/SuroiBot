@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { config } from "../.config/config.js";
 
 import {
@@ -181,10 +178,14 @@ export class DiscordBot extends Client<true> {
         })).filter(file => file.name.endsWith(".ts") || file.name.endsWith(".js"));
 
         for (const file of files) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
             const event = new ClientEvent(this);
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             if (event.config.once) this.once(event.config.name as string, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             else this.on(event.config.name as string, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
         }
     };
@@ -201,7 +202,9 @@ export class DiscordBot extends Client<true> {
         })).filter(file => file.name.endsWith(".ts") || file.name.endsWith(".js"));
 
         for (const file of files) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
             const command = new ClientCommand(this);
 
             if (command.config.isSubcommand) this.subcommands.set(command.config.parent, command);
