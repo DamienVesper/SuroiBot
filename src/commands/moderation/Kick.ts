@@ -73,7 +73,7 @@ class Kick extends Command {
                 }
             }).catch(async err => {
                 this.client.logger.warn("Gateway", `Failed to kick: ${err.stack ?? err.message}`);
-                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while banning that user.")] });
+                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while kicking that user.")] });
                 await msg.delete();
             });
     };
