@@ -33,7 +33,6 @@ class Say extends Command {
         const message = interaction.options.getString("message", true);
 
         await interaction.reply({ embeds: [this.client.createApproveEmbed(interaction.user, "Your message was sent.")], ephemeral: true });
-        await interaction.deleteReply();
 
         /**
          * Send a message while disabling all mentions in the message.
@@ -46,6 +45,9 @@ class Say extends Command {
                 roles: [],
                 users: []
             }
+        }).then(async () => {
+            await Bun.sleep(3e3);
+            await interaction.deleteReply();
         }).catch(err => {
             this.client.logger.warn("Gateway", `Failed to send message: ${err.stack ?? err.message}`);
         });

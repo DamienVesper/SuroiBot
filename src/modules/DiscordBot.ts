@@ -39,13 +39,13 @@ import { Command } from "../classes/Command.js";
 
 import { capitalize, caseActionToStr, cleanse, createTrackBar } from "../utils/utils.js";
 import { Case, CaseAction } from "../models/Case.js";
-import { Cooldown } from "../models/Cooldowns.js";
+import { Cooldowns } from "../models/Cooldowns.js";
 
 interface DrizzleSchema extends Record<string, unknown> {
     guild: typeof Guild
     user: typeof User
     case: typeof Case
-    cooldown: typeof Cooldown
+    cooldowns: typeof Cooldowns
 }
 
 export class DiscordBot extends Client<true> {
@@ -320,7 +320,7 @@ export class DiscordBot extends Client<true> {
         const sEmbed = new EmbedBuilder()
             .setAuthor({ name: target.tag, iconURL: target.avatarURL() ?? target.defaultAvatarURL })
             .setDescription([
-                `**${cleanse(target.tag)} (<@${target.id}>) was ${actionStr}**.`,
+                `**${target.tag} (<@${target.id}>) was ${actionStr}**.`,
                 "",
                 "**Responsible Moderator**",
                 `<@${perpetrator.id}>`,
@@ -362,7 +362,7 @@ export class DiscordBot extends Client<true> {
                 .setFields([
                     {
                         name: "Requester",
-                        value: song.requester?.displayName ?? song.requester?.tag ?? "Unknown User",
+                        value: cleanse(song.requester?.displayName ?? song.requester?.tag ?? "Unknown User"),
                         inline: true
                     },
                     {

@@ -57,7 +57,7 @@ class Ban extends Command {
         if (!target) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "That user is not in the server.")], ephemeral: true });
             return;
-        } else if (!target.bannable || target.id === this.client.user.id) {
+        } else if (!target.bannable || target.user.bot) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I cannot ban that user.")], ephemeral: true });
             return;
         } else if (target.roles.highest.comparePositionTo(member.roles.highest) >= 0) {

@@ -7,6 +7,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { Case } from "./Case.js";
+import { Cooldowns } from "./Cooldowns.js";
 import { User } from "./User.js";
 
 export const Guild = pgTable("guild", {
@@ -20,5 +21,6 @@ export const Guild = pgTable("guild", {
 
 export const guildRelations = relations(Guild, ({ many }) => ({
     users: many(User),
-    cases: many(Case)
+    cases: many(Case),
+    cooldowns: many(Cooldowns)
 }));

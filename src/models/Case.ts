@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+    boolean,
     date,
     pgEnum,
     pgTable,
@@ -42,7 +43,10 @@ export const Case = pgTable("user", {
         .notNull(),
     action: pgEnum("action", ["warn", "mute", "unmute", "kick", "softban", "ban", "unban"])()
         .notNull()
-        .$type<CaseAction>()
+        .$type<CaseAction>(),
+    active: boolean("active")
+        .notNull()
+        .default(true)
 });
 
 export const caseRelations = relations(Case, ({ one }) => ({
