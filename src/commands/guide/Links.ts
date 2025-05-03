@@ -6,7 +6,7 @@ import {
 
 import { Command } from "../../classes/Command.js";
 
-class Rules extends Command {
+class Links extends Command {
     cmd = new SlashCommandBuilder()
         .setName("links")
         .setDescription("View useful links.");
@@ -29,4 +29,4 @@ class Rules extends Command {
     };
 }
 
-export default Rules;
+export default Links;

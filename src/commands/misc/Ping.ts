@@ -8,7 +8,7 @@ import { Command } from "../../classes/Command.js";
 
 import { numToCooldownFormat } from "../../utils/utils.js";
 
-class Rules extends Command {
+class Ping extends Command {
     cmd = new SlashCommandBuilder()
         .setName("ping")
         .setDescription("View ping statistics.");
@@ -30,4 +30,4 @@ class Rules extends Command {
     };
 }
 
-export default Rules;
+export default Ping;
