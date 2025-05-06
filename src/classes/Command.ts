@@ -1,5 +1,4 @@
 import {
-    PermissionFlagsBits,
     type ChatInputCommandInteraction,
     SlashCommandBuilder,
     type SharedSlashCommand
@@ -11,13 +10,8 @@ export abstract class Command {
 
     abstract cmd: SharedSlashCommand;
     config: ConfigType = {
-        botPermissions: [
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.EmbedLinks
-        ],
-        userPermissions: [
-            PermissionFlagsBits.UseApplicationCommands
-        ],
+        botPermissions: [],
+        userPermissions: [],
         isSubcommand: false,
         cooldown: 0
     };

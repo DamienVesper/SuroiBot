@@ -19,8 +19,6 @@ class Mute extends Command {
 
     config: ConfigType = {
         botPermissions: [
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.EmbedLinks,
             PermissionFlagsBits.ModerateMembers
         ],
         userPermissions: [

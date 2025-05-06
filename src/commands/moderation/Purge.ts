@@ -21,8 +21,6 @@ class Purge extends Command {
 
     config: ConfigType = {
         botPermissions: [
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.EmbedLinks,
             PermissionFlagsBits.ManageMessages
         ],
         userPermissions: [
@@ -33,7 +31,7 @@ class Purge extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null || !interaction.channel?.isTextBased()) return;
+        if (!interaction.inGuild() || !interaction.channel?.isTextBased()) return;
 
         const amount = interaction.options.getNumber("amount", true);
         const target = interaction.options.getUser("user", true);

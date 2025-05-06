@@ -19,8 +19,6 @@ class Kick extends Command {
 
     config: ConfigType = {
         botPermissions: [
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.EmbedLinks,
             PermissionFlagsBits.KickMembers
         ],
         userPermissions: [

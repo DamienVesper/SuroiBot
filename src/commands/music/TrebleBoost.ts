@@ -33,7 +33,7 @@ class TrebleBoost extends Command {
             return;
         }
 
-        if (!this.client.config.modules.music?.enabled) throw new Error("Music configuration was not specified or enabled.");
+        if (!this.client.config.modules.music.enabled) throw new Error("Music configuration was not specified or enabled.");
 
         const equalizerBands = this.client.config.modules.music.options.equalizerBands;
         const mult = this.client.config.modules.music.options.trebleIntensityMultiplier;

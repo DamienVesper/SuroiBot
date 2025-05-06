@@ -17,7 +17,6 @@ class Say extends Command {
 
     config: ConfigType = {
         botPermissions: [
-            PermissionFlagsBits.SendMessages,
             PermissionFlagsBits.EmbedLinks
         ],
         userPermissions: [
@@ -28,7 +27,7 @@ class Say extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (!interaction.channel?.isTextBased() || interaction.channel.isDMBased()) return;
+        if (!interaction.inGuild() || !interaction.channel?.isTextBased()) return;
 
         const message = interaction.options.getString("message", true);
 

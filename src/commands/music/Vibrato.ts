@@ -36,7 +36,7 @@ class Vibrato extends Command {
             return;
         }
 
-        if (!this.client.config.modules.music?.enabled) throw new Error("Music configuration was not specified or enabled.");
+        if (!this.client.config.modules.music.enabled) throw new Error("Music configuration was not specified or enabled.");
         await player.filters.setVibrato({
             depth: (vibrato ?? 0) / 100,
             frequency: (vibratoFrequency ?? player.filters.vibrato?.frequency) ?? this.client.config.modules.music.options.tremoloVibratoFrequency

@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Collection, Events, InteractionContextType } from "discord.js";
+import { ChatInputCommandInteraction, Collection, Events, InteractionContextType, PermissionFlagsBits } from "discord.js";
 
 import { Event } from "../classes/Event.js";
 
@@ -18,7 +18,14 @@ class InteractionCreate extends Event<typeof EventType> {
 
         this.run = async interaction => {
             if (interaction.isChatInputCommand()) {
-                const command = this.client.commands.get(interaction.commandName);
+                /**
+                 * Check if the bot, if in a guild, has the minimum permissions to send messages.
+                 * If it is in a guild and does not have the required permissions, abort the interaction.
+                 */
+                if (interaction.inGuild() && interaction.channel?.permissionsFor(interaction.guild!.members.me!).has([
+                    PermissionFlagsBits.ViewChannel,
+                    PermissionFlagsBits.SendMessages
+                ])) return;
 
                 /**
                  * After a recent deployment, it takes time to update the cached command.
@@ -26,6 +33,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  * So we gracefully handle it and let them know the reason their command is not working.
                  * Typically, Discord clients will update cached commands after invoking the outdated command once.
                  */
+                const command = this.client.commands.get(interaction.commandName);
                 if (command === undefined) {
                     await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "This command is outdated. Please try again.")], ephemeral: true });
                     return;
@@ -34,9 +42,7 @@ class InteractionCreate extends Event<typeof EventType> {
                 /**
                  * Here, we split the preliminary command usability checking into two parts: dev permissions and command category.
                  * We do Discord permission handling further down the line.
-                 */
-
-                /**
+                 *
                  * If we have so specified in the config file, we only want devs to be able to run commands.
                  * Otherwise, use the default permissions from Discord (aka do nothing in this condition block).
                  */
@@ -46,7 +52,7 @@ class InteractionCreate extends Event<typeof EventType> {
                 }
 
                 /**
-                 * We only want to be able to run the "guide" category commands outside of guild channels.
+                 * We only want to be able to additionally run the "guide" category commands outside of guild channels.
                  * All other commands (include "guide" commands) should be run in a guild (or the dev guild, if in dev permissions mode).
                  * The following two if statements handle these cases.
                  */
@@ -56,8 +62,8 @@ class InteractionCreate extends Event<typeof EventType> {
                 }
 
                 if (
-                    command.cmd.contexts?.includes(InteractionContextType.BotDM)
-                    || interaction.guild === null
+                    command.cmd.contexts?.includes(InteractionContextType.Guild)
+                    || !interaction.inGuild()
                     || (this.client.config.dev.overridePermissions && interaction.guildId !== this.client.config.dev.guildID)
                 ) {
                     await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "That command cannot be used here!")] });
@@ -68,7 +74,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  * Check if the user has permissions (in Discord).
                  * This will probably fail miserably.
                  */
-                const missingUserPerms = interaction.memberPermissions?.missing(command.config.userPermissions) ?? [];
+                const missingUserPerms = interaction.memberPermissions.missing(command.config.userPermissions) ?? [];
                 if (missingUserPerms.length !== 0) {
                     await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? "permission" : "permissions"} ${missingUserPerms.map(x => `\`${x}\``).join(", ")} to use this command.`)], ephemeral: true });
                     return;
@@ -78,7 +84,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  * Check if the bot has permissions (in Discord).
                  * This will also probably fail miserably.
                  */
-                const missingBotPerms = interaction.guild.members.me?.permissions.missing(command.config.botPermissions) ?? [];
+                const missingBotPerms = interaction.guild?.members.me?.permissions.missing(command.config.botPermissions) ?? [];
                 if (missingBotPerms.length !== 0) {
                     await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? "permission" : "permissions"} ${missingBotPerms.map(x => `\`${x}\``).join(", ")} to execute this command.`)], ephemeral: true });
                     return;

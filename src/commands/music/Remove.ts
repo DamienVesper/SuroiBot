@@ -11,7 +11,7 @@ class Remove extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (!interaction.channel?.isTextBased() || interaction.channel.isDMBased()) return;
+        if (!interaction.inGuild() || !interaction.channel?.isTextBased()) return;
         if (interaction.guild === null) {
             await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;

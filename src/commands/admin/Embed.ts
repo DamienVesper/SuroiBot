@@ -22,7 +22,6 @@ class Embed extends Command {
 
     config: ConfigType = {
         botPermissions: [
-            PermissionFlagsBits.SendMessages,
             PermissionFlagsBits.EmbedLinks
         ],
         userPermissions: [
@@ -33,7 +32,7 @@ class Embed extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (!interaction.channel?.isTextBased() || interaction.channel.isDMBased()) return;
+        if (!interaction.inGuild() || !interaction.channel?.isTextBased()) return;
 
         const author = interaction.options.getString("author");
         const title = interaction.options.getString("title");
