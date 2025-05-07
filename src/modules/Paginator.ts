@@ -4,6 +4,7 @@ import {
     ButtonStyle,
     ChatInputCommandInteraction,
     ComponentType,
+    MessageFlags,
     User,
     type ButtonInteraction,
     type EmbedBuilder,
@@ -70,7 +71,7 @@ export class Paginator {
             if (interaction.user.id !== this.user.id) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 (interaction.replied || interaction.deferred)
-                    ? void interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You did not invoke this command!")], ephemeral: interaction.ephemeral ?? true })
+                    ? void interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You did not invoke this command!")], flags: interaction.ephemeral ? MessageFlags.Ephemeral : undefined })
                     : void interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You did not invoke this command!")], flags: MessageFlags.Ephemeral });
                 return;
             }

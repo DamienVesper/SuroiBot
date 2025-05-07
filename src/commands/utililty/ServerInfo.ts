@@ -2,6 +2,7 @@ import {
     ChannelType,
     EmbedBuilder,
     InteractionContextType,
+    MessageFlags,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";

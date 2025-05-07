@@ -1,6 +1,7 @@
 import {
     EmbedBuilder,
     InteractionContextType,
+    MessageFlags,
     SlashCommandBuilder,
     type ChatInputCommandInteraction,
     type GuildMember

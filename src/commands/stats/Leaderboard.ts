@@ -1,5 +1,6 @@
 import {
     InteractionContextType,
+    MessageFlags,
     SlashCommandBuilder,
     type ChatInputCommandInteraction,
     type GuildMember
@@ -13,6 +14,7 @@ import { readFile } from "fs/promises";
 
 import { Command } from "../../classes/Command.js";
 import { User } from "../../models/User.js";
+
 import { getTotalXP } from "../../utils/utils.js";
 import type { Unpacked } from "../../utils/types.js";
 

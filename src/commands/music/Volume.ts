@@ -1,4 +1,9 @@
-import { InteractionContextType, SlashCommandBuilder, type ChatInputCommandInteraction } from "discord.js";
+import {
+    InteractionContextType,
+    MessageFlags,
+    SlashCommandBuilder,
+    type ChatInputCommandInteraction
+} from "discord.js";
 
 import { Command } from "../../classes/Command.js";
 

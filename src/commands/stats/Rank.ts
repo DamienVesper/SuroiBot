@@ -1,6 +1,7 @@
 import {
     AttachmentBuilder,
     InteractionContextType,
+    MessageFlags,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";

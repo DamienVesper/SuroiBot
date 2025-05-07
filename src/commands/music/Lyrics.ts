@@ -2,8 +2,8 @@ import {
     EmbedBuilder,
     SlashCommandBuilder,
     InteractionContextType,
-    type ChatInputCommandInteraction,
-    MessageFlags
+    MessageFlags,
+    type ChatInputCommandInteraction
 } from "discord.js";
 
 import { Command } from "../../classes/Command.js";
