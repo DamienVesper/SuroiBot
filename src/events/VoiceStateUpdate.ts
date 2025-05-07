@@ -20,7 +20,7 @@ class VoiceStateUpdate extends Event<typeof EventType> {
                 if (player?.textChannelId && player?.voiceChannelId === oldChannel.id && oldChannel.members.size === 1) {
                     const channel = await this.client.channels.fetch(player.textChannelId);
                     if (channel?.isSendable()) {
-                        this.client.logger.info("Gateway", `Left voice channel "${oldChannel.name}" (${oldChannel.id}).`);
+                        this.client.logger.debug("Gateway", `Left voice channel "${oldChannel.name}" (${oldChannel.id}).`);
 
                         await channel.send({ embeds: [this.client.createEmbed(player.guildId, "Leaving channel as there are no listeners.").setColor(this.client.config.colors.blue)] });
                         await player.destroy();
