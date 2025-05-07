@@ -1,4 +1,4 @@
-import { ChannelType, Events } from "discord.js";
+import { Events } from "discord.js";
 
 import { Event } from "../classes/Event.js";
 
@@ -19,7 +19,7 @@ class VoiceStateUpdate extends Event<typeof EventType> {
                 const player = this.client.lavalink.get(oldState.guild.id);
                 if (player?.textChannelId && player?.voiceChannelId === oldChannel.id && oldChannel.members.size === 1) {
                     const channel = await this.client.channels.fetch(player.textChannelId);
-                    if (channel?.type === ChannelType.GuildText) {
+                    if (channel?.isSendable()) {
                         this.client.logger.info("Gateway", `Left voice channel "${oldChannel.name}" (${oldChannel.id}).`);
 
                         await channel.send({ embeds: [this.client.createEmbed(player.guildId, "Leaving channel as there are no listeners.").setColor(this.client.config.colors.blue)] });

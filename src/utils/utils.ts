@@ -4,6 +4,22 @@ import type { SKRSContext2D } from "@napi-rs/canvas";
 import { CaseAction } from "../models/Case.js";
 
 /**
+ * Common durations used in moderation commands.
+ */
+export const durations = {
+    ["60s"]: 60,
+    ["5m"]: 300,
+    ["10m"]: 600,
+    ["30m"]: 1800,
+    ["1h"]: 3600,
+    ["6h"]: 3600,
+    ["12h"]: 3600,
+    ["1d"]: 86400,
+    ["7d"]: 604800,
+    ["30d"]: 2592e3
+};
+
+/**
  * Clean a string of Discord formatting.
  * @param str The string to clean.
  */

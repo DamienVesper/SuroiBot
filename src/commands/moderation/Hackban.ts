@@ -32,7 +32,7 @@ class Hackban extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) return;
+        if (!interaction.inCachedGuild()) return;
 
         const targetId = interaction.options.getString("id", true);
         const reason = interaction.options.getString("reason") ?? "No reason provided";
@@ -49,14 +49,14 @@ class Hackban extends Command {
         const modCase = (await this.client.db.insert(Case).values({
             discordId: targetId,
             issuerId: interaction.user.id,
-            guildId: interaction.guildId!,
+            guildId: interaction.guildId,
             reason,
             action: CaseAction.Hackban
         } satisfies typeof Case.$inferInsert).returning())[0];
 
         await interaction.guild.members.ban(targetId, { reason })
             .then(async () => {
-                const replyEmbed = this.client.createEmbed(targetId, `${this.client.config.emojis.checkmark} **${targetId} was banned from **${cleanse(interaction.guild!.name)}`)
+                const replyEmbed = this.client.createEmbed(targetId, `${this.client.config.emojis.checkmark} **${targetId} was banned from **${cleanse(interaction.guild.name)}`)
                     .setColor(this.client.config.colors.green);
 
                 await interaction.followUp({ embeds: [replyEmbed] });

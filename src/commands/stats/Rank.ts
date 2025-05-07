@@ -22,14 +22,14 @@ class Rank extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) {
+        if (!interaction.inCachedGuild()) {
             await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
         await interaction.deferReply();
 
-        const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, interaction.user.id), eq(User.guildId, interaction.guildId!))).limit(1);
+        const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, interaction.user.id), eq(User.guildId, interaction.guildId))).limit(1);
         const dbUser = userQuery.length !== 0 ? userQuery[0] : null;
 
         if (dbUser === null) {

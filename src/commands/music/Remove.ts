@@ -11,14 +11,13 @@ class Remove extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (!interaction.inGuild() || !interaction.channel?.isTextBased()) return;
-        if (interaction.guild === null) {
+        if (!interaction.channel?.isTextBased()) return;
+        if (!interaction.inCachedGuild()) {
             await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
-        const voiceChannel = (await interaction.guild.members.fetch(interaction.user.id)).voice.channel;
-        if (voiceChannel === null) {
+        if (interaction.member.voice.channel === null) {
             await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], ephemeral: true });
             return;
         }
@@ -29,7 +28,7 @@ class Remove extends Command {
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;
-        } else if (player !== undefined && voiceChannel.id !== player.voiceChannelId) {
+        } else if (interaction.member.voice.channel.id !== player.voiceChannelId) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
         }

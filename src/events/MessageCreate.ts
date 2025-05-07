@@ -19,11 +19,11 @@ class MessageCreate extends Event<typeof EventType> {
         };
 
         this.run = async message => {
-            if (message.author.bot || message.guild === null) return;
+            if (message.author.bot || !message.inGuild()) return;
 
-            const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, message.author.id), eq(User.guildId, message.guildId!))).limit(1);
-            const guildQuery = await this.client.db.select().from(Guild).where(eq(Guild.discordId, message.guildId!)).limit(1);
-            const cooldownQuery = await this.client.db.select().from(Cooldowns).where(and(eq(Cooldowns.discordId, message.author.id), eq(Cooldowns.guildId, message.guildId!))).limit(1);
+            const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, message.author.id), eq(User.guildId, message.guildId))).limit(1);
+            const guildQuery = await this.client.db.select().from(Guild).where(eq(Guild.discordId, message.guildId)).limit(1);
+            const cooldownQuery = await this.client.db.select().from(Cooldowns).where(and(eq(Cooldowns.discordId, message.author.id), eq(Cooldowns.guildId, message.guildId))).limit(1);
 
             let dbUser: typeof User.$inferSelect | null = userQuery.length !== 0 ? userQuery[0] : null;
             let guild: typeof Guild.$inferSelect | null = guildQuery.length !== 0 ? guildQuery[0] : null;
@@ -32,7 +32,7 @@ class MessageCreate extends Event<typeof EventType> {
             if (guild === null) {
                 this.client.logger.debug("Database", `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
                 guild = (await this.client.db.insert(Guild).values({
-                    discordId: message.guildId!
+                    discordId: message.guildId
                 } satisfies typeof Guild.$inferInsert).returning())[0];
             }
 
@@ -40,7 +40,7 @@ class MessageCreate extends Event<typeof EventType> {
                 this.client.logger.debug("Database", `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                 dbUser = (await this.client.db.insert(User).values({
                     discordId: message.author.id,
-                    guildId: message.guildId!,
+                    guildId: message.guildId,
                     level: this.client.config.modules.leveling.enabled ? this.client.config.modules.leveling.level.min : 0
                 } satisfies typeof User.$inferInsert).returning())[0];
             }
@@ -49,7 +49,7 @@ class MessageCreate extends Event<typeof EventType> {
                 this.client.logger.debug("Database", `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                 cooldowns = (await this.client.db.insert(Cooldowns).values({
                     discordId: message.author.id,
-                    guildId: message.guildId!
+                    guildId: message.guildId
                 } satisfies typeof Cooldowns.$inferInsert).returning())[0];
             }
 

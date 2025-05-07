@@ -10,12 +10,10 @@ import {
     EmbedBuilder,
     type Snowflake,
     type User,
-    TextChannel,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
     type BaseMessageOptions,
-    ChannelType,
     User as DiscordUser,
     Guild
 } from "discord.js";
@@ -132,14 +130,14 @@ export class DiscordBot extends Client<true> {
             this.lavalink.on(ManagerEventTypes.NodeDisconnect, node => {
                 this.logger.warn("Lavalink Manager", `Disconnected from node ${node.options.identifier}.`);
 
-                // Kill all players after 30 seconds.
+                // Kill all players associated with the node after 30 seconds.
                 killPlayers = setTimeout(() => {
                     this.lavalink.players.filter(player => player.node === node).forEach(player => void player.destroy());
                 }, 3e4);
             });
 
             this.lavalink.on(ManagerEventTypes.NodeReconnect, node => {
-                // Reset and restart all players.
+                // Reset and restart all players associated with the node.
                 clearInterval(killPlayers);
                 this.lavalink.players.filter(player => player.node === node).forEach(player => void player.pause(false));
             });
@@ -150,7 +148,7 @@ export class DiscordBot extends Client<true> {
 
             this.lavalink.on(ManagerEventTypes.QueueEnd, player => {
                 const channel = this.channels.cache.get(player.textChannelId!);
-                if (channel?.type === ChannelType.GuildText && !player.paused && player.playing) {
+                if (channel?.isSendable() && !player.paused && player.playing) {
                     void channel.send({ embeds: [this.createEmbed(player.guildId, "Leaving channel as the queue has ended.").setColor(this.config.colors.blue)] });
                     void player.destroy();
                 }
@@ -160,7 +158,7 @@ export class DiscordBot extends Client<true> {
                 this.logger.debug(`Lavalink Node ${player.node.options.identifier}`, `Now playing "${track.title}".`);
                 if (player.queue.length !== 0 && player.textChannelId !== null) {
                     void this.channels.fetch(player.textChannelId).then(channel => {
-                        if (channel !== null && channel instanceof TextChannel) void channel.send(this.createNowPlayingDetails(player, true));
+                        if (channel?.isSendable()) void channel.send(this.createNowPlayingDetails(player, true));
                     });
                 }
             });

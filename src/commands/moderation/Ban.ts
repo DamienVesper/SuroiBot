@@ -8,25 +8,17 @@ import {
 import { Command, type ConfigType } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
 
+import { durations } from "../../utils/utils.js";
+
 class Ban extends Command {
     cmd = new SlashCommandBuilder()
         .setName("ban")
         .addUserOption(option => option.setName("user").setDescription("The user to ban.").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are banning the user."))
-        .addStringOption(option => option.setName("purgeDuration").setDescription("Duration of messages to remove. Defaults to 1d if not specified.").setChoices([
-            {
-                name: "none",
-                value: "0"
-            },
-            {
-                name: "1d",
-                value: "86400"
-            },
-            {
-                name: "7d",
-                value: "604800"
-            }
-        ]))
+        .addStringOption(option => option
+            .setName("deleteMessages")
+            .setDescription("Duration of messages to remove. Defaults to 1d if not specified.")
+            .setChoices(Object.entries(durations).map(([key, value]) => ({ name: key, value: value.toString() }))))
         .setDescription("Ban a user.")
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .setContexts(InteractionContextType.Guild);
@@ -43,11 +35,11 @@ class Ban extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) return;
+        if (!interaction.inCachedGuild()) return;
 
         const user = interaction.options.getUser("user", true);
         const reason = interaction.options.getString("reason") ?? "No reason provided";
-        const deleteMessageSeconds = parseInt(interaction.options.getString("purgeDuration") ?? "86400");
+        const deleteMessageSeconds = parseInt(interaction.options.getString("deleteMessages") ?? "86400");
 
         const member = await interaction.guild.members.fetch(interaction.user.id);
         const target = await interaction.guild.members.fetch(user.id);
@@ -68,7 +60,7 @@ class Ban extends Command {
         const modCase = (await this.client.db.insert(Case).values({
             discordId: target.id,
             issuerId: interaction.user.id,
-            guildId: interaction.guildId!,
+            guildId: interaction.guildId,
             reason,
             action: CaseAction.Ban
         } satisfies typeof Case.$inferInsert).returning())[0];
@@ -76,7 +68,7 @@ class Ban extends Command {
         const msg = await target.send({ embeds: [this.client.createDMCaseEmbed(modCase.id, CaseAction.Ban, interaction.guild, interaction.user, reason)] });
         await target.ban({ reason, deleteMessageSeconds })
             .then(async () => {
-                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Ban, target.user, interaction.guild!)] });
+                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Ban, target.user, interaction.guild)] });
                 if (this.client.config.modules.logging.enabled) {
                     const logChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.modLog);
                     const punishmentChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);

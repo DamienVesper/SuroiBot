@@ -23,7 +23,7 @@ class Leaderboard extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) {
+        if (!interaction.inCachedGuild()) {
             await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }

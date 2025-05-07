@@ -1,12 +1,12 @@
 import { relations } from "drizzle-orm";
 import {
     boolean,
-    date,
     integer,
     numeric,
     pgTable,
     serial,
-    text
+    text,
+    timestamp
 } from "drizzle-orm/pg-core";
 
 import { Case } from "./Case.js";
@@ -15,7 +15,8 @@ import { Cooldowns } from "./Cooldowns.js";
 
 export const User = pgTable("user", {
     id: serial("id").primaryKey(),
-    createdAt: date()
+    createdAt: timestamp()
+        .notNull()
         .defaultNow(),
     discordId: text("discordId")
         .notNull()

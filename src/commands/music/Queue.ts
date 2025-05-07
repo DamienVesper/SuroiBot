@@ -2,8 +2,7 @@ import {
     EmbedBuilder,
     InteractionContextType,
     SlashCommandBuilder,
-    type ChatInputCommandInteraction,
-    type VoiceChannel
+    type ChatInputCommandInteraction
 } from "discord.js";
 
 import { Command } from "../../classes/Command.js";
@@ -18,13 +17,12 @@ class Queue extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) {
+        if (!interaction.inCachedGuild()) {
             await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
-        const voiceChannel = (await interaction.guild.members.fetch(interaction.user.id)).voice.channel;
-        if (voiceChannel === null) {
+        if (interaction.member.voice.channel === null) {
             await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], ephemeral: true });
             return;
         }
@@ -35,7 +33,7 @@ class Queue extends Command {
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;
-        } else if (player !== undefined && voiceChannel.id !== player.voiceChannelId) {
+        } else if (interaction.member.voice.channel.id !== player.voiceChannelId) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
         }
@@ -57,7 +55,11 @@ class Queue extends Command {
             return;
         }
 
-        const channel = await this.client.channels.fetch(player.voiceChannelId) as VoiceChannel;
+        const channel = await this.client.channels.fetch(player.voiceChannelId);
+        if (!channel?.isVoiceBased()) {
+            this.client.logger.error("Gateway", `Tried to view a queue for a channel that is not a voice channel. [GUILD]: ${player.guildId} [CHANNEL]: ${player.voiceChannelId}.`);
+            return;
+        }
 
         for (let i = 0; i < pageCount * 10; i += 10) {
             const tracks = queue.slice(i, Math.min(i + 10, queue.length));

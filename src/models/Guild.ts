@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
 import {
-    date,
     pgTable,
     serial,
-    text
+    text,
+    timestamp
 } from "drizzle-orm/pg-core";
 
 import { Case } from "./Case.js";
@@ -12,7 +12,8 @@ import { User } from "./User.js";
 
 export const Guild = pgTable("guild", {
     id: serial("id").primaryKey(),
-    createdAt: date()
+    createdAt: timestamp()
+        .notNull()
         .defaultNow(),
     discordId: text("discordId")
         .notNull()

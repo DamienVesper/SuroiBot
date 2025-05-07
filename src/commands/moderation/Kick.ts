@@ -29,7 +29,7 @@ class Kick extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) return;
+        if (!interaction.inCachedGuild()) return;
 
         const user = interaction.options.getUser("user", true);
         const reason = interaction.options.getString("reason") ?? "No reason provided";
@@ -53,7 +53,7 @@ class Kick extends Command {
         const modCase = (await this.client.db.insert(Case).values({
             discordId: target.id,
             issuerId: interaction.user.id,
-            guildId: interaction.guildId!,
+            guildId: interaction.guildId,
             reason,
             action: CaseAction.Kick
         } satisfies typeof Case.$inferInsert).returning())[0];
@@ -61,13 +61,13 @@ class Kick extends Command {
         const msg = await target.send({ embeds: [this.client.createDMCaseEmbed(modCase.id, CaseAction.Kick, interaction.guild, interaction.user, reason)] });
         await target.kick(reason)
             .then(async () => {
-                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Kick, target.user, interaction.guild!)] });
+                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Kick, target.user, interaction.guild)] });
                 if (this.client.config.modules.logging.enabled) {
                     const logChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.modLog);
                     const punishmentChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);
 
-                    if (logChannel?.isSendable()) await logChannel.send({ embeds: [this.client.createLogEmbed(modCase.id, CaseAction.Ban, interaction.user, target.user, reason)] });
-                    if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Ban, interaction.user, target.user, reason)] });
+                    if (logChannel?.isSendable()) await logChannel.send({ embeds: [this.client.createLogEmbed(modCase.id, CaseAction.Kick, interaction.user, target.user, reason)] });
+                    if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Kick, interaction.user, target.user, reason)] });
                 }
             }).catch(async err => {
                 this.client.logger.warn("Gateway", `Failed to kick: ${err.stack ?? err.message}`);

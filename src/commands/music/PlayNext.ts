@@ -13,13 +13,12 @@ class PlayNext extends Command {
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null || !interaction.inGuild() || !interaction.channel?.isTextBased()) {
+        if (!interaction.inCachedGuild() || !interaction.channel?.isTextBased()) {
             await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
             return;
         }
 
-        const voiceChannel = (await interaction.guild.members.fetch(interaction.user.id)).voice.channel;
-        if (voiceChannel === null) {
+        if (interaction.member.voice.channel === null) {
             await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], ephemeral: true });
             return;
         }
@@ -27,7 +26,7 @@ class PlayNext extends Command {
         await interaction.deferReply();
 
         const guildPlayer = this.client.lavalink.players.get(interaction.guild.id);
-        if (guildPlayer !== undefined && voiceChannel.id !== guildPlayer.voiceChannelId) {
+        if (guildPlayer !== undefined && interaction.member.voice.channel.id !== guildPlayer.voiceChannelId) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
         }
@@ -46,7 +45,7 @@ class PlayNext extends Command {
 
         const player = this.client.lavalink.create({
             guildId: interaction.guild.id,
-            voiceChannelId: voiceChannel.id,
+            voiceChannelId: interaction.member.voice.channel.id,
             textChannelId: interaction.channel.id,
             volume: 75,
             selfDeafen: true

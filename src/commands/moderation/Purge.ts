@@ -1,6 +1,5 @@
 import {
     EmbedBuilder,
-    GuildTextBasedChannel,
     InteractionContextType,
     PermissionFlagsBits,
     SlashCommandBuilder,
@@ -46,7 +45,7 @@ class Purge extends Command {
         }
 
         await interaction.deferReply();
-        await (interaction.channel as GuildTextBasedChannel).bulkDelete?.(messages)
+        await interaction.channel.bulkDelete?.(messages)
             .then(async () => {
                 await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Deleted **${messages.size}** messages.`)] });
                 if (this.client.config.modules.logging.enabled) {

@@ -29,7 +29,7 @@ class Softban extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (interaction.guild === null) return;
+        if (!interaction.inCachedGuild()) return;
 
         const user = interaction.options.getUser("user", true);
         const reason = interaction.options.getString("reason") ?? "No reason provided";
@@ -53,7 +53,7 @@ class Softban extends Command {
         const modCase = (await this.client.db.insert(Case).values({
             discordId: target.id,
             issuerId: interaction.user.id,
-            guildId: interaction.guildId!,
+            guildId: interaction.guildId,
             reason,
             action: CaseAction.Softban
         } satisfies typeof Case.$inferInsert).returning())[0];
@@ -61,7 +61,7 @@ class Softban extends Command {
         const msg = await target.send({ embeds: [this.client.createDMCaseEmbed(modCase.id, CaseAction.Softban, interaction.guild, interaction.user, reason)] });
         await target.ban({ reason, deleteMessageSeconds: 604800 })
             .then(async () => {
-                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Softban, target.user, interaction.guild!)] });
+                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Softban, target.user, interaction.guild)] });
                 if (this.client.config.modules.logging.enabled) {
                     const logChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.modLog);
                     const punishmentChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);
@@ -70,9 +70,9 @@ class Softban extends Command {
                     if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Softban, interaction.user, target.user, reason)] });
                 }
 
-                await interaction.guild!.members.unban(target.id, `Softban | Case #${modCase.id}`)
+                await interaction.guild.members.unban(target.id, `Softban | Case #${modCase.id}`)
                     .then(async () => {
-                        await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Softban, target.user, interaction.guild!)] });
+                        await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Softban, target.user, interaction.guild)] });
                     }).catch(err => {
                         console.error(err);
                         void interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I could not unban that user.")] });

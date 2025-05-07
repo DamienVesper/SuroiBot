@@ -1,11 +1,11 @@
 import { relations } from "drizzle-orm";
 import {
     boolean,
-    date,
     pgEnum,
     pgTable,
     serial,
-    text
+    text,
+    timestamp
 } from "drizzle-orm/pg-core";
 
 import { Guild } from "./Guild.js";
@@ -26,10 +26,11 @@ export enum CaseAction {
 
 export const Case = pgTable("user", {
     id: serial("id").primaryKey(),
-    createdAt: date()
+    createdAt: timestamp()
+        .notNull()
         .defaultNow(),
-    updatedAt: date(),
-    expires: date(),
+    updatedAt: timestamp(),
+    expires: timestamp(),
     discordId: text("discordId")
         .notNull()
         .references(() => User.discordId),
