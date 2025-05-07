@@ -7,6 +7,9 @@ const customData = {
     bots: {
         suroiBot: "659582297871220766"
     },
+    channels: {
+        bugReports: "1109649399203762247"
+    },
 
     domain: "suroi.io",
     github: {

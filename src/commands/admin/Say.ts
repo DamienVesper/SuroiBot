@@ -1,5 +1,6 @@
 import {
     InteractionContextType,
+    MessageFlags,
     PermissionFlagsBits,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
@@ -31,7 +32,7 @@ class Say extends Command {
 
         const message = interaction.options.getString("message", true);
 
-        await interaction.reply({ embeds: [this.client.createApproveEmbed(interaction.user, "Your message was sent.")], ephemeral: true });
+        await interaction.reply({ embeds: [this.client.createApproveEmbed(interaction.user, "Your message was sent.")], flags: MessageFlags.Ephemeral });
 
         /**
          * Send a message while disabling all mentions in the message.

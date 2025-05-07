@@ -1,6 +1,7 @@
 import {
     EmbedBuilder,
     InteractionContextType,
+    MessageFlags,
     PermissionFlagsBits,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
@@ -50,7 +51,7 @@ class Embed extends Command {
         if (color !== null) {
             const col = Number(color);
             if (isNaN(col)) {
-                await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "That is an invalid color! Colors should be specified as `0xRRGGBB`.")], ephemeral: true });
+                await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "That is an invalid color! Colors should be specified as `0xRRGGBB`.")], flags: MessageFlags.Ephemeral });
                 return;
             }
 
@@ -58,7 +59,7 @@ class Embed extends Command {
         }
         if (footer !== null) sEmbed.setFooter({ text: footer });
 
-        await interaction.reply({ embeds: [this.client.createApproveEmbed(interaction.user, "Your embed was created.")], ephemeral: true });
+        await interaction.reply({ embeds: [this.client.createApproveEmbed(interaction.user, "Your embed was created.")], flags: MessageFlags.Ephemeral });
 
         /**
          * Send an embed.

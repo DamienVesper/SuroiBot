@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Collection, Events, InteractionContextType, PermissionFlagsBits } from "discord.js";
+import { ChatInputCommandInteraction, Collection, Events, MessageFlags, PermissionFlagsBits } from "discord.js";
 
 import { Event } from "../classes/Event.js";
 
@@ -22,7 +22,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  * Check if the bot, if in a guild, has the minimum permissions to send messages.
                  * If it is in a guild and does not have the required permissions, abort the interaction.
                  */
-                if (interaction.inGuild() && interaction.channel?.permissionsFor(interaction.guild!.members.me!).has([
+                if (interaction.inGuild() && !interaction.channel?.permissionsFor(interaction.guild!.members.me!).has([
                     PermissionFlagsBits.ViewChannel,
                     PermissionFlagsBits.SendMessages
                 ])) return;
@@ -35,7 +35,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  */
                 const command = this.client.commands.get(interaction.commandName);
                 if (command === undefined) {
-                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "This command is outdated. Please try again.")], ephemeral: true });
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "This command is outdated. Please try again.")], flags: MessageFlags.Ephemeral });
                     return;
                 }
 
@@ -52,20 +52,18 @@ class InteractionCreate extends Event<typeof EventType> {
                 }
 
                 /**
-                 * We only want to be able to additionally run the "guide" category commands outside of guild channels.
-                 * All other commands (include "guide" commands) should be run in a guild (or the dev guild, if in dev permissions mode).
-                 * The following two if statements handle these cases.
+                 * If command is being invoked from outside of a guild, run it without checking for permissions, as there is no concept of permissions outside of a guild.
                  */
-                if (command.category === "guide") {
+                if (!interaction.inGuild()) {
                     await runCommand(this.client, interaction, command);
                     return;
                 }
 
-                if (
-                    command.cmd.contexts?.includes(InteractionContextType.Guild)
-                    || !interaction.inGuild()
-                    || (this.client.config.dev.overridePermissions && interaction.guildId !== this.client.config.dev.guildID)
-                ) {
+                /**
+                 * If command is being invoked from a guild while development mode is enabled,
+                 * handle the special case where permissions are taken from the config file.
+                 */
+                if (this.client.config.dev.overridePermissions && interaction.guildId !== this.client.config.dev.guildID) {
                     await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "That command cannot be used here!")] });
                     return;
                 }
@@ -76,7 +74,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  */
                 const missingUserPerms = interaction.memberPermissions.missing(command.config.userPermissions) ?? [];
                 if (missingUserPerms.length !== 0) {
-                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? "permission" : "permissions"} ${missingUserPerms.map(x => `\`${x}\``).join(", ")} to use this command.`)], ephemeral: true });
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? "permission" : "permissions"} ${missingUserPerms.map(x => `\`${x}\``).join(", ")} to use this command.`)], flags: MessageFlags.Ephemeral });
                     return;
                 }
 
@@ -86,7 +84,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  */
                 const missingBotPerms = interaction.guild?.members.me?.permissions.missing(command.config.botPermissions) ?? [];
                 if (missingBotPerms.length !== 0) {
-                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? "permission" : "permissions"} ${missingBotPerms.map(x => `\`${x}\``).join(", ")} to execute this command.`)], ephemeral: true });
+                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? "permission" : "permissions"} ${missingBotPerms.map(x => `\`${x}\``).join(", ")} to execute this command.`)], flags: MessageFlags.Ephemeral });
                     return;
                 }
 
@@ -104,7 +102,7 @@ class InteractionCreate extends Event<typeof EventType> {
                     const cmdCooldown = cooldowns.get(command.cmd.name);
                     if (cmdCooldown === undefined || (Date.now() - cmdCooldown > command.config.cooldown)) cooldowns.set(command.cmd.name, Date.now());
                     else {
-                        await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must wait another \`${numToCooldownFormat(command.config.cooldown - (Date.now() - cmdCooldown))}\` before using that command.`)], ephemeral: true });
+                        await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You must wait another \`${numToCooldownFormat(command.config.cooldown - (Date.now() - cmdCooldown))}\` before using that command.`)], flags: MessageFlags.Ephemeral });
                         return;
                     }
                 }
@@ -140,8 +138,8 @@ const runCommand = async (client: InteractionCreate["client"], interaction: Chat
         client.logger.error("Gateway", err.stack ?? err.message);
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         interaction.replied || interaction.deferred
-            ? await interaction.followUp({ embeds: [client.createDenyEmbed(interaction.user, "There was an error executing this command.")], ephemeral: interaction.ephemeral ?? true })
-            : await interaction.reply({ embeds: [client.createDenyEmbed(interaction.user, "There was an error executing this command.")], ephemeral: true });
+            ? await interaction.followUp({ embeds: [client.createDenyEmbed(interaction.user, "There was an error executing this command.")], flags: interaction.ephemeral ? MessageFlags.Ephemeral : undefined })
+            : await interaction.reply({ embeds: [client.createDenyEmbed(interaction.user, "There was an error executing this command.")], flags: MessageFlags.Ephemeral });
     }
 };
 

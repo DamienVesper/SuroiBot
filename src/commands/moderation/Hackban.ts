@@ -2,6 +2,7 @@ import {
     EmbedBuilder,
     GuildMember,
     InteractionContextType,
+    MessageFlags,
     PermissionFlagsBits,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
@@ -40,7 +41,7 @@ class Hackban extends Command {
         const target = await interaction.guild.members.fetch(targetId) as GuildMember | null;
 
         if (target !== null) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "Hackban only works on users who are not in the server.\nPlease use `/ban` to ban users in the server.")], ephemeral: true });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "Hackban only works on users who are not in the server.\nPlease use `/ban` to ban users in the server.")], flags: MessageFlags.Ephemeral });
             return;
         }
 

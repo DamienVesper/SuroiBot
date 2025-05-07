@@ -3,6 +3,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     EmbedBuilder,
+    InteractionContextType,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";
@@ -34,7 +35,8 @@ const rulesText = `
 class Rules extends Command {
     cmd = new SlashCommandBuilder()
         .setName("rules")
-        .setDescription("View server rules.");
+        .setDescription("View server rules.")
+        .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         const sEmbed = new EmbedBuilder()

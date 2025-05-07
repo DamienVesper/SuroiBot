@@ -177,7 +177,9 @@ export class DiscordBot extends Client<true> {
 
         for (const file of files) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
+            const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href))?.default;
+            if (!ClientEvent) continue;
+
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
             const event = new ClientEvent(this);
 
@@ -201,7 +203,9 @@ export class DiscordBot extends Client<true> {
 
         for (const file of files) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href)).default;
+            const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href))?.default;
+            if (!ClientCommand) continue;
+
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
             const command = new ClientCommand(this);
 

@@ -1,6 +1,7 @@
 import {
     EmbedBuilder,
     InteractionContextType,
+    MessageFlags,
     PermissionFlagsBits,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
@@ -40,7 +41,7 @@ class Purge extends Command {
         if (target) messages = messages.filter(x => x.author.id === target.id);
 
         if (messages.size === 0) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There are no messages to delete.")], ephemeral: true });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There are no messages to delete.")], flags: MessageFlags.Ephemeral });
             return;
         }
 

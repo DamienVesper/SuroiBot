@@ -55,6 +55,8 @@ class Status extends Command {
             let playerCount = 0;
             for (const value of VALUES) playerCount += Number(value.value[0]);
 
+            const bugReportsChannel = await this.client.channels.fetch(this.client.config.customData.channels.bugReports).catch(err => this.client.logger.error("Gateway", err.stack ?? err.message));
+
             const desc = [
                 "## Suroi Status",
                 `Currently **${playerCount}** players online.`,
@@ -80,7 +82,7 @@ class Status extends Command {
             const sRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Play Suroi").setURL(`https://${this.client.config.customData.domain}`),
                 new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Wiki").setURL(`https://wiki.${this.client.config.customData.domain}`),
-                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Report a problem").setURL(`https://discord.com/users/${this.client.config.customData.users.hasanger}`)
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Report a problem").setURL(bugReportsChannel?.url ?? `https://discord.com/channels/${this.client.config.customData.users.hasanger}`)
             );
 
             await interaction.followUp({ embeds: [sEmbed], components: [sRow] });

@@ -1,5 +1,6 @@
 import {
     InteractionContextType,
+    MessageFlags,
     PermissionFlagsBits,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
@@ -16,7 +17,7 @@ class Ban extends Command {
         .addUserOption(option => option.setName("user").setDescription("The user to ban.").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are banning the user."))
         .addStringOption(option => option
-            .setName("deleteMessages")
+            .setName("delete_messages")
             .setDescription("Duration of messages to remove. Defaults to 1d if not specified.")
             .setChoices(Object.entries(durations).map(([key, value]) => ({ name: key, value: value.toString() }))))
         .setDescription("Ban a user.")
@@ -45,13 +46,13 @@ class Ban extends Command {
         const target = await interaction.guild.members.fetch(user.id);
 
         if (!target) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "That user is not in the server.")], ephemeral: true });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "That user is not in the server.")], flags: MessageFlags.Ephemeral });
             return;
         } else if (!target.bannable || target.user.bot) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I cannot ban that user.")], ephemeral: true });
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I cannot ban that user.")], flags: MessageFlags.Ephemeral });
             return;
         } else if (target.roles.highest.comparePositionTo(member.roles.highest) >= 0) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You do not outrank that user.")], ephemeral: true });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You do not outrank that user.")], flags: MessageFlags.Ephemeral });
             return;
         }
 

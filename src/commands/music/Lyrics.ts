@@ -2,7 +2,8 @@ import {
     EmbedBuilder,
     SlashCommandBuilder,
     InteractionContextType,
-    type ChatInputCommandInteraction
+    type ChatInputCommandInteraction,
+    MessageFlags
 } from "discord.js";
 
 import { Command } from "../../classes/Command.js";
@@ -18,12 +19,12 @@ class Lyrics extends Command {
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (!interaction.inCachedGuild()) {
-            await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
+            await interaction.reply({ content: "This command can only be used in a guild!", flags: MessageFlags.Ephemeral });
             return;
         }
 
         if (interaction.member.voice.channel === null) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], ephemeral: true });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in a voice channel to use that command!")], flags: MessageFlags.Ephemeral });
             return;
         }
 

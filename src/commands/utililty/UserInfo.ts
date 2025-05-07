@@ -19,7 +19,7 @@ class UserInfo extends Command {
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (!interaction.inCachedGuild()) {
-            await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
+            await interaction.reply({ content: "This command can only be used in a guild!", flags: MessageFlags.Ephemeral });
             return;
         }
 
@@ -28,7 +28,7 @@ class UserInfo extends Command {
 
         const member: GuildMember | null = await interaction.guild.members.fetch(user?.id ?? interaction.user.id);
         if (member === null) {
-            await interaction.reply({ content: "The interaction member was not found in the guild.", ephemeral: true });
+            await interaction.reply({ content: "The interaction member was not found in the guild.", flags: MessageFlags.Ephemeral });
             return;
         }
 

@@ -23,7 +23,7 @@ class Rank extends Command {
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (!interaction.inCachedGuild()) {
-            await interaction.reply({ content: "This command can only be used in a guild!", ephemeral: true });
+            await interaction.reply({ content: "This command can only be used in a guild!", flags: MessageFlags.Ephemeral });
             return;
         }
 
