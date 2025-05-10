@@ -11,12 +11,12 @@ import { Command, type ConfigType } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
 import { cleanse } from "../../utils/utils.js";
 
-class Hackban extends Command {
+class Unban extends Command {
     cmd = new SlashCommandBuilder()
-        .setName("hackban")
+        .setName("unban")
         .addStringOption(option => option.setName("id").setDescription("The ID of user to ban.").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are banning the user."))
-        .setDescription("Hackban a user.")
+        .setDescription("Unban a user.")
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .setContexts(InteractionContextType.Guild);
 
@@ -37,10 +37,9 @@ class Hackban extends Command {
         const targetId = interaction.options.getString("id", true);
         const reason = interaction.options.getString("reason") ?? "No reason provided";
 
-        const target = await interaction.guild.members.fetch(targetId);
-
-        if (target !== null) {
-            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "Hackban only works on users who are not in the server.\nPlease use `/ban` to ban users in the server.")], flags: MessageFlags.Ephemeral });
+        const target = await interaction.guild.bans.fetch(targetId);
+        if (target === null) {
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "That user is not banned!")], flags: MessageFlags.Ephemeral });
             return;
         }
 
@@ -51,12 +50,12 @@ class Hackban extends Command {
             issuerId: interaction.user.id,
             guildId: interaction.guildId,
             reason,
-            action: CaseAction.Hackban
+            action: CaseAction.Unban
         } satisfies typeof Case.$inferInsert).returning())[0];
 
-        await interaction.guild.members.ban(targetId, { reason })
+        await interaction.guild.members.unban(targetId, reason)
             .then(async () => {
-                const replyEmbed = this.client.createEmbed(targetId, `${this.client.config.emojis.checkmark} **${targetId} was banned.`)
+                const replyEmbed = this.client.createEmbed(targetId, `${this.client.config.emojis.checkmark} **${targetId} was unbanned.`)
                     .setColor(this.client.config.colors.green);
 
                 await interaction.followUp({ embeds: [replyEmbed] });
@@ -67,9 +66,9 @@ class Hackban extends Command {
 
                     if (logChannel?.isSendable()) {
                         const logEmbed = new EmbedBuilder()
-                            .setAuthor({ name: targetId })
+                            .setAuthor({ name: target.user.tag })
                             .setDescription([
-                                `**\`${targetId}\` (<@${targetId}>) was hackbanned**.`,
+                                `**\`${targetId}\` (<@${targetId}>) was unbanned**.`,
                                 "",
                                 "**Responsible Moderator**",
                                 `<@${interaction.user.id}>`,
@@ -86,7 +85,7 @@ class Hackban extends Command {
                     if (punishmentChannel?.isSendable()) {
                         const caseEmbed = new EmbedBuilder()
                             .setColor(this.client.config.colors.orange)
-                            .setAuthor({ name: `Hackban | Case #${modCase.id}` })
+                            .setAuthor({ name: `Unban | Case #${modCase.id}` })
                             .addFields([
                                 {
                                     name: "User",
@@ -107,10 +106,10 @@ class Hackban extends Command {
                     }
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to hackban: ${err.stack ?? err.message}`);
-                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while banning that user.")] });
+                this.client.logger.warn("Gateway", `Failed to unban: ${err.stack ?? err.message}`);
+                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while unbanning that user.")] });
             });
     };
 }
 
-export default Hackban;
+export default Unban;

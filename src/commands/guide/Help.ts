@@ -1,5 +1,6 @@
 import {
     EmbedBuilder,
+    MessageFlags,
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";
@@ -16,7 +17,7 @@ class Help extends Command {
         .setDescription("View the help menu.");
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        await interaction.deferReply();
+        await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
         const commandsByCategory: Record<string, Command[]> = {};
         for (const [, command] of [...this.client.commands]) {

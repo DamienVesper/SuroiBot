@@ -45,7 +45,7 @@ class ServerInfo extends Command {
                 `${this.client.config.emojis.bot} Bots: \`${interaction.guild.members.cache.filter(member => member.user.bot).size}\``,
                 `${this.client.config.emojis.manager} **Roles:** \`${interaction.guild.roles.cache.size}\``
             ].join("\n"))
-            .setThumbnail(interaction.guild?.iconURL() ?? null)
+            .setThumbnail(interaction.guild.iconURL() ?? null)
             .setTimestamp()
             .setFooter({ text: `ID: ${interaction.user.id}` });
 

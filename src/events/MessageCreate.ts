@@ -21,6 +21,9 @@ class MessageCreate extends Event<typeof EventType> {
         this.run = async message => {
             if (message.author.bot || !message.inGuild()) return;
 
+            /**
+             * Expensive to run three different queries per message. Maybe this can be simplified somehow?
+             */
             const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, message.author.id), eq(User.guildId, message.guildId))).limit(1);
             const guildQuery = await this.client.db.select().from(Guild).where(eq(Guild.discordId, message.guildId)).limit(1);
             const cooldownQuery = await this.client.db.select().from(Cooldowns).where(and(eq(Cooldowns.discordId, message.author.id), eq(Cooldowns.guildId, message.guildId))).limit(1);
@@ -72,7 +75,7 @@ class MessageCreate extends Event<typeof EventType> {
                         // Update player XP.
                         await this.client.db.update(User).set({
                             xp: dbUser.xp,
-                            level: dbUser.level // TODO: Check perf to see if this is updated only as needed.                            }
+                            level: dbUser.level // TODO: Check perf to see if this is updated only as needed.
                         }).where(eq(User.id, dbUser.id));
 
                         // Update player cooldowns.

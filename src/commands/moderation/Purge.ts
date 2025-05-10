@@ -31,7 +31,7 @@ class Purge extends Command {
     };
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (!interaction.inGuild() || !interaction.channel?.isTextBased()) return;
+        if (!interaction.inCachedGuild() || !interaction.channel?.isTextBased()) return;
 
         const amount = interaction.options.getNumber("amount", true);
         const target = interaction.options.getUser("user", true);
@@ -50,7 +50,7 @@ class Purge extends Command {
             .then(async () => {
                 await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `Deleted **${messages.size}** messages.`)] });
                 if (this.client.config.modules.logging.enabled) {
-                    const logChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.modLog);
+                    const logChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
                     if (logChannel?.isSendable()) {
                         const sEmbed = new EmbedBuilder()
                             .setColor(this.client.config.colors.blue)
@@ -67,7 +67,7 @@ class Purge extends Command {
                 }
             }).catch(async err => {
                 this.client.logger.warn("Gateway", `Failed to delete messages: ${err.stack ?? err.message}`);
-                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while deleting the messages.")] });
+                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while bulk deleting messages.")] });
             });
 
         await Bun.sleep(5e3);

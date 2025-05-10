@@ -9,13 +9,14 @@ import {
 } from "discord.js";
 
 import { Command, type ConfigType } from "../../classes/Command.js";
-import { cleanse } from "../../utils/utils.js";
+import { cleanse, numToCooldownFormat } from "../../utils/utils.js";
 
-class Lockdown extends Command {
+class Slowmode extends Command {
     cmd = new SlashCommandBuilder()
-        .setName("lockdown")
-        .setDescription("Lock / unlock the channel.")
-        .addStringOption(option => option.setName("reason").setDescription("The reason you are locking / unlocking the channel."))
+        .setName("slowmode")
+        .setDescription("Set a slowmode on the channel.")
+        .addIntegerOption(option => option.setName("duration").setDescription("The ratelimit duration, in seconds, per user per message.").setMinValue(1).setMaxValue(100).setRequired(true))
+        .addStringOption(option => option.setName("reason").setDescription("The reason you are modifying channel slowmode."))
         .setContexts(InteractionContextType.Guild);
 
     config: ConfigType = {
@@ -27,7 +28,7 @@ class Lockdown extends Command {
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         /**
-         * There is probably some type guard that I missed that will guarantee permissionsOverwrite.
+         * There is probably some type guard that I missed that will guarantee setRateLimitPerUser.
          */
         if (!interaction.inCachedGuild() || (
             interaction.channel?.type !== ChannelType.GuildText
@@ -47,28 +48,28 @@ class Lockdown extends Command {
             return;
         }
 
+        const duration = interaction.options.getInteger("duration", true);
         const reason = interaction.options.getString("reason") ?? "No reason provided";
 
         await interaction.deferReply();
-
-        const isLocked = !interaction.channel.permissionsFor(interaction.guild.id)?.has(PermissionFlagsBits.SendMessages);
-        await interaction.channel.permissionOverwrites.edit(interaction.guild.id, { SendMessages: !isLocked }, { reason })
+        await interaction.channel.setRateLimitPerUser(duration, reason)
             .then(async () => {
-                await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${isLocked ? "Locked" : "Unlocked"} #${interaction.channel!.name}**.`)] });
+                await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**Set slowmode to ${duration} seconds**.`)] });
 
                 if (this.client.config.modules.logging.enabled) {
                     const logChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
 
                     if (logChannel?.isSendable()) {
                         const logEmbed = new EmbedBuilder()
-                            .setAuthor({ name: isLocked ? "Lock" : "Unlock" })
+                            .setAuthor({ name: "Slowmode Changed" })
                             .setDescription([
-                                `**<#${interaction.channelId}> was ${isLocked ? "locked" : "unlocked"}**.`,
-                                "",
-                                "**Responsible Moderator**",
+                                "### Channel",
+                                `<#${interaction.channelId}`,
+                                "### Duration",
+                                numToCooldownFormat(duration),
+                                "### Responsible Moderator",
                                 `<@${interaction.user.id}>`,
-                                "",
-                                "**Reason**",
+                                "### Reason",
                                 `\`\`\`${cleanse(reason)}\`\`\``
                             ].join("\n"))
                             .setTimestamp()
@@ -78,10 +79,10 @@ class Lockdown extends Command {
                     }
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to modify channel permissions: ${err.stack ?? err.message}`);
-                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while updating the channel.")] });
+                this.client.logger.warn("Gateway", `Failed to modify channel slowmode: ${err.stack ?? err.message}`);
+                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while updating the channel's slowmode.")] });
             });
     };
 }
 
-export default Lockdown;
+export default Slowmode;

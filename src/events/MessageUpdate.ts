@@ -35,7 +35,7 @@ class MessageUpdate extends Event<typeof EventType> {
                 .setTimestamp()
                 .setFooter({ text: `ID: ${oldMsg.author.id}` });
 
-            const logChannel = await oldMsg.guild?.channels.fetch(this.client.config.modules.logging.channels.modLog);
+            const logChannel = await oldMsg.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
             if (logChannel?.isSendable()) await logChannel.send({ embeds: [logEmbed] });
         };
     }

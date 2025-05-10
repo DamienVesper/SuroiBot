@@ -28,7 +28,7 @@ class BotInfo extends Command {
                 `${this.client.config.emojis.processor} **CPU:** \`${(cpuUsage * 100).toFixed(2)}%\``,
                 `${this.client.config.emojis.memory} **Memory:** \`${Math.trunc(process.memoryUsage().rss / (1024 ** 2))} MiB\``
             ].join("\n"))
-            .setThumbnail(interaction.guild?.iconURL() ?? null)
+            .setThumbnail(interaction.guild.iconURL() ?? null)
             .setTimestamp()
             .setFooter({ text: `ID: ${interaction.user.id}` });
 

@@ -272,6 +272,9 @@ export class DiscordBot extends Client<true> {
      * @param reason The reason for the action.
      */
     createDMCaseEmbed = (id: number, action: CaseAction, guild: Guild, moderator: DiscordUser, reason: string): EmbedBuilder => (
+        /**
+         * @todo Link to appeals server for bans.
+         */
         new EmbedBuilder()
             .setColor(this.config.colors.red)
             .setDescription([

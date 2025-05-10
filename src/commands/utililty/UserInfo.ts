@@ -68,7 +68,7 @@ class UserInfo extends Command {
             .setColor(this.client.config.colors.orange)
             .setDescription("### User Information")
             .setFields(fields)
-            .setThumbnail(interaction.guild?.iconURL() ?? null)
+            .setThumbnail(interaction.guild.iconURL() ?? null)
             .setTimestamp()
             .setFooter({ text: `ID: ${interaction.user.id}` });
 

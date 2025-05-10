@@ -22,7 +22,7 @@ class Mute extends Command {
             .setChoices(Object.entries(durations).map(([key, value]) => ({ name: key, value: value.toString() }))))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are muting the user."))
         .setDescription("Mute a user.")
-        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .setContexts(InteractionContextType.Guild);
 
     config: ConfigType = {
@@ -42,7 +42,7 @@ class Mute extends Command {
         const user = interaction.options.getUser("user", true);
         const reason = interaction.options.getString("reason") ?? "No reason provided";
 
-        const duration = parseInt(interaction.options.getString("duration", true));
+        const duration = parseInt(interaction.options.getString("duration", true)) * 1e3;
 
         const member = await interaction.guild.members.fetch(interaction.user.id);
         const target = await interaction.guild.members.fetch(user.id);
@@ -64,24 +64,25 @@ class Mute extends Command {
             discordId: target.id,
             issuerId: interaction.user.id,
             guildId: interaction.guildId,
+            expires: new Date(Date.now() + duration),
             reason,
             action: CaseAction.Mute
         } satisfies typeof Case.$inferInsert).returning())[0];
 
         const msg = await target.send({ embeds: [this.client.createDMCaseEmbed(modCase.id, CaseAction.Mute, interaction.guild, interaction.user, reason)] });
-        await target.timeout(Number(duration) * 1e3, reason)
+        await target.timeout(duration, reason)
             .then(async () => {
                 await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Mute, target.user, interaction.guild)] });
                 if (this.client.config.modules.logging.enabled) {
-                    const logChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.modLog);
-                    const punishmentChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);
+                    const logChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
+                    const punishmentChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);
 
                     if (logChannel?.isSendable()) await logChannel.send({ embeds: [this.client.createLogEmbed(modCase.id, CaseAction.Mute, interaction.user, target.user, reason)] });
                     if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Mute, interaction.user, target.user, reason)] });
                 }
             }).catch(async err => {
                 this.client.logger.warn("Gateway", `Failed to mute: ${err.stack ?? err.message}`);
-                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while kicking that user.")] });
+                await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while muting that user.")] });
                 await msg.delete();
             });
     };

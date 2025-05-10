@@ -54,7 +54,7 @@ class InteractionCreate extends Event<typeof EventType> {
                 /**
                  * If command is being invoked from outside of a guild, run it without checking for permissions, as there is no concept of permissions outside of a guild.
                  */
-                if (!interaction.inGuild()) {
+                if (!interaction.inCachedGuild()) {
                     await runCommand(this.client, interaction, command);
                     return;
                 }
@@ -82,7 +82,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  * Check if the bot has permissions (in Discord).
                  * This will also probably fail miserably.
                  */
-                const missingBotPerms = interaction.guild?.members.me?.permissions.missing(command.config.botPermissions) ?? [];
+                const missingBotPerms = interaction.guild.members.me?.permissions.missing(command.config.botPermissions) ?? [];
                 if (missingBotPerms.length !== 0) {
                     await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? "permission" : "permissions"} ${missingBotPerms.map(x => `\`${x}\``).join(", ")} to execute this command.`)], flags: MessageFlags.Ephemeral });
                     return;

@@ -64,8 +64,8 @@ class Kick extends Command {
             .then(async () => {
                 await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Kick, target.user, interaction.guild)] });
                 if (this.client.config.modules.logging.enabled) {
-                    const logChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.modLog);
-                    const punishmentChannel = await interaction.guild?.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);
+                    const logChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
+                    const punishmentChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);
 
                     if (logChannel?.isSendable()) await logChannel.send({ embeds: [this.client.createLogEmbed(modCase.id, CaseAction.Kick, interaction.user, target.user, reason)] });
                     if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Kick, interaction.user, target.user, reason)] });

@@ -26,10 +26,10 @@ const getServerInfo = (subdomain: string): Promise<Array<number | undefined>> =>
         .then(res => [res.data?.playerCount ?? 0, res.status])
         .catch((err: AxiosError) => [-1, err.response?.status]);
 
-class Status extends Command {
+class Servers extends Command {
     cmd = new SlashCommandBuilder()
-        .setName("status")
-        .setDescription("View the status of Suroi servers.");
+        .setName("servers")
+        .setDescription("View the status of Suroi game servers.");
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
         await interaction.deferReply();
@@ -90,4 +90,4 @@ class Status extends Command {
     };
 }
 
-export default Status;
+export default Servers;
