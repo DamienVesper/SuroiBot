@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "bun --bun tsc",
     "start": "bun --bun dist/index.js",
     "dev": "bun --bun ./src/index.ts",
     "lint": "eslint . --fix",
