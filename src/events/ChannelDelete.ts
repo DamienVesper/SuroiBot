@@ -1,0 +1,60 @@
+import { AuditLogEvent, EmbedBuilder, Events } from "discord.js";
+
+import { Event } from "../classes/Event.js";
+import { cleanse } from "../utils/utils.js";
+
+const EventType = Events.ChannelDelete;
+
+class ChannelDelete extends Event<typeof EventType> {
+    constructor (client: Event<typeof EventType>["client"]) {
+        super(client);
+
+        this.config = {
+            name: EventType,
+            once: false
+        };
+
+        this.run = async channel => {
+            if (!this.client.config.modules.logging.enabled || channel.isDMBased()) return;
+
+            const log = (await channel.guild.fetchAuditLogs({
+                type: AuditLogEvent.ChannelDelete,
+                limit: 1
+            })).entries.first();
+
+            if (!log?.executorId
+                || log.executorId === client.user.id
+                || Date.now() - log.createdTimestamp
+            ) return;
+
+            const executor = await client.users.fetch(log.executorId);
+            if (!executor) return;
+
+            const desc = [
+                "**Channel Deleted**",
+                `\`${channel.name}\``,
+                "",
+                "**Responsible Moderator**",
+                `<@${log.executorId}>`
+            ];
+
+            if (log.reason) {
+                desc.push(...[
+                    "**Reason**",
+                    `\`\`\`${cleanse(log.reason)}\`\`\``
+                ]);
+            }
+
+            const sEmbed = new EmbedBuilder()
+                .setAuthor({ name: executor.username, iconURL: executor.displayAvatarURL() ?? executor.defaultAvatarURL })
+                .setDescription(desc.join("\n"))
+                .setTimestamp()
+                .setFooter({ text: `ID: ${channel.id}` });
+
+            const logChannel = await channel.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
+            if (logChannel?.isSendable()) await logChannel.send({ embeds: [sEmbed] });
+        };
+    }
+}
+
+export default ChannelDelete;
