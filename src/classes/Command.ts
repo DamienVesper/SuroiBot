@@ -6,7 +6,6 @@ import {
 
 import type { DiscordBot } from "../modules/DiscordBot.js";
 
-import { CommandTypes } from "../utils/utils.js";
 import { Subcommand } from "./Subcommand.js";
 
 export abstract class Command<SubcommandOnly = false> {
@@ -20,7 +19,6 @@ export abstract class Command<SubcommandOnly = false> {
     };
 
     category!: string;
-    type = CommandTypes.Command;
 
     subcommands = new Collection<Subcommand["cmd"]["name"], Subcommand>();
 

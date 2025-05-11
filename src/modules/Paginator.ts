@@ -95,10 +95,10 @@ export class Paginator {
 
             FIRST.setDisabled(this.currentPage === 0);
             PREV.setDisabled(this.currentPage === 0);
+            COUNT.setLabel(`${this.currentPage + 1} / ${this.pages.length}`);
             NEXT.setDisabled(this.currentPage === this.pages.length - 1);
             LAST.setDisabled(this.currentPage === this.pages.length - 1);
 
-            COUNT.setLabel(`${this.currentPage + 1} / ${this.pages.length}`);
             void interaction.update({ embeds: [this.pages[this.currentPage]], components: [this.actionRow!] }).catch(() => {
                 this.client.logger.warn("Gateway", "Failed to update paginator: Message was deleted.");
             });

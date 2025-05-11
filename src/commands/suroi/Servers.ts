@@ -55,7 +55,7 @@ class Servers extends Command {
             let playerCount = 0;
             for (const value of VALUES) playerCount += Number(value.value[0]);
 
-            const bugReportsChannel = await this.client.channels.fetch(this.client.config.customData.channels.bugReports).catch(err => this.client.logger.error("Gateway", err.stack ?? err.message));
+            const bugReportsChannel = await this.client.channels.fetch(this.client.config.customData.channels.bugReports).catch(err => this.client.logger.error("Gateway", err));
 
             const desc = [
                 "## Suroi Status",

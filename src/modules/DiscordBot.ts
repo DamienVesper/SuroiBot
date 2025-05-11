@@ -47,7 +47,6 @@ import {
     capitalize,
     caseActionToStr,
     cleanse,
-    CommandTypes,
     createTrackBar
 } from "../utils/utils.js";
 
@@ -222,7 +221,7 @@ export class DiscordBot extends Client<true> {
             const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href))?.default;
             if (!ClientCommand) continue;
 
-            if (ClientCommand.type === CommandTypes.Command) {
+            if (ClientCommand.prototype instanceof Command) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 const command = new ClientCommand(this) as Command;
 
@@ -230,7 +229,7 @@ export class DiscordBot extends Client<true> {
                 command.category = category;
 
                 this.commands.set(command.cmd.name, command);
-            } else if (ClientCommand.type === CommandTypes.Subcommand) {
+            } else if (ClientCommand.prototype instanceof Subcommand) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 const subcommand = new ClientCommand(this) as Subcommand;
                 subcommands.push(subcommand);
@@ -267,7 +266,7 @@ export class DiscordBot extends Client<true> {
 
             this.logger.info("Gateway", `Deployed ${this.commands.size} commands.`);
         } catch (err: any) {
-            this.logger.error("Gateway", err.stack ?? err.message);
+            this.logger.error("Gateway", err);
         }
     };
 

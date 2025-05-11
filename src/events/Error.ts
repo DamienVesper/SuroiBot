@@ -14,7 +14,7 @@ class ErrorEvent extends Event<typeof EventType> {
         };
 
         this.run = async err => {
-            this.client.logger.error("Gateway", err.stack ?? err.message);
+            this.client.logger.error("Gateway", err);
         };
     }
 }

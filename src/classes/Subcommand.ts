@@ -5,7 +5,6 @@ import {
 
 import type { DiscordBot } from "../modules/DiscordBot.js";
 
-import { CommandTypes } from "../utils/utils.js";
 import { Command } from "./Command.js";
 
 export abstract class Subcommand {
@@ -18,8 +17,6 @@ export abstract class Subcommand {
         userPermissions: [],
         cooldown: 0
     };
-
-    type = CommandTypes.Subcommand;
 
     constructor (client: DiscordBot) {
         this.client = client;

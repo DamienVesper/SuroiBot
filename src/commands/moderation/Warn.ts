@@ -14,6 +14,7 @@ class Warn extends Command {
         .setName("warn")
         .addUserOption(option => option.setName("user").setDescription("The user to warn.").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are warning the user."))
+        .setDescription("Warn a user.")
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
         .setContexts(InteractionContextType.Guild);
 
