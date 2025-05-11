@@ -134,11 +134,11 @@ export class DiscordBot extends Client<true> {
             let killPlayers: NodeJS.Timeout;
 
             this.lavalink.on(ManagerEventTypes.NodeConnect, node => {
-                this.logger.info("Lavalink Manager", `Connected to node ${node.options.identifier}.`);
+                this.logger.info("Lavalink", `Connected to node ${node.options.identifier}.`);
             });
 
             this.lavalink.on(ManagerEventTypes.NodeDisconnect, node => {
-                this.logger.warn("Lavalink Manager", `Disconnected from node ${node.options.identifier}.`);
+                this.logger.warn("Lavalink", `Disconnected from node ${node.options.identifier}.`);
 
                 // Kill all players associated with the node after 30 seconds.
                 killPlayers = setTimeout(() => {
@@ -153,7 +153,7 @@ export class DiscordBot extends Client<true> {
             });
 
             this.lavalink.on(ManagerEventTypes.NodeError, (node, error) => {
-                this.logger.error("Lavalink Manager", `Node ${node.options.identifier} encountered an error:`, error.message);
+                this.logger.error("Lavalink", `Node ${node.options.identifier} encountered an error:`, error.message);
             });
 
             this.lavalink.on(ManagerEventTypes.QueueEnd, player => {
@@ -185,6 +185,7 @@ export class DiscordBot extends Client<true> {
             withFileTypes: true
         })).filter(file => file.name.endsWith(".ts") || file.name.endsWith(".js"));
 
+        let eventsLoaded = 0;
         for (const file of files) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href))?.default;
@@ -197,7 +198,11 @@ export class DiscordBot extends Client<true> {
             if (event.config.once) this.once(event.config.name, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             else this.on(event.config.name as string, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
+
+            eventsLoaded++;
         }
+
+        this.logger.debug("Client", `Loaded ${eventsLoaded} events.`);
     };
 
     /**
@@ -247,6 +252,8 @@ export class DiscordBot extends Client<true> {
              */
             (command.cmd as SlashCommandBuilder).addSubcommand(subcommand.cmd);
         }
+
+        this.logger.debug("Client", `Loaded ${this.commands.size} commands and ${subcommands.length} subcommands.`);
     };
 
     /**
@@ -264,7 +271,7 @@ export class DiscordBot extends Client<true> {
                 : Routes.applicationCommands(this.user.id)
             , { body: commands });
 
-            this.logger.info("Gateway", `Deployed ${this.commands.size} commands.`);
+            this.logger.info("Gateway", `Deployed all commands ${mode === "dev" ? "in development guild" : "globally"}.`);
         } catch (err: any) {
             this.logger.error("Gateway", err);
         }
