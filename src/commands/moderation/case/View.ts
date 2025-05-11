@@ -1,5 +1,3 @@
-import { config } from "../../../.config/config.js";
-
 import {
     EmbedBuilder,
     SlashCommandSubcommandBuilder,
@@ -8,7 +6,9 @@ import {
 import { and, eq } from "drizzle-orm";
 
 import { Subcommand } from "../../../classes/Subcommand.js";
+
 import { Case } from "../../../models/Case.js";
+
 import { capitalize, numToCooldownFormat } from "../../../utils/utils.js";
 
 class View extends Subcommand {
@@ -28,7 +28,6 @@ class View extends Subcommand {
         if (!interaction.inCachedGuild()) return;
 
         const id = interaction.options.getNumber("id", true);
-
         await interaction.deferReply();
 
         const cases = await this.client.db.select().from(Case).where(and(
@@ -47,7 +46,7 @@ class View extends Subcommand {
         const target = await this.client.users.fetch(modCase.discordId);
 
         const desc = [
-            `**Active:** ${modCase.active ? config.emojis.checkmark : config.emojis.xmark}`,
+            `**Active:** ${modCase.active ? this.client.config.emojis.checkmark : this.client.config.emojis.xmark}`,
             "",
             `**Action:** \`${capitalize(modCase.action)}\``,
             "",

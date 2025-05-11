@@ -20,8 +20,9 @@ class Mute extends Command {
         .addStringOption(option => option
             .setName("duration")
             .setDescription("The length to mute the user.")
+            .setChoices(Object.entries(durations).map(([key, value]) => ({ name: key, value: value.toString() })))
             .setRequired(true)
-            .setChoices(Object.entries(durations).map(([key, value]) => ({ name: key, value: value.toString() }))))
+        )
         .addStringOption(option => option.setName("reason").setDescription("The reason you are muting the user."))
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .setContexts(InteractionContextType.Guild);

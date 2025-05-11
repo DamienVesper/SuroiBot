@@ -33,7 +33,7 @@ class Edit extends Subcommand {
 
         await interaction.deferReply();
 
-        await this.client.db.update(Case).set({ reason }).where(and(
+        await this.client.db.update(Case).set({ reason, updatedAt: new Date() }).where(and(
             eq(Case.guildId, interaction.guildId),
             eq(Case.id, id)
         ))

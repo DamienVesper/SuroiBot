@@ -155,6 +155,8 @@ export const fitText = (context: SKRSContext2D, text: string, maxFontSize: numbe
 
 /**
  * Convert an action to a string.
+ * @param action The action to convert.
+ * @param log Whether to output in log-ready form.
  */
 export const caseActionToStr = (action: CaseAction, log?: boolean): string => {
     switch (action) {
@@ -173,3 +175,14 @@ export const caseActionToStr = (action: CaseAction, log?: boolean): string => {
         case CaseAction.Unban: return "unbanned from the server";
     }
 };
+
+/**
+ * Truncate a string to a specified length.
+ * @param str The string to potentially truncate.
+ * @param maxLength The maximum length of the string (including ellipsis).
+ */
+export const truncate = (str: string, maxLength: number): string => (
+    str.length > maxLength - 3
+        ? `${str.substring(0, maxLength)}...`
+        : str
+);
