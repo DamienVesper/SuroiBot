@@ -1,34 +1,23 @@
 import {
     InteractionContextType,
-    PermissionFlagsBits,
-    SlashCommandBuilder,
-    type ChatInputCommandInteraction
+    SlashCommandBuilder
 } from "discord.js";
 
 import { Command } from "../../classes/Command.js";
 
-class Punishment extends Command {
+class Punishment extends Command<true> {
     cmd = new SlashCommandBuilder()
         .setName("punishment")
-        .addStringOption(option => option.setName("id").setDescription("The ID of user to ban.").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason you are banning the user."))
-        .setDescription("Hackban a user.")
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+        .setDescription("Interact with game infractions.")
         .setContexts(InteractionContextType.Guild);
 
     config = {
-        botPermissions: [
-            PermissionFlagsBits.ViewAuditLog
-        ],
-        userPermissions: [
-            PermissionFlagsBits.ViewAuditLog
-        ],
+        botPermissions: [],
+        userPermissions: [],
         cooldown: 0
     };
 
-    run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (!interaction.inCachedGuild()) return;
-    };
+    run: undefined;
 }
 
 export default Punishment;
