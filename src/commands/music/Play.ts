@@ -39,8 +39,8 @@ class Play extends Command {
         const res = await this.client.lavalink.search(songInput, interaction.user as any);
 
         if (res.loadType === LoadTypes.Error) {
-            this.client.logger.debug(`Lavalink Node ${guildPlayer?.node.options.identifier}`, res);
-            this.client.logger.error(`Lavalink Node ${guildPlayer?.node.options.identifier}`, "There was an error queuing a track.");
+            this.client.logger.error(`Lavalink Node ${guildPlayer?.node.options.identifier}`, res);
+            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error queuing a track.")] });
             return;
         } else if (res.loadType === LoadTypes.Empty) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I could not find any songs with the provided query.")] });
