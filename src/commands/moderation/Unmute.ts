@@ -6,7 +6,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
 
 class Unmute extends Command {
@@ -18,14 +18,13 @@ class Unmute extends Command {
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [
             PermissionFlagsBits.ModerateMembers
         ],
         userPermissions: [
             PermissionFlagsBits.ModerateMembers
         ],
-        isSubcommand: false,
         cooldown: 0
     };
 

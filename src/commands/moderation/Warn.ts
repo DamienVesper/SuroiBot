@@ -6,7 +6,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
 
 class Warn extends Command {
@@ -17,12 +17,11 @@ class Warn extends Command {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [],
         userPermissions: [
             PermissionFlagsBits.ManageMessages
         ],
-        isSubcommand: false,
         cooldown: 0
     };
 

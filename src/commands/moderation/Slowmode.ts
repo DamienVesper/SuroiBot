@@ -8,7 +8,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 import { cleanse, numToCooldownFormat } from "../../utils/utils.js";
 
 class Slowmode extends Command {
@@ -19,10 +19,9 @@ class Slowmode extends Command {
         .addStringOption(option => option.setName("reason").setDescription("The reason you are modifying channel slowmode."))
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [],
         userPermissions: [],
-        isSubcommand: false,
         cooldown: 0
     };
 

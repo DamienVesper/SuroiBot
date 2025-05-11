@@ -4,6 +4,7 @@ import { Event } from "../classes/Event.js";
 
 import { numToCooldownFormat } from "../utils/utils.js";
 import { Command } from "../classes/Command.js";
+import { Subcommand } from "../classes/Subcommand.js";
 
 const EventType = Events.InteractionCreate;
 
@@ -34,6 +35,8 @@ class InteractionCreate extends Event<typeof EventType> {
                  * Typically, Discord clients will update cached commands after invoking the outdated command once.
                  */
                 const command = this.client.commands.get(interaction.commandName);
+                const subcommandOpt = interaction.options.getSubcommand(false);
+
                 if (command === undefined) {
                     await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "This command is outdated. Please try again.")], flags: MessageFlags.Ephemeral });
                     return;
@@ -55,7 +58,7 @@ class InteractionCreate extends Event<typeof EventType> {
                  * If command is being invoked from outside of a guild, run it without checking for permissions, as there is no concept of permissions outside of a guild.
                  */
                 if (!interaction.inCachedGuild()) {
-                    await runCommand(this.client, interaction, command);
+                    await runCommand(this.client, interaction, command, subcommandOpt);
                     return;
                 }
 
@@ -68,25 +71,7 @@ class InteractionCreate extends Event<typeof EventType> {
                     return;
                 }
 
-                /**
-                 * Check if the user has permissions (in Discord).
-                 * This will probably fail miserably.
-                 */
-                const missingUserPerms = interaction.memberPermissions.missing(command.config.userPermissions) ?? [];
-                if (missingUserPerms.length !== 0) {
-                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? "permission" : "permissions"} ${missingUserPerms.map(x => `\`${x}\``).join(", ")} to use this command.`)], flags: MessageFlags.Ephemeral });
-                    return;
-                }
-
-                /**
-                 * Check if the bot has permissions (in Discord).
-                 * This will also probably fail miserably.
-                 */
-                const missingBotPerms = interaction.guild.members.me?.permissions.missing(command.config.botPermissions) ?? [];
-                if (missingBotPerms.length !== 0) {
-                    await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? "permission" : "permissions"} ${missingBotPerms.map(x => `\`${x}\``).join(", ")} to execute this command.`)], flags: MessageFlags.Ephemeral });
-                    return;
-                }
+                if (!(await checkPermissions(this.client, interaction, command))) return;
 
                 /**
                  * Check cooldowns.
@@ -107,7 +92,7 @@ class InteractionCreate extends Event<typeof EventType> {
                     }
                 }
 
-                await runCommand(client, interaction, command);
+                await runCommand(client, interaction, command, subcommandOpt);
             } else if (interaction.isButton()) {
                 const button = this.client.buttons.get(interaction.customId);
                 if (button === undefined) return;
@@ -123,17 +108,70 @@ class InteractionCreate extends Event<typeof EventType> {
 }
 
 /**
+ * Helper function to check the permissions of a GuildMember running a command.
+ * @param client The bot who owns the command.
+ * @param interaction The interaction that invokes the command.
+ * @param command The command / subcommand to check permissions against.
+ */
+const checkPermissions = async (client: InteractionCreate["client"], interaction: ChatInputCommandInteraction<"cached">, command: Command | Subcommand): Promise<boolean> => {
+    /**
+     * Check if the user has permissions (in Discord).
+     * This will probably fail miserably.
+     */
+    const missingUserPerms = interaction.memberPermissions.missing(command.config.userPermissions) ?? [];
+    if (missingUserPerms.length !== 0) {
+        await interaction.reply({ embeds: [client.createDenyEmbed(interaction.user, `You are missing the ${missingUserPerms.length === 1 ? "permission" : "permissions"} ${missingUserPerms.map(x => `\`${x}\``).join(", ")} to use this command.`)], flags: MessageFlags.Ephemeral });
+        return false;
+    }
+
+    /**
+     * Check if the bot has permissions (in Discord).
+     * This will also probably fail miserably.
+     */
+    const missingBotPerms = interaction.guild.members.me?.permissions.missing(command.config.botPermissions) ?? [];
+    if (missingBotPerms.length !== 0) {
+        await interaction.reply({ embeds: [client.createDenyEmbed(interaction.user, `I am missing the ${missingBotPerms.length === 1 ? "permission" : "permissions"} ${missingBotPerms.map(x => `\`${x}\``).join(", ")} to execute this command.`)], flags: MessageFlags.Ephemeral });
+        return false;
+    }
+
+    return true;
+};
+
+/**
  * Helper function to run commands given the proper inputs.
  * @param client The bot who owns the command.
  * @param interaction The interaction that invokes the command.
  * @param command The actual command being invoked.
  */
-const runCommand = async (client: InteractionCreate["client"], interaction: ChatInputCommandInteraction, command: Command): Promise<void> => {
+const runCommand = async (client: InteractionCreate["client"], interaction: ChatInputCommandInteraction, command: Command, subcommandOpt: string | null): Promise<void> => {
+    /**
+     * By default, we run the base command.
+     */
+    let cmd: Command | Subcommand = command;
+
+    if (subcommandOpt) {
+        const subcommand = command.subcommands.get(subcommandOpt);
+        if (subcommand === undefined) {
+            await interaction.reply({ embeds: [client.createDenyEmbed(interaction.user, "This subcommand is outdated. Please try again.")], flags: MessageFlags.Ephemeral });
+            return;
+        }
+
+        /**
+         * Check subcommand permissions.
+         */
+        if (interaction.inCachedGuild() && !(await checkPermissions(client, interaction, subcommand))) return;
+
+        /**
+         * Run the subcommand instead of the command.
+         */
+        cmd = subcommand;
+    }
+
     try {
         client.logger.debug("Gateway", interaction.guild !== null
             ? `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`
             : `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in a DM.`);
-        await command.run(interaction);
+        await cmd.run(interaction);
     } catch (err: any) {
         client.logger.error("Gateway", err.stack ?? err.message);
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions

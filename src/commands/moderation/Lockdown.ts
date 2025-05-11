@@ -8,7 +8,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 import { cleanse } from "../../utils/utils.js";
 
 class Lockdown extends Command {
@@ -18,10 +18,9 @@ class Lockdown extends Command {
         .addStringOption(option => option.setName("reason").setDescription("The reason you are locking / unlocking the channel."))
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [],
         userPermissions: [],
-        isSubcommand: false,
         cooldown: 0
     };
 

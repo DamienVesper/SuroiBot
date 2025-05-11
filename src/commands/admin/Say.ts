@@ -6,7 +6,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 
 class Say extends Command {
     cmd = new SlashCommandBuilder()
@@ -16,14 +16,13 @@ class Say extends Command {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [
             PermissionFlagsBits.EmbedLinks
         ],
         userPermissions: [
             PermissionFlagsBits.Administrator
         ],
-        isSubcommand: false,
         cooldown: 0
     };
 

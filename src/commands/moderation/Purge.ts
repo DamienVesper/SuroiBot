@@ -7,7 +7,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 
 class Purge extends Command {
     cmd = new SlashCommandBuilder()
@@ -19,14 +19,13 @@ class Purge extends Command {
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [
             PermissionFlagsBits.ManageMessages
         ],
         userPermissions: [
             PermissionFlagsBits.ManageMessages
         ],
-        isSubcommand: false,
         cooldown: 0
     };
 

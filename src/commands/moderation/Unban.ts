@@ -7,7 +7,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
 import { cleanse } from "../../utils/utils.js";
 
@@ -20,14 +20,13 @@ class Unban extends Command {
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [
             PermissionFlagsBits.BanMembers
         ],
         userPermissions: [
             PermissionFlagsBits.BanMembers
         ],
-        isSubcommand: false,
         cooldown: 0
     };
 

@@ -15,7 +15,10 @@ import {
     ButtonStyle,
     type BaseMessageOptions,
     User as DiscordUser,
-    Guild
+    Guild,
+    Events,
+    SlashCommandBuilder,
+    SharedSlashCommand
 } from "discord.js";
 import {
     Manager,
@@ -34,10 +37,19 @@ import { Logger } from "./Logger.js";
 import { MusicPlayer } from "./MusicPlayer.js";
 
 import { Command } from "../classes/Command.js";
+import { Event } from "../classes/Event.js";
+import { Subcommand } from "../classes/Subcommand.js";
 
-import { capitalize, caseActionToStr, cleanse, createTrackBar } from "../utils/utils.js";
 import { Case, CaseAction } from "../models/Case.js";
 import { Cooldowns } from "../models/Cooldowns.js";
+
+import {
+    capitalize,
+    caseActionToStr,
+    cleanse,
+    CommandTypes,
+    createTrackBar
+} from "../utils/utils.js";
 
 interface DrizzleSchema extends Record<string, unknown> {
     guild: typeof Guild
@@ -57,9 +69,8 @@ export class DiscordBot extends Client<true> {
         handleExceptions: true
     });
 
-    commands = new Collection<Command["cmd"]["name"], Command>();
-    subcommands = new Collection<Command["cmd"]["name"], Command>();
-    cooldowns = new Collection<Snowflake, Collection<Command["cmd"]["name"], number>>();
+    commands = new Collection<SharedSlashCommand["name"], Command>();
+    cooldowns = new Collection<Snowflake, Collection<SharedSlashCommand["name"], number>>();
     buttons = new Collection<string, null>();
     modals = new Collection<string, null>();
 
@@ -180,12 +191,12 @@ export class DiscordBot extends Client<true> {
             const ClientEvent = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href))?.default;
             if (!ClientEvent) continue;
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-            const event = new ClientEvent(this);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            const event = new ClientEvent(this) as Event<Events.Debug>;
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            if (event.config.once) this.once(event.config.name as string, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            if (event.config.once) this.once(event.config.name, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             else this.on(event.config.name as string, event.runUnsafe !== undefined ? event.runUnsafe.bind(null) : event.run.bind(null));
         }
     };
@@ -201,21 +212,41 @@ export class DiscordBot extends Client<true> {
             withFileTypes: true
         })).filter(file => file.name.endsWith(".ts") || file.name.endsWith(".js"));
 
+        /**
+         * Temporary buffer for subcommands, to defer their loading until all commands have been loaded.
+         */
+        const subcommands: Subcommand[] = [];
+
         for (const file of files) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const ClientCommand = (await import(pathToFileURL(resolve(file.parentPath, file.name)).href))?.default;
             if (!ClientCommand) continue;
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-            const command = new ClientCommand(this);
+            if (ClientCommand.type === CommandTypes.Command) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                const command = new ClientCommand(this) as Command;
 
-            if (command.config.isSubcommand) this.subcommands.set(command.config.parent, command);
-            else {
                 const category = basename(dirname(resolve(file.parentPath, file.name)));
                 command.category = category;
 
                 this.commands.set(command.cmd.name, command);
+            } else if (ClientCommand.type === CommandTypes.Subcommand) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                const subcommand = new ClientCommand(this) as Subcommand;
+                subcommands.push(subcommand);
             }
+        }
+
+        for (const subcommand of subcommands) {
+            const command = this.commands.get(subcommand.config.parent);
+            if (!command) continue;
+
+            command.subcommands.set(subcommand.cmd.name, subcommand);
+
+            /**
+             * There is probably a cleaner way to do this.
+             */
+            (command.cmd as SlashCommandBuilder).addSubcommand(subcommand.cmd);
         }
     };
 
@@ -225,13 +256,16 @@ export class DiscordBot extends Client<true> {
      */
     deployCommands = async (mode: typeof this.config.mode): Promise<void> => {
         try {
-            this.logger.info("Gateway", `Deployed ${this.commands.size} commands.`);
-
+            /**
+             * Commands here are guaranteed to have a cmd property.
+             */
             const commands = this.commands.map(command => command.cmd.toJSON());
             await this.rest.put(mode === "dev"
                 ? Routes.applicationGuildCommands(this.user.id, config.dev.guildID)
                 : Routes.applicationCommands(this.user.id)
             , { body: commands });
+
+            this.logger.info("Gateway", `Deployed ${this.commands.size} commands.`);
         } catch (err: any) {
             this.logger.error("Gateway", err.stack ?? err.message);
         }

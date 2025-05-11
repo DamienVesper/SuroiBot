@@ -6,7 +6,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
 
 class Kick extends Command {
@@ -18,14 +18,13 @@ class Kick extends Command {
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [
             PermissionFlagsBits.KickMembers
         ],
         userPermissions: [
             PermissionFlagsBits.KickMembers
         ],
-        isSubcommand: false,
         cooldown: 0
     };
 

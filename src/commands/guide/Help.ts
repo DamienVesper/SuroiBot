@@ -21,8 +21,8 @@ class Help extends Command {
 
         const commandsByCategory: Record<string, Command[]> = {};
         for (const [, command] of [...this.client.commands]) {
-            if (commandsByCategory[command.category!] === undefined) commandsByCategory[command.category!] = [];
-            commandsByCategory[command.category!].push(command);
+            if (commandsByCategory[command.category] === undefined) commandsByCategory[command.category] = [];
+            commandsByCategory[command.category].push(command);
         }
 
         const embeds = [

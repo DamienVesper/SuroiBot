@@ -19,6 +19,11 @@ export const durations = {
     ["30d"]: 2592e3
 };
 
+export enum CommandTypes {
+    Command,
+    Subcommand
+}
+
 /**
  * Clean a string of Discord formatting.
  * @param str The string to clean.

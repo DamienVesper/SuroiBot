@@ -5,7 +5,7 @@ import {
     type ChatInputCommandInteraction
 } from "discord.js";
 
-import { Command, type ConfigType } from "../../classes/Command.js";
+import { Command } from "../../classes/Command.js";
 
 class Punishment extends Command {
     cmd = new SlashCommandBuilder()
@@ -16,14 +16,13 @@ class Punishment extends Command {
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .setContexts(InteractionContextType.Guild);
 
-    config: ConfigType = {
+    config = {
         botPermissions: [
             PermissionFlagsBits.ViewAuditLog
         ],
         userPermissions: [
             PermissionFlagsBits.ViewAuditLog
         ],
-        isSubcommand: false,
         cooldown: 0
     };
 

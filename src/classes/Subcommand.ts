@@ -1,28 +1,25 @@
 import {
     type ChatInputCommandInteraction,
-    Collection,
-    SharedSlashCommand
+    SlashCommandSubcommandBuilder
 } from "discord.js";
 
 import type { DiscordBot } from "../modules/DiscordBot.js";
 
 import { CommandTypes } from "../utils/utils.js";
-import { Subcommand } from "./Subcommand.js";
+import { Command } from "./Command.js";
 
-export abstract class Command<SubcommandOnly = false> {
+export abstract class Subcommand {
     client: DiscordBot;
 
-    abstract cmd: SharedSlashCommand;
+    abstract cmd: SlashCommandSubcommandBuilder;
     config: ConfigType = {
+        parent: "",
         botPermissions: [],
         userPermissions: [],
         cooldown: 0
     };
 
-    category!: string;
-    type = CommandTypes.Command;
-
-    subcommands = new Collection<Subcommand["cmd"]["name"], Subcommand>();
+    type = CommandTypes.Subcommand;
 
     constructor (client: DiscordBot) {
         this.client = client;
@@ -32,12 +29,11 @@ export abstract class Command<SubcommandOnly = false> {
      * Executed when receiving the interaction.
      * @param interaction The interaction received.
      */
-    abstract run: SubcommandOnly extends false
-        ? (interaction: ChatInputCommandInteraction) => Promise<void>
-        : undefined;
+    abstract run: (interaction: ChatInputCommandInteraction) => Promise<void>;
 }
 
 interface ConfigType {
+    parent: Command["cmd"]["name"]
     botPermissions: bigint[]
     userPermissions: bigint[]
     cooldown: number
