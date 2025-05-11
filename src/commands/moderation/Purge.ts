@@ -65,7 +65,7 @@ class Purge extends Command {
                     }
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to delete messages: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to delete messages: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while bulk deleting messages.")] });
             });
 

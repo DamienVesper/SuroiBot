@@ -78,7 +78,7 @@ class Slowmode extends Command {
                     }
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to modify channel slowmode: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to modify channel slowmode: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while updating the channel's slowmode.")] });
             });
     };

@@ -70,7 +70,7 @@ class Unmute extends Command {
                     if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Unmute, interaction.user, target.user, reason)] });
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to unmute: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to unmute: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while unmuting that user.")] });
                 await msg.delete();
             });

@@ -77,7 +77,7 @@ class Lockdown extends Command {
                     }
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to modify channel permissions: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to modify channel permissions: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while updating the channel.")] });
             });
     };

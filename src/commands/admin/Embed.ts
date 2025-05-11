@@ -67,7 +67,7 @@ class Embed extends Command {
             await Bun.sleep(3e3);
             await interaction.deleteReply();
         }).catch(err => {
-            this.client.logger.warn("Gateway", `Failed to send message: ${err.stack ?? err.message}`);
+            this.client.logger.warn("Gateway", `Failed to send message: ${err}`);
         });
     };
 }

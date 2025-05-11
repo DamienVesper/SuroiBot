@@ -105,7 +105,7 @@ class Unban extends Command {
                     }
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to unban: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to unban: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while unbanning that user.")] });
             });
     };

@@ -70,7 +70,7 @@ class Kick extends Command {
                     if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Kick, interaction.user, target.user, reason)] });
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to kick: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to kick: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while kicking that user.")] });
                 await msg.delete();
             });

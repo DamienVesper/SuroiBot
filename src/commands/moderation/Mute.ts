@@ -80,7 +80,7 @@ class Mute extends Command {
                     if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Mute, interaction.user, target.user, reason)] });
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to mute: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to mute: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while muting that user.")] });
                 await msg.delete();
             });

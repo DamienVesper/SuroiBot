@@ -77,7 +77,7 @@ class Ban extends Command {
                     if (punishmentChannel?.isSendable()) await punishmentChannel.send({ embeds: [this.client.createCaseEmbed(modCase.id, CaseAction.Ban, interaction.user, target.user, reason)] });
                 }
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to ban: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to ban: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while banning that user.")] });
                 await msg.delete();
             });

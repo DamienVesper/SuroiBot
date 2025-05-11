@@ -78,7 +78,7 @@ class Softban extends Command {
                         void interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I could not unban that user.")] });
                     });
             }).catch(async err => {
-                this.client.logger.warn("Gateway", `Failed to ban: ${err.stack ?? err.message}`);
+                this.client.logger.warn("Gateway", `Failed to ban: ${err}`);
                 await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There was an error while banning that user.")] });
                 await msg.delete();
             });
