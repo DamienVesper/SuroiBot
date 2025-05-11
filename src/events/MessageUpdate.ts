@@ -22,7 +22,7 @@ class MessageUpdate extends Event<typeof EventType> {
             if (oldMsg.author.bot || !oldMsg.inGuild() || oldMsg.content === newMsg.content) return;
 
             const logEmbed = new EmbedBuilder()
-                .setAuthor({ name: oldMsg.author.tag, iconURL: oldMsg.author.avatarURL() ?? oldMsg.author.defaultAvatarURL })
+                .setAuthor({ name: oldMsg.author.tag, iconURL: oldMsg.author.displayAvatarURL() })
                 .setDescription([
                     `**Message sent by <@${oldMsg.author.id}> edited in <#${oldMsg.channel.id}>.**`,
                     `[Jump to Message](${newMsg.url})`,

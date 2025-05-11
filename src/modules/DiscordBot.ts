@@ -354,7 +354,7 @@ export class DiscordBot extends Client<true> {
                     value: reason
                 }
             ])
-            .setThumbnail(target.avatarURL() ?? target.defaultAvatarURL)
+            .setThumbnail(target.displayAvatarURL())
             .setTimestamp()
             .setFooter({ text: `ID: ${target.id}` })
     );
@@ -363,7 +363,7 @@ export class DiscordBot extends Client<true> {
         const actionStr = caseActionToStr(action);
 
         const sEmbed = new EmbedBuilder()
-            .setAuthor({ name: target.tag, iconURL: target.avatarURL() ?? target.defaultAvatarURL })
+            .setAuthor({ name: target.tag, iconURL: target.displayAvatarURL() })
             .setDescription([
                 `**${target.tag} (<@${target.id}>) was ${actionStr}**.`,
                 "",
@@ -373,7 +373,7 @@ export class DiscordBot extends Client<true> {
                 "**Reason**",
                 `\`\`\`${cleanse(reason)}\`\`\``
             ].join("\n"))
-            .setThumbnail(target.avatarURL() ?? target.defaultAvatarURL)
+            .setThumbnail(target.displayAvatarURL())
             .setTimestamp()
             .setFooter({ text: `ID: ${target.id} | Case #${id}` });
 

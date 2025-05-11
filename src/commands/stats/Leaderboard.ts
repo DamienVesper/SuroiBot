@@ -55,7 +55,7 @@ class Leaderboard extends Command {
                 subtitle: `${interaction.guild.memberCount} members`
             })
             .setPlayers(members.map(({ user, member }, i) => ({
-                avatar: member.displayAvatarURL({ extension: "png" }) ?? member.user.defaultAvatarURL,
+                avatar: member.displayAvatarURL({ extension: "png" }),
                 username: member.user.username,
                 displayName: member.displayName,
                 level: user.level,

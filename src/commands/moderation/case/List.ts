@@ -63,7 +63,7 @@ class List extends Subcommand {
 
             const sEmbed = new EmbedBuilder()
                 .setColor(this.client.config.colors.pink)
-                .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() ?? user.defaultAvatarURL })
+                .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
                 .setDescription([
                     "# User Cases"
                 ].concat(caseArr).join("\n"))
