@@ -30,7 +30,7 @@ class Lyrics extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id) as MusicPlayer;
+        const player = this.client.lavalink.players.get(interaction.guildId) as MusicPlayer;
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;
@@ -43,7 +43,7 @@ class Lyrics extends Command {
         }
 
         // @ts-expect-error SessionID is private.
-        const lyrics: Partial<SongLyrics> | null = await player.node.rest.get(`/v4/sessions/${player.node.rest.sessionId}/players/${interaction.guild.id}/track/lyrics?skipTrackSource=true`);
+        const lyrics: Partial<SongLyrics> | null = await player.node.rest.get(`/v4/sessions/${player.node.rest.sessionId}/players/${interaction.guildId}/track/lyrics?skipTrackSource=true`);
         if (lyrics?.lines === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I could not find any lyrics for that track!")] });
             return;

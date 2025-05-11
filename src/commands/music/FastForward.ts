@@ -10,8 +10,8 @@ import { Command } from "../../classes/Command.js";
 class FastForward extends Command {
     cmd = new SlashCommandBuilder()
         .setName("fastforward")
-        .addIntegerOption(option => option.setName("time").setDescription("The time, in seconds, to fast-forward.").setMinValue(1).setRequired(true))
         .setDescription("Fast-forward the current song.")
+        .addIntegerOption(option => option.setName("time").setDescription("The time, in seconds, to fast-forward.").setMinValue(1).setRequired(true))
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -27,7 +27,7 @@ class FastForward extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

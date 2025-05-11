@@ -10,9 +10,9 @@ import { Command } from "../../classes/Command.js";
 class Remove extends Command {
     cmd = new SlashCommandBuilder()
         .setName("remove")
+        .setDescription("Remove one or multiple songs from the queue.")
         .addIntegerOption(option => option.setName("start").setDescription("The position to start removing at.").setMinValue(1).setRequired(true))
         .addIntegerOption(option => option.setName("end").setDescription("The position to stop removing at (exclusive).").setMinValue(2))
-        .setDescription("Remove one or multiple songs from the queue.")
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -29,7 +29,7 @@ class Remove extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

@@ -12,10 +12,10 @@ import { Command } from "../../classes/Command.js";
 class Purge extends Command {
     cmd = new SlashCommandBuilder()
         .setName("purge")
+        .setDescription("Purge a channel's messages.")
         .addIntegerOption(option => option.setName("amount").setDescription("The amount of messages to be deleted.").setMinValue(1).setMaxValue(100).setRequired(true))
         .addUserOption(option => option.setName("user").setDescription("The (optional) user to purge messages from."))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are purging the messages."))
-        .setDescription("Purge a channel's messages.")
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .setContexts(InteractionContextType.Guild);
 

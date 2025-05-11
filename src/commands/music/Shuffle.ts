@@ -26,7 +26,7 @@ class Shuffle extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

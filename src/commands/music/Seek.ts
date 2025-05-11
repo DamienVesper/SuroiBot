@@ -12,8 +12,8 @@ import { numToDurationFormat } from "../../utils/utils.js";
 class Seek extends Command {
     cmd = new SlashCommandBuilder()
         .setName("seek")
-        .addIntegerOption(option => option.setName("time").setDescription("The time, in seconds, to seek to.").setMinValue(0).setRequired(true))
         .setDescription("Seek a certain position in the current song.")
+        .addIntegerOption(option => option.setName("time").setDescription("The time, in seconds, to seek to.").setMinValue(0).setRequired(true))
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -29,7 +29,7 @@ class Seek extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

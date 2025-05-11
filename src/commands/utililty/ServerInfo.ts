@@ -35,7 +35,7 @@ class ServerInfo extends Command {
             .setDescription([
                 "### Server Information",
                 `${this.client.config.emojis.arrow} **Name:** ${cleanse(interaction.guild.name)}`,
-                `${this.client.config.emojis.__.repeat(2)} ID: \`${interaction.guild.id}\``,
+                `${this.client.config.emojis.__.repeat(2)} ID: \`${interaction.guildId}\``,
                 `${this.client.config.emojis.owner} **Owner:** <@${interaction.guild.ownerId}>`,
                 `🎂 **Created:** ${timestamp(interaction.guild.createdAt)}`,
                 `${this.client.config.emojis.arrow}**Channels:** \`${channels.size}\``,

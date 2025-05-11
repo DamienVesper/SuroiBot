@@ -18,8 +18,8 @@ import { fitText, getMaxXP, numToPredicateFormat } from "../../utils/utils.js";
 class Rank extends Command {
     cmd = new SlashCommandBuilder()
         .setName("rank")
-        .addUserOption(option => option.setName("user").setDescription("The user to check."))
         .setDescription("View a person's server rank.")
+        .addUserOption(option => option.setName("user").setDescription("The user to check."))
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -30,7 +30,11 @@ class Rank extends Command {
 
         await interaction.deferReply();
 
-        const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, interaction.user.id), eq(User.guildId, interaction.guildId))).limit(1);
+        const userQuery = await this.client.db.select().from(User).where(and(
+            eq(User.discordId, interaction.user.id),
+            eq(User.guildId, interaction.guildId))
+        ).limit(1);
+
         const dbUser = userQuery.length !== 0 ? userQuery[0] : null;
 
         if (dbUser === null) {

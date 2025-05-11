@@ -169,8 +169,8 @@ const runCommand = async (client: InteractionCreate["client"], interaction: Chat
 
     try {
         client.logger.debug("Gateway", interaction.guild !== null
-            ? `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guild.id}).`
-            : `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in a DM.`);
+            ? `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} in "${interaction.guild.name}" (${interaction.guildId}).`
+            : `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} outside of a guild.`);
         await cmd.run(interaction);
     } catch (err: any) {
         client.logger.error("Gateway", err);

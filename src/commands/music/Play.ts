@@ -29,7 +29,7 @@ class Play extends Command {
 
         await interaction.deferReply();
 
-        const guildPlayer = this.client.lavalink.players.get(interaction.guild.id);
+        const guildPlayer = this.client.lavalink.players.get(interaction.guildId);
         if (guildPlayer !== undefined && interaction.member.voice.channel.id !== guildPlayer.voiceChannelId) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
@@ -48,7 +48,7 @@ class Play extends Command {
         }
 
         const player = this.client.lavalink.create({
-            guildId: interaction.guild.id,
+            guildId: interaction.guildId,
             voiceChannelId: interaction.member.voice.channel.id,
             textChannelId: interaction.channel.id,
             volume: 75,

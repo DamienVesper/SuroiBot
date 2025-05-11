@@ -6,8 +6,11 @@ import {
     type ChatInputCommandInteraction,
     type GuildMember
 } from "discord.js";
+import { and, eq } from "drizzle-orm";
 
 import { Command } from "../../classes/Command.js";
+
+import { Case, CaseAction } from "../../models/Case.js";
 
 import { cleanse, timestamp } from "../../utils/utils.js";
 
@@ -38,7 +41,7 @@ class UserInfo extends Command {
                 name: "General",
                 value: [
                     `${this.client.config.emojis.arrow} **Name:** \`${cleanse(member.user.displayName)}\``,
-                    `${this.client.config.emojis.__.repeat(2)} ID: \`${member.user.id}\``,
+                    `${this.client.config.emojis.__.repeat(2)} ID: \`${member.id}\``,
                     `🎂 **Created:** ${timestamp(member.user.createdAt)}`,
                     `📆 **Joined:** ${timestamp(member.joinedAt ?? new Date())}`,
                     `${this.client.config.emojis.bot} **Bot:** ${member.user.bot ? this.client.config.emojis.checkmark : this.client.config.emojis.xmark}`
@@ -52,14 +55,20 @@ class UserInfo extends Command {
             }
         ];
 
+        const cases = await this.client.db.select().from(Case).where(and(
+            eq(Case.discordId, member.id),
+            eq(Case.guildId, interaction.guildId),
+            eq(Case.active, true)
+        ));
+
         if (!member.user.bot) {
             fields.splice(1, 0, {
                 name: "Moderation",
                 value: [
-                    "⚠️ **Warnings:** `0`",
-                    "🔨 **Mutes:** `0`",
-                    "⚒️ **Kicks:** `0`",
-                    "⚔️ **Bans:** `0`"
+                    `⚠️ **Warnings:** \`${cases.filter(x => x.action === CaseAction.Warn).length}\``,
+                    `🔨 **Mutes:** \`${cases.filter(x => x.action === CaseAction.Mute).length}\``,
+                    `⚒️ **Kicks:** \`${cases.filter(x => x.action === CaseAction.Kick).length}\``,
+                    `⚔️ **Bans:** \`${cases.filter(x => x.action === CaseAction.Ban).length}\``
                 ].join("\n")
             });
         }

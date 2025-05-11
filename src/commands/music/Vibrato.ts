@@ -10,9 +10,9 @@ import { Command } from "../../classes/Command.js";
 class Vibrato extends Command {
     cmd = new SlashCommandBuilder()
         .setName("vibrato")
+        .setDescription("Set the vibrato filter.")
         .addIntegerOption(option => option.setName("value").setDescription("The vibrato depth (%). Leave blank for default.").setMinValue(0).setMaxValue(100))
         .addNumberOption(option => option.setName("frequency").setDescription("The frequency of the vibrato. Leave blank for default.").setMinValue(0.001).setMaxValue(14))
-        .setDescription("Set the vibrato filter.")
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -31,7 +31,7 @@ class Vibrato extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

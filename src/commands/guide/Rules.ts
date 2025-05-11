@@ -51,7 +51,7 @@ class Rules extends Command {
 
         const sRow = new ActionRowBuilder<ButtonBuilder>();
 
-        if (interaction.guild.rulesChannelId != null) sRow.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Server Rules").setURL(`https://discord.com/channels/${interaction.guild.id}/${interaction.guild.rulesChannelId}`));
+        if (interaction.guild.rulesChannelId != null) sRow.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Server Rules").setURL(`https://discord.com/channels/${interaction.guildId}/${interaction.guild.rulesChannelId}`));
         sRow.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Game Rules").setURL(`https://${this.client.config.customData.domain}/rules/`));
 
         await interaction.reply({ embeds: [sEmbed], components: [sRow] });

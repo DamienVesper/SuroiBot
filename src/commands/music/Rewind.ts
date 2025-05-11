@@ -10,8 +10,8 @@ import { Command } from "../../classes/Command.js";
 class Rewind extends Command {
     cmd = new SlashCommandBuilder()
         .setName("rewind")
-        .addIntegerOption(option => option.setName("time").setDescription("The time, in seconds, to rewind. If not specified, defaults to the beginning of the song.").setMinValue(1))
         .setDescription("Rewind the current song.")
+        .addIntegerOption(option => option.setName("time").setDescription("The time, in seconds, to rewind. If not specified, defaults to the beginning of the song.").setMinValue(1))
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -27,7 +27,7 @@ class Rewind extends Command {
 
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

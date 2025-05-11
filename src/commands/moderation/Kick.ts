@@ -5,6 +5,7 @@ import {
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";
+import { count, eq } from "drizzle-orm";
 
 import { Command } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
@@ -12,9 +13,9 @@ import { Case, CaseAction } from "../../models/Case.js";
 class Kick extends Command {
     cmd = new SlashCommandBuilder()
         .setName("kick")
+        .setDescription("Kick a user.")
         .addUserOption(option => option.setName("user").setDescription("The user to kick.").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are kicking the user."))
-        .setDescription("Kick a user.")
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .setContexts(InteractionContextType.Guild);
 
@@ -50,7 +51,9 @@ class Kick extends Command {
 
         await interaction.deferReply();
 
+        const caseCount = (await this.client.db.select({ count: count() }).from(Case).where(eq(Case.guildId, interaction.guildId)))[0].count;
         const modCase = (await this.client.db.insert(Case).values({
+            id: caseCount + 1,
             discordId: target.id,
             issuerId: interaction.user.id,
             guildId: interaction.guildId,

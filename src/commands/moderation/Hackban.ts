@@ -6,6 +6,7 @@ import {
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";
+import { count, eq } from "drizzle-orm";
 
 import { Command } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
@@ -14,9 +15,9 @@ import { cleanse } from "../../utils/utils.js";
 class Hackban extends Command {
     cmd = new SlashCommandBuilder()
         .setName("hackban")
+        .setDescription("Hackban a user.")
         .addStringOption(option => option.setName("id").setDescription("The ID of user to ban.").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are banning the user."))
-        .setDescription("Hackban a user.")
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .setContexts(InteractionContextType.Guild);
 
@@ -45,7 +46,9 @@ class Hackban extends Command {
 
         await interaction.deferReply();
 
+        const caseCount = (await this.client.db.select({ count: count() }).from(Case).where(eq(Case.guildId, interaction.guildId)))[0].count;
         const modCase = (await this.client.db.insert(Case).values({
+            id: caseCount + 1,
             discordId: targetId,
             issuerId: interaction.user.id,
             guildId: interaction.guildId,

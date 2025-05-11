@@ -10,8 +10,8 @@ import { Command } from "../../classes/Command.js";
 class BassBoost extends Command {
     cmd = new SlashCommandBuilder()
         .setName("bassboost")
-        .addNumberOption(option => option.setName("value").setDescription("The value to bassboost by. Leave blank for default.").setMinValue(0).setMaxValue(10))
         .setDescription("Boost the player's bass.")
+        .addNumberOption(option => option.setName("value").setDescription("The value to bassboost by. Leave blank for default.").setMinValue(0).setMaxValue(10))
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -28,7 +28,7 @@ class BassBoost extends Command {
         const bassboost = interaction.options.getNumber("value");
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

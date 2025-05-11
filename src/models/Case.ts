@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
     boolean,
+    integer,
     pgEnum,
     pgTable,
     serial,
@@ -25,12 +26,14 @@ export enum CaseAction {
 }
 
 export const Case = pgTable("user", {
-    id: serial("id").primaryKey(),
+    sId: serial("id").primaryKey(),
+    id: integer("id")
+        .notNull(),
     createdAt: timestamp()
         .notNull()
         .defaultNow(),
     updatedAt: timestamp(),
-    expires: timestamp(),
+    expiresAt: timestamp(),
     discordId: text("discordId")
         .notNull()
         .references(() => User.discordId),

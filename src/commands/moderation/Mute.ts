@@ -5,6 +5,7 @@ import {
     SlashCommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";
+import { count, eq } from "drizzle-orm";
 
 import { Command } from "../../classes/Command.js";
 import { Case, CaseAction } from "../../models/Case.js";
@@ -14,6 +15,7 @@ import { durations } from "../../utils/utils.js";
 class Mute extends Command {
     cmd = new SlashCommandBuilder()
         .setName("mute")
+        .setDescription("Mute a user.")
         .addUserOption(option => option.setName("user").setDescription("The user to mute.").setRequired(true))
         .addStringOption(option => option
             .setName("duration")
@@ -21,7 +23,6 @@ class Mute extends Command {
             .setRequired(true)
             .setChoices(Object.entries(durations).map(([key, value]) => ({ name: key, value: value.toString() }))))
         .addStringOption(option => option.setName("reason").setDescription("The reason you are muting the user."))
-        .setDescription("Mute a user.")
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .setContexts(InteractionContextType.Guild);
 
@@ -59,11 +60,13 @@ class Mute extends Command {
 
         await interaction.deferReply();
 
+        const caseCount = (await this.client.db.select({ count: count() }).from(Case).where(eq(Case.guildId, interaction.guildId)))[0].count;
         const modCase = (await this.client.db.insert(Case).values({
+            id: caseCount + 1,
             discordId: target.id,
             issuerId: interaction.user.id,
             guildId: interaction.guildId,
-            expires: new Date(Date.now() + duration),
+            expiresAt: new Date(Date.now() + duration),
             reason,
             action: CaseAction.Mute
         } satisfies typeof Case.$inferInsert).returning())[0];

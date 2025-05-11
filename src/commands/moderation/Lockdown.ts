@@ -50,8 +50,8 @@ class Lockdown extends Command {
 
         await interaction.deferReply();
 
-        const isLocked = !interaction.channel.permissionsFor(interaction.guild.id)?.has(PermissionFlagsBits.SendMessages);
-        await interaction.channel.permissionOverwrites.edit(interaction.guild.id, { SendMessages: !isLocked }, { reason })
+        const isLocked = !interaction.channel.permissionsFor(interaction.guildId)?.has(PermissionFlagsBits.SendMessages);
+        await interaction.channel.permissionOverwrites.edit(interaction.guildId, { SendMessages: !isLocked }, { reason })
             .then(async () => {
                 await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${isLocked ? "Locked" : "Unlocked"} #${interaction.channel!.name}**.`)] });
 

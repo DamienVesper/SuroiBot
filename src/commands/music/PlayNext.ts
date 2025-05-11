@@ -13,8 +13,8 @@ import { LoadTypes } from "magmastream";
 class PlayNext extends Command {
     cmd = new SlashCommandBuilder()
         .setName("playnext")
-        .addStringOption(option => option.setName("query").setDescription("The name or link to the song, file, or playlist.").setRequired(true))
         .setDescription("Insert a song, audio file, or playlist at the front of the queue.")
+        .addStringOption(option => option.setName("query").setDescription("The name or link to the song, file, or playlist.").setRequired(true))
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -30,7 +30,7 @@ class PlayNext extends Command {
 
         await interaction.deferReply();
 
-        const guildPlayer = this.client.lavalink.players.get(interaction.guild.id);
+        const guildPlayer = this.client.lavalink.players.get(interaction.guildId);
         if (guildPlayer !== undefined && interaction.member.voice.channel.id !== guildPlayer.voiceChannelId) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "You must be in the same voice channel as the bot to use that command!")] });
             return;
@@ -49,7 +49,7 @@ class PlayNext extends Command {
         }
 
         const player = this.client.lavalink.create({
-            guildId: interaction.guild.id,
+            guildId: interaction.guildId,
             voiceChannelId: interaction.member.voice.channel.id,
             textChannelId: interaction.channel.id,
             volume: 75,

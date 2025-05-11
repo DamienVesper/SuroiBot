@@ -10,8 +10,8 @@ import { Command } from "../../classes/Command.js";
 class Rotation extends Command {
     cmd = new SlashCommandBuilder()
         .setName("rotation")
-        .addNumberOption(option => option.setName("value").setDescription("The frequency to rotate at.").setMinValue(0).setMaxValue(10))
         .setDescription("Set a panning filter to the audio.")
+        .addNumberOption(option => option.setName("value").setDescription("The frequency to rotate at.").setMinValue(0).setMaxValue(10))
         .setContexts(InteractionContextType.Guild);
 
     run = async (interaction: ChatInputCommandInteraction): Promise<void> => {
@@ -28,7 +28,7 @@ class Rotation extends Command {
         const rotation = interaction.options.getNumber("value");
         await interaction.deferReply();
 
-        const player = this.client.lavalink.players.get(interaction.guild.id);
+        const player = this.client.lavalink.players.get(interaction.guildId);
         if (player === undefined) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I am not currently in a voice channel!")] });
             return;

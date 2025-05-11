@@ -24,9 +24,15 @@ class MessageCreate extends Event<typeof EventType> {
             /**
              * Expensive to run three different queries per message. Maybe this can be simplified somehow?
              */
-            const userQuery = await this.client.db.select().from(User).where(and(eq(User.discordId, message.author.id), eq(User.guildId, message.guildId))).limit(1);
+            const userQuery = await this.client.db.select().from(User).where(and(
+                eq(User.discordId, message.author.id),
+                eq(User.guildId, message.guildId))
+            ).limit(1);
             const guildQuery = await this.client.db.select().from(Guild).where(eq(Guild.discordId, message.guildId)).limit(1);
-            const cooldownQuery = await this.client.db.select().from(Cooldowns).where(and(eq(Cooldowns.discordId, message.author.id), eq(Cooldowns.guildId, message.guildId))).limit(1);
+            const cooldownQuery = await this.client.db.select().from(Cooldowns).where(and(
+                eq(Cooldowns.discordId, message.author.id),
+                eq(Cooldowns.guildId, message.guildId))
+            ).limit(1);
 
             let dbUser: typeof User.$inferSelect | null = userQuery.length !== 0 ? userQuery[0] : null;
             let guild: typeof Guild.$inferSelect | null = guildQuery.length !== 0 ? guildQuery[0] : null;
