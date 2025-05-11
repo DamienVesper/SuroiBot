@@ -367,10 +367,10 @@ export class DiscordBot extends Client<true> {
             .setDescription([
                 `**${target.tag} (<@${target.id}>) was ${actionStr}**.`,
                 "",
-                "**Responsible Moderator**",
+                "### Responsible Moderator",
                 `<@${perpetrator.id}>`,
                 "",
-                "**Reason**",
+                "### Reason",
                 `\`\`\`${cleanse(reason)}\`\`\``
             ].join("\n"))
             .setThumbnail(target.displayAvatarURL())

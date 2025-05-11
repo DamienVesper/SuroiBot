@@ -42,7 +42,7 @@ class GuildBanRemove extends Event<typeof EventType> {
 
             if (log.reason) {
                 desc.push(...[
-                    "**Reason**",
+                    "### Reason",
                     `\`\`\`${cleanse(log.reason)}\`\`\``
                 ]);
             }

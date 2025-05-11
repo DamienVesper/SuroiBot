@@ -56,7 +56,7 @@ class Purge extends Command {
                             .setDescription([
                                 `**<@${interaction.user.id}> purged ${messages.size} messages in <#${interaction.channel!.id}>.`,
                                 "",
-                                "**Reason**",
+                                "### Reason",
                                 `\`\`\`${reason}\`\`\``
                             ].join("\n"))
                             .setTimestamp()

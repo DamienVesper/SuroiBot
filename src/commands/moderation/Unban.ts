@@ -72,10 +72,10 @@ class Unban extends Command {
                             .setDescription([
                                 `**\`${targetId}\` (<@${targetId}>) was unbanned**.`,
                                 "",
-                                "**Responsible Moderator**",
+                                "### Responsible Moderator",
                                 `<@${interaction.user.id}>`,
                                 "",
-                                "**Reason**",
+                                "### Reason",
                                 `\`\`\`${cleanse(reason)}\`\`\``
                             ].join("\n"))
                             .setTimestamp()

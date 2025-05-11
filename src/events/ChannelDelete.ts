@@ -41,7 +41,7 @@ class ChannelDelete extends Event<typeof EventType> {
 
             if (log.reason) {
                 desc.push(...[
-                    "**Reason**",
+                    "### Reason",
                     `\`\`\`${cleanse(log.reason)}\`\`\``
                 ]);
             }

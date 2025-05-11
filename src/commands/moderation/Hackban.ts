@@ -73,10 +73,10 @@ class Hackban extends Command {
                             .setDescription([
                                 `**\`${targetId}\` (<@${targetId}>) was hackbanned**.`,
                                 "",
-                                "**Responsible Moderator**",
+                                "### Responsible Moderator",
                                 `<@${interaction.user.id}>`,
                                 "",
-                                "**Reason**",
+                                "### Reason",
                                 `\`\`\`${cleanse(reason)}\`\`\``
                             ].join("\n"))
                             .setTimestamp()

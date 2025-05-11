@@ -64,10 +64,10 @@ class Lockdown extends Command {
                             .setDescription([
                                 `**<#${interaction.channelId}> was ${isLocked ? "locked" : "unlocked"}**.`,
                                 "",
-                                "**Responsible Moderator**",
+                                "### Responsible Moderator",
                                 `<@${interaction.user.id}>`,
                                 "",
-                                "**Reason**",
+                                "### Reason",
                                 `\`\`\`${cleanse(reason)}\`\`\``
                             ].join("\n"))
                             .setTimestamp()
