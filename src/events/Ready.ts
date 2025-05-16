@@ -19,6 +19,7 @@ class Ready extends Event<typeof EventType> {
             this.client.lavalink?.init(client.user.id);
 
             await this.client.deployCommands(this.client.config.mode);
+            await this.client.setTimers();
         };
     }
 }

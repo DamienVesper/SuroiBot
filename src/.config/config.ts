@@ -31,6 +31,11 @@ export const config = {
     },
 
     modules: {
+        caching: {
+            connectionString: process.env.REDIS_URL!,
+            prefix: "suroibot",
+            enabled: true
+        },
         logging: {
             enabled: false
         },
@@ -46,6 +51,9 @@ export const config = {
             },
             xpCooldown: 6e4,
             levelUpMessages: "none"
+        },
+        gameModeration: {
+            enabled: false
         },
         music: {
             enabled: true,
@@ -118,6 +126,10 @@ interface Config {
      */
     modules: {
         /**
+         * Caching
+         */
+        caching: Module<CachingModule>
+        /**
          * Logging
          */
         logging: Module<LoggingModule>
@@ -125,6 +137,10 @@ interface Config {
          * Leveling
          */
         leveling: Module<LevelingModule>
+        /**
+         * Game Moderation
+         */
+        gameModeration: Module<GameModeration>
         /**
          * Music Player
          */
@@ -144,6 +160,17 @@ type Module<ModuleTypeNarrowing> =
     | { enabled: true } & ModuleTypeNarrowing
     | { enabled: false };
 
+interface CachingModule {
+    /**
+     * The database connection string.
+     */
+    connectionString: string
+    /**
+     * The prefix of all Redis keys.
+     */
+    prefix: string
+}
+
 interface LoggingModule {
     channels: {
         modLog: Snowflake
@@ -159,6 +186,25 @@ interface LevelingModule {
 
     xpCooldown: number
     levelUpMessages: "channel" | "dm" | "none"
+}
+
+interface GameModeration {
+    /**
+     * The ingame moderation guild.
+     */
+    guild: Snowflake
+    /**
+     * Roles in the ingame moderation guild.
+     */
+    roles: Record<"leader" | "gameMod", Snowflake>
+    /**
+     * Base API URL.
+     */
+    apiUrl: string
+    /**
+     * API Key
+     */
+    apiKey: string
 }
 
 interface MusicModule extends Partial<ManagerOptions> {

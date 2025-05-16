@@ -1,5 +1,6 @@
 import { config } from "../.config/config.js";
 
+import { RedisClient } from "bun";
 import {
     ActivityType,
     Client,
@@ -26,7 +27,6 @@ import {
     Structure,
     type Player
 } from "magmastream";
-import { Font, FontFactory } from "canvacord";
 import { drizzle } from "drizzle-orm/node-postgres";
 
 import { basename, dirname, resolve } from "path";
@@ -49,6 +49,7 @@ import {
     cleanse,
     createTrackBar
 } from "../utils/utils.js";
+import { updateLeaderboards } from "../utils/db.js";
 
 interface DrizzleSchema extends Record<string, unknown> {
     guild: typeof Guild
@@ -76,6 +77,7 @@ export class DiscordBot extends Client<true> {
     lavalink!: Manager;
 
     db: ReturnType<typeof drizzle<DrizzleSchema>>;
+    redis: RedisClient | undefined;
 
     constructor () {
         super({
@@ -112,11 +114,12 @@ export class DiscordBot extends Client<true> {
             }
         });
 
-        // Load canvacord font.
-        if (!FontFactory.size) Font.fromFileSync(resolve(fileURLToPath(import.meta.url), "../../../assets/fonts/Inter-Regular.ttf"));
-
         // Instantiate the database connection.
         this.db = drizzle<DrizzleSchema>({ connection: config.db });
+
+        // Instantiate the redis connection.
+        if (config.modules.caching.enabled)
+            this.redis = new RedisClient(config.modules.caching.connectionString);
 
         // Prepare the Lavalink client.
         if (this.config.modules.music.enabled) {
@@ -268,12 +271,24 @@ export class DiscordBot extends Client<true> {
             const commands = this.commands.map(command => command.cmd.toJSON());
             await this.rest.put(mode === "dev"
                 ? Routes.applicationGuildCommands(this.user.id, config.dev.guildID)
-                : Routes.applicationCommands(this.user.id)
-            , { body: commands });
+                : Routes.applicationCommands(this.user.id),
+            { body: commands });
 
             this.logger.info("Gateway", `Deployed all commands ${mode === "dev" ? "in development guild" : "globally"}.`);
         } catch (err: any) {
             this.logger.error("Gateway", err);
+        }
+    };
+
+    /**
+     * Setup timers for the client.
+     */
+    setTimers = async (): Promise<void> => {
+        if (this.config.modules.caching.enabled) {
+            await updateLeaderboards(this);
+
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            setInterval(updateLeaderboards, 3e5, this);
         }
     };
 

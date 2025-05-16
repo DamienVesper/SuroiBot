@@ -10,7 +10,11 @@ const customData = {
     channels: {
         bugReports: "1109649399203762247"
     },
-
+    roles: {
+        admin: "1133172590630936686",
+        mod: "1079214909079953458",
+        wikian: "1238861060610592839"
+    },
     domain: "suroi.io",
     github: {
         repo: "HasangerGames/suroi",

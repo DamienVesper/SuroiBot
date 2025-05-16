@@ -1,6 +1,7 @@
 import { EmbedBuilder, Events } from "discord.js";
 
 import { Event } from "../classes/Event.js";
+import { timestamp } from "../utils/utils.js";
 
 const EventType = Events.GuildMemberAdd;
 
@@ -19,7 +20,9 @@ class GuildMemberAdd extends Event<typeof EventType> {
             const logEmbed = new EmbedBuilder()
                 .setDescription([
                     `<@${member.id}> joined the server.`,
-                    `There are now **${member.guild.memberCount}** members.`
+                    `There are now **${member.guild.memberCount}** members.`,
+                    "",
+                    `Account Created: ${timestamp(member.user.createdAt)}`
                 ].join("\n"))
                 .setThumbnail(member.displayAvatarURL())
                 .setTimestamp()
