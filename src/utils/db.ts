@@ -1,4 +1,4 @@
-import { type Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
 import { and, asc, desc, eq } from "drizzle-orm";
 
 import type { DiscordBot } from "../modules/DiscordBot.js";
@@ -6,17 +6,11 @@ import type { DiscordBot } from "../modules/DiscordBot.js";
 import { User } from "../models/User.js";
 import { Guild } from "../models/Guild.js";
 
-export const updateLeaderboards = async (client: DiscordBot): Promise<void> => {
-    if (!client.redis || !client.config.modules.caching.enabled) return;
-
-    const guilds = await client.db.select().from(Guild);
-
-    for (const guild of guilds) {
-        const users = await getLBUsers(client, guild.discordId);
-        await client.redis.set(`${client.config.modules.caching.prefix}/${guild.id}/lb`, JSON.stringify(users));
-    }
-};
-
+/**
+ * Fetch all users in a guild, and return their XP data.
+ * @param client The Discord client.
+ * @param id The guild ID.
+ */
 export const getLBUsers = async (client: DiscordBot, id: Snowflake): Promise<LBUser[]> => {
     return (await client.db.select().from(User).where(
         and(
@@ -33,6 +27,21 @@ export const getLBUsers = async (client: DiscordBot, id: Snowflake): Promise<LBU
             level: user.level,
             xp: user.xp
         }));
+};
+
+/**
+ * Update all guild leaderboards.
+ * @param client The Discord client.
+ */
+export const updateLeaderboards = async (client: DiscordBot): Promise<void> => {
+    if (!client.redis || !client.config.modules.caching.enabled) return;
+
+    const guilds = await client.db.select().from(Guild);
+
+    for (const guild of guilds) {
+        const users = await getLBUsers(client, guild.discordId);
+        await client.redis.set(`${client.config.modules.caching.prefix}/${guild.id}/lb`, JSON.stringify(users));
+    }
 };
 
 export type LBUser = Pick<typeof User.$inferSelect, "discordId" | "level" | "xp">;

@@ -23,10 +23,10 @@ class InteractionCreate extends Event<typeof EventType> {
                  * Check if the bot, if in a guild, has the minimum permissions to send messages.
                  * If it is in a guild and does not have the required permissions, abort the interaction.
                  */
-                if (interaction.inGuild() && !interaction.channel?.permissionsFor(interaction.guild!.members.me!).has([
+                if ((interaction.inCachedGuild() && !interaction.channel?.permissionsFor(interaction.guild.members.me!).has([
                     PermissionFlagsBits.ViewChannel,
                     PermissionFlagsBits.SendMessages
-                ])) return;
+                ])) || interaction.inRawGuild()) return;
 
                 /**
                  * After a recent deployment, it takes time to update the cached command.

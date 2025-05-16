@@ -19,7 +19,7 @@ class GuildBanRemove extends Event<typeof EventType> {
             if (!this.client.config.modules.logging.enabled) return;
 
             const log = (await ban.guild.fetchAuditLogs({
-                type: AuditLogEvent.MemberBanAdd,
+                type: AuditLogEvent.MemberBanRemove,
                 limit: 1
             })).entries.first();
 
