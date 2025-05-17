@@ -3,7 +3,7 @@ import {
     SlashCommandSubcommandBuilder,
     type ChatInputCommandInteraction
 } from "discord.js";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import { Subcommand } from "../../../classes/Subcommand.js";
 
@@ -35,7 +35,7 @@ class List extends Subcommand {
         const cases = await this.client.db.select().from(Case).where(and(
             eq(Case.guildId, interaction.guildId),
             eq(Case.discordId, user.id)
-        ));
+        )).orderBy(asc(Case.id));
 
         if (cases.length === 0) {
             await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, `${user.id === interaction.user.id ? "You have" : "That user has"} no cases.`)] });
@@ -44,21 +44,21 @@ class List extends Subcommand {
 
         const embeds: EmbedBuilder[] = [];
 
-        for (let i = 0; i < cases.length; i += 5) {
-            const caseArr = cases.slice(i, Math.min(i + 5, cases.length - 1)).map(x => {
+        for (let i = 0; i < cases.length; i += 3) {
+            const caseArr = cases.slice(i, Math.min(i + 3, cases.length)).map(x => {
                 /**
                  * This is really messy. Needs to be improved.
                  */
                 const desc = [
                     `### ${capitalize(x.action)} | Case #${x.id}`,
-                    `> Active: ${x.action ? this.client.config.emojis.checkmark : this.client.config.emojis.xmark}`,
+                    `> Active: ${x.active ? this.client.config.emojis.checkmark : this.client.config.emojis.xmark}`,
                     `> Date: <t:${Math.floor(x.createdAt.getTime() / 1e3)}:f>`,
                     `> Moderator: <@${x.issuerId}>`,
                     `> Reason: \`${cleanse(x.reason)}\``
                 ];
 
                 if (x.expiresAt) desc.splice(2, 0, `> Duration: ${numToCooldownFormat(x.expiresAt.valueOf() - x.createdAt.valueOf())}`);
-                return desc;
+                return desc.join("\n");
             }).join("\n");
 
             const sEmbed = new EmbedBuilder()
@@ -72,8 +72,10 @@ class List extends Subcommand {
             embeds.push(sEmbed);
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const paginator = new Paginator(this.client, interaction, interaction.user, embeds);
+        if (embeds.length > 1) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const paginator = new Paginator(this.client, interaction, interaction.user, embeds);
+        } else await interaction.followUp({ embeds: [embeds[0]] });
     };
 }
 
