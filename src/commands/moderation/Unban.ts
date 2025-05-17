@@ -55,7 +55,7 @@ class Unban extends Command {
             action: CaseAction.Unban
         } satisfies typeof Case.$inferInsert).returning())[0];
 
-        await interaction.guild.members.unban(targetId, reason)
+        await interaction.guild.members.unban(targetId, `${reason} - ${interaction.user.username}`)
             .then(async () => {
                 const replyEmbed = this.client.createEmbed(targetId, `${this.client.config.emojis.checkmark} **${targetId} was unbanned.`)
                     .setColor(this.client.config.colors.green);
@@ -70,7 +70,7 @@ class Unban extends Command {
                         const logEmbed = new EmbedBuilder()
                             .setAuthor({ name: target.user.tag })
                             .setDescription([
-                                `**\`${targetId}\` (<@${targetId}>) was unbanned**.`,
+                                `**\`${targetId}\` (<@${targetId}>) was unbanned.**`,
                                 "",
                                 "### Responsible Moderator",
                                 `<@${interaction.user.id}>`,

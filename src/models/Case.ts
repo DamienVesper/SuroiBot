@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+// import { relations } from "drizzle-orm";
 import {
     boolean,
     integer,
@@ -9,8 +9,8 @@ import {
     timestamp
 } from "drizzle-orm/pg-core";
 
-import { Guild } from "./Guild.js";
-import { User } from "./User.js";
+// import { Guild } from "./Guild.js";
+// import { User } from "./User.js";
 
 export enum CaseAction {
     Warn = "warn",
@@ -25,8 +25,10 @@ export enum CaseAction {
     Unban = "unban"
 }
 
-export const Case = pgTable("user", {
-    sId: serial("id").primaryKey(),
+export const actionEnum = pgEnum("action", ["warn", "mute", "unmute", "kick", "softban", "ban", "unban"]);
+
+export const Case = pgTable("case", {
+    sId: serial("sId").primaryKey(),
     id: integer("id")
         .notNull(),
     createdAt: timestamp()
@@ -35,17 +37,17 @@ export const Case = pgTable("user", {
     updatedAt: timestamp(),
     expiresAt: timestamp(),
     discordId: text("discordId")
-        .notNull()
-        .references(() => User.discordId),
+        // .references(() => User.discordId)
+        .notNull(),
     issuerId: text("issuerId")
-        .notNull()
-        .references(() => User.discordId),
+        // .references(() => User.discordId)
+        .notNull(),
     guildId: text("guildId")
-        .notNull()
-        .references(() => Guild.discordId),
+        // .references(() => Guild.discordId)
+        .notNull(),
     reason: text("reason")
         .notNull(),
-    action: pgEnum("action", ["warn", "mute", "unmute", "kick", "softban", "ban", "unban"])()
+    action: actionEnum()
         .notNull()
         .$type<CaseAction>(),
     active: boolean("active")
@@ -53,17 +55,9 @@ export const Case = pgTable("user", {
         .default(true)
 });
 
-export const caseRelations = relations(Case, ({ one }) => ({
-    user: one(User, {
-        fields: [Case.discordId],
-        references: [User.discordId]
-    }),
-    issuer: one(User, {
-        fields: [Case.issuerId],
-        references: [User.discordId]
-    }),
-    guild: one(Guild, {
-        fields: [Case.guildId],
-        references: [Guild.discordId]
-    })
-}));
+// export const caseRelations = relations(Case, ({ one }) => ({
+//     guild: one(Guild, {
+//         fields: [Case.guildId],
+//         references: [Guild.discordId]
+//     })
+// }));

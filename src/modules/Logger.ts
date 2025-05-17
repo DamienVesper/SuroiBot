@@ -99,10 +99,11 @@ export class Logger {
         // Handle exceptions, if applicable.
         if (this.config.handleExceptions) {
             process.on("uncaughtException", (err, origin) => {
-                this.error("System", err.stack ?? err.message);
+                this.error("System", err.stack ?? err.message ?? err);
             });
-            process.on("unhandledRejection", (err: any, origin) => {
-                this.error("System", err?.stack ?? err);
+
+            process.on("unhandledRejection", (err, origin) => {
+                this.error("System", err);
             });
         }
     }
@@ -196,8 +197,13 @@ export class Logger {
      * @param args The arguments to normalize.
      */
     private normalizedArgs = (args: any[]): typeof args => args.map(arg => {
-        if (typeof arg === "object") return JSON.stringify(arg);
-        else return arg;
+        if (typeof arg === "object") {
+            const stringified = JSON.stringify(arg);
+            return stringified === "{}"
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                ? arg.toString?.()
+                : stringified;
+        } else return arg;
     });
 
     /**

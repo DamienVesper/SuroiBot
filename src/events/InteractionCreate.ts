@@ -173,7 +173,7 @@ const runCommand = async (client: InteractionCreate["client"], interaction: Chat
             : `"${interaction.user.tag}" (${interaction.user.id}) ran command ${interaction.commandName} outside of a guild.`);
         await cmd.run(interaction);
     } catch (err: any) {
-        client.logger.error("Gateway", err);
+        client.logger.error("Gateway", err.stack ?? err);
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         interaction.replied || interaction.deferred
             ? await interaction.followUp({ embeds: [client.createDenyEmbed(interaction.user, "There was an error executing this command.")], flags: interaction.ephemeral ? MessageFlags.Ephemeral : undefined })

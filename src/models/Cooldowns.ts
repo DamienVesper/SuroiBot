@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+// import { relations } from "drizzle-orm";
 import {
     pgTable,
     serial,
@@ -18,7 +18,7 @@ import { User } from "./User.js";
  * A bandage solution when the real problem is developer
  * skill issue, but whatever.
  */
-export const Cooldowns = pgTable("user", {
+export const Cooldowns = pgTable("cooldowns", {
     id: serial("id").primaryKey(),
     discordId: text("discordId")
         .notNull()
@@ -31,13 +31,13 @@ export const Cooldowns = pgTable("user", {
         .default(new Date(0))
 });
 
-export const userRelations = relations(User, ({ one }) => ({
-    user: one(User, {
-        fields: [Cooldowns.discordId],
-        references: [User.discordId]
-    }),
-    guild: one(Guild, {
-        fields: [Cooldowns.guildId],
-        references: [Guild.discordId]
-    })
-}));
+// export const cooldownRelations = relations(Cooldowns, ({ one }) => ({
+//     user: one(User, {
+//         fields: [Cooldowns.discordId],
+//         references: [User.discordId]
+//     }),
+//     guild: one(Guild, {
+//         fields: [Cooldowns.guildId],
+//         references: [Guild.discordId]
+//     })
+// }));

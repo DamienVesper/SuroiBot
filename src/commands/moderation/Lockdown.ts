@@ -51,9 +51,9 @@ class Lockdown extends Command {
         await interaction.deferReply();
 
         const isLocked = !interaction.channel.permissionsFor(interaction.guildId)?.has(PermissionFlagsBits.SendMessages);
-        await interaction.channel.permissionOverwrites.edit(interaction.guildId, { SendMessages: !isLocked }, { reason })
+        await interaction.channel.permissionOverwrites.edit(interaction.guildId, { SendMessages: !isLocked }, { reason: `${reason} - ${interaction.user.username}` })
             .then(async () => {
-                await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${isLocked ? "Locked" : "Unlocked"} #${interaction.channel!.name}**.`)] });
+                await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**${isLocked ? "Locked" : "Unlocked"} #${interaction.channel!.name}.**`)] });
 
                 if (this.client.config.modules.logging.enabled) {
                     const logChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
@@ -62,7 +62,7 @@ class Lockdown extends Command {
                         const logEmbed = new EmbedBuilder()
                             .setAuthor({ name: isLocked ? "Lock" : "Unlock" })
                             .setDescription([
-                                `**<#${interaction.channelId}> was ${isLocked ? "locked" : "unlocked"}**.`,
+                                `**<#${interaction.channelId}> was ${isLocked ? "locked" : "unlocked"}.**`,
                                 "",
                                 "### Responsible Moderator",
                                 `<@${interaction.user.id}>`,

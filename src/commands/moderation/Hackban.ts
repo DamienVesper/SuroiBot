@@ -56,7 +56,7 @@ class Hackban extends Command {
             action: CaseAction.Hackban
         } satisfies typeof Case.$inferInsert).returning())[0];
 
-        await interaction.guild.members.ban(targetId, { reason })
+        await interaction.guild.members.ban(targetId, { reason: `${reason} - ${interaction.user.username}` })
             .then(async () => {
                 const replyEmbed = this.client.createEmbed(targetId, `${this.client.config.emojis.checkmark} **${targetId} was banned.`)
                     .setColor(this.client.config.colors.green);
@@ -71,7 +71,7 @@ class Hackban extends Command {
                         const logEmbed = new EmbedBuilder()
                             .setAuthor({ name: targetId })
                             .setDescription([
-                                `**\`${targetId}\` (<@${targetId}>) was hackbanned**.`,
+                                `**\`${targetId}\` (<@${targetId}>) was hackbanned.**`,
                                 "",
                                 "### Responsible Moderator",
                                 `<@${interaction.user.id}>`,

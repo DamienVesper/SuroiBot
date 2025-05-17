@@ -39,14 +39,14 @@ class MessageCreate extends Event<typeof EventType> {
             let cooldowns: typeof Cooldowns.$inferSelect | null = cooldownQuery.length !== 0 ? cooldownQuery[0] : null;
 
             if (guild === null) {
-                this.client.logger.debug("Database", `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
+                this.client.logger.debug("Drizzle", `Created entry for guild "${message.guild.name}" (${message.guild.id}).`);
                 guild = (await this.client.db.insert(Guild).values({
                     discordId: message.guildId
                 } satisfies typeof Guild.$inferInsert).returning())[0];
             }
 
             if (dbUser === null) {
-                this.client.logger.debug("Database", `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
+                this.client.logger.debug("Drizzle", `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                 dbUser = (await this.client.db.insert(User).values({
                     discordId: message.author.id,
                     guildId: message.guildId,
@@ -55,7 +55,7 @@ class MessageCreate extends Event<typeof EventType> {
             }
 
             if (cooldowns === null) {
-                this.client.logger.debug("Database", `Created account for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
+                this.client.logger.debug("Drizzle", `Created cooldowns for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                 cooldowns = (await this.client.db.insert(Cooldowns).values({
                     discordId: message.author.id,
                     guildId: message.guildId
@@ -64,7 +64,7 @@ class MessageCreate extends Event<typeof EventType> {
 
             if (this.client.config.modules.leveling.enabled) {
                 if (guild === null || dbUser === null) {
-                    this.client.logger.error("Database", `Guild or User were found null for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
+                    this.client.logger.error("Drizzle", `Guild or User were found null for "${message.author.tag}" (${message.author.id}) in "${message.guild.name}" (${message.guild.id}).`);
                     return;
                 }
 

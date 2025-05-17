@@ -118,8 +118,19 @@ export class DiscordBot extends Client<true> {
         this.db = drizzle<DrizzleSchema>({ connection: config.db });
 
         // Instantiate the redis connection.
-        if (config.modules.caching.enabled)
+        if (config.modules.caching.enabled) {
             this.redis = new RedisClient(config.modules.caching.connectionString);
+
+            this.redis.onconnect = () => {
+                this.logger.info("Redis", "Connected to caching database.");
+            };
+
+            this.redis.onclose = err => {
+                this.logger.error("Redis", err);
+            };
+
+            void this.redis.connect();
+        }
 
         // Prepare the Lavalink client.
         if (this.config.modules.music.enabled) {
@@ -333,7 +344,7 @@ export class DiscordBot extends Client<true> {
         new EmbedBuilder()
             .setColor(this.config.colors.red)
             .setDescription([
-                `You were ${action}${action.endsWith("n") ? "ned" : action.endsWith("e") ? "d" : "ed"} from **${cleanse(guild.name)}**.`,
+                `You were ${action}${action.endsWith("n") ? "ed" : action.endsWith("e") ? "d" : "ed"} ${action === CaseAction.Warn || action === CaseAction.Mute || action === CaseAction.Unmute ? "in" : "from"} **${cleanse(guild.name)}**.`,
                 `**Reason:** ${cleanse(reason)}`
             ].join("\n"))
             .setTimestamp()
@@ -347,8 +358,8 @@ export class DiscordBot extends Client<true> {
      * @param victim The victim of the action.
      * @param guild The guild the action is invoked from.
      */
-    createReplyCaseEmbed = (id: number, action: CaseAction, victim: DiscordUser, guild: Guild): EmbedBuilder => (
-        this.createApproveEmbed(victim, `**${cleanse(victim.displayName)} was ${action}${action.endsWith("n") ? "ned" : action.endsWith("e") ? "d" : "ed"} from **${cleanse(guild.name)}**.`)
+    createReplyCaseEmbed = (id: number, action: CaseAction, victim: DiscordUser): EmbedBuilder => (
+        this.createApproveEmbed(victim, `**${cleanse(victim.displayName)} was ${action}${action.endsWith("n") ? "ed" : action.endsWith("e") ? "d" : "ned"}.**`)
     );
 
     createCaseEmbed = (id: number, action: CaseAction, moderator: DiscordUser, target: DiscordUser, reason: string): EmbedBuilder => (
@@ -380,7 +391,7 @@ export class DiscordBot extends Client<true> {
         const sEmbed = new EmbedBuilder()
             .setAuthor({ name: target.tag, iconURL: target.displayAvatarURL() })
             .setDescription([
-                `**${target.tag} (<@${target.id}>) was ${actionStr}**.`,
+                `**${target.tag} (<@${target.id}>) was ${actionStr}.**`,
                 "",
                 "### Responsible Moderator",
                 `<@${perpetrator.id}>`,

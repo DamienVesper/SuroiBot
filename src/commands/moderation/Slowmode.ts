@@ -51,9 +51,9 @@ class Slowmode extends Command {
         const reason = interaction.options.getString("reason") ?? "No reason provided";
 
         await interaction.deferReply();
-        await interaction.channel.setRateLimitPerUser(duration, reason)
+        await interaction.channel.setRateLimitPerUser(duration, `${reason} - ${interaction.user.username}`)
             .then(async () => {
-                await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**Set slowmode to ${duration} seconds**.`)] });
+                await interaction.followUp({ embeds: [this.client.createApproveEmbed(interaction.user, `**Set slowmode to ${duration} seconds.**`)] });
 
                 if (this.client.config.modules.logging.enabled) {
                     const logChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);

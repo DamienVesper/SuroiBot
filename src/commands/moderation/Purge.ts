@@ -40,7 +40,7 @@ class Purge extends Command {
         if (target) messages = messages.filter(x => x.author.id === target.id);
 
         if (messages.size === 0) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "There are no messages to delete.")], flags: MessageFlags.Ephemeral });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "There are no messages to delete.")], flags: MessageFlags.Ephemeral });
             return;
         }
 

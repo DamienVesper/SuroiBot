@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "lib": ["ESNext", "DOM"],
+        "module": "NodeNext",
+        "target": "ES6",
+
+        "moduleResolution": "NodeNext",
+
+        "strict": true,
+        "strictNullChecks": true,
+        "alwaysStrict": true,
+        "skipLibCheck": true,
+
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+
+        "outDir": "drizzle"
+    },
+    "include": [
+        "src/models/*.ts",
+        "drizzle.config.ts"
+    ],
+    "exclude": ["node_modules"]
+}

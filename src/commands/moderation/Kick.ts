@@ -39,10 +39,10 @@ class Kick extends Command {
         const target = await interaction.guild.members.fetch(user.id);
 
         if (!target) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "That user is not in the server.")], flags: MessageFlags.Ephemeral });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "That user is not in the server.")], flags: MessageFlags.Ephemeral });
             return;
         } else if (!target.kickable || target.user.bot) {
-            await interaction.followUp({ embeds: [this.client.createDenyEmbed(interaction.user, "I cannot kick that user.")], flags: MessageFlags.Ephemeral });
+            await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "I cannot kick that user.")], flags: MessageFlags.Ephemeral });
             return;
         } else if (target.roles.highest.comparePositionTo(member.roles.highest) >= 0) {
             await interaction.reply({ embeds: [this.client.createDenyEmbed(interaction.user, "You do not outrank that user.")], flags: MessageFlags.Ephemeral });
@@ -62,9 +62,9 @@ class Kick extends Command {
         } satisfies typeof Case.$inferInsert).returning())[0];
 
         const msg = await target.send({ embeds: [this.client.createDMCaseEmbed(modCase.id, CaseAction.Kick, interaction.guild, interaction.user, reason)] });
-        await target.kick(reason)
+        await target.kick(`${reason} - ${interaction.user.username}`)
             .then(async () => {
-                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Kick, target.user, interaction.guild)] });
+                await interaction.followUp({ embeds: [this.client.createReplyCaseEmbed(modCase.id, CaseAction.Kick, target.user)] });
                 if (this.client.config.modules.logging.enabled) {
                     const logChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.modLog);
                     const punishmentChannel = await interaction.guild.channels.fetch(this.client.config.modules.logging.channels.punishmentLog);
