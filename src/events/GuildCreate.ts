@@ -16,7 +16,7 @@ class GuildCreate extends Event<typeof EventType> {
         };
 
         this.run = async guild => {
-            const guildQuery = await this.client.db.select().from(Guild).where(eq(Guild.discordId, guild.id)).limit(1);
+            const guildQuery = await this.client.db.select({}).from(Guild).where(eq(Guild.discordId, guild.id)).limit(1);
             if (guildQuery.length === 0) {
                 this.client.logger.info("Drizzle", `Created entry for guild "${guild.name}" (${guild.id}).`);
                 await this.client.db.insert(Guild).values({

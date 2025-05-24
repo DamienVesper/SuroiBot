@@ -28,6 +28,7 @@ import {
     type Player
 } from "magmastream";
 import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import { basename, dirname, resolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -35,6 +36,7 @@ import { readdir } from "fs/promises";
 
 import { Logger } from "./Logger.js";
 import { MusicPlayer } from "./MusicPlayer.js";
+import { SuroiAPI } from "./SuroiAPI.js";
 
 import { Command } from "../classes/Command.js";
 import { Event } from "../classes/Event.js";
@@ -75,9 +77,9 @@ export class DiscordBot extends Client<true> {
     modals = new Collection<string, null>();
 
     lavalink!: Manager;
-
     db: ReturnType<typeof drizzle<DrizzleSchema>>;
-    redis: RedisClient | undefined;
+    redis?: RedisClient;
+    suroi?: SuroiAPI;
 
     constructor () {
         super({
@@ -115,7 +117,20 @@ export class DiscordBot extends Client<true> {
         });
 
         // Instantiate the database connection.
-        this.db = drizzle<DrizzleSchema>({ connection: config.db });
+        const pool = new Pool({
+            ...config.db,
+            idleTimeoutMillis: 3e4
+        });
+
+        pool.on("connect", () => {
+            this.logger.info("PostgreSQL", "Connected to database.");
+        });
+
+        pool.on("error", err => {
+            this.logger.error("PostgreSQL", err.stack ?? err.message);
+        });
+
+        this.db = drizzle<DrizzleSchema>({ client: pool });
 
         // Instantiate the redis connection.
         if (config.modules.caching.enabled) {

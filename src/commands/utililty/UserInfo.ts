@@ -55,8 +55,8 @@ class UserInfo extends Command {
             }
         ];
 
-        const cases = await this.client.db.select().from(Case).where(and(
-            eq(Case.discordId, member.id),
+        const cases = await this.client.db.select({ action: Case.action }).from(Case).where(and(
+            eq(Case.targetId, member.id),
             eq(Case.guildId, interaction.guildId),
             eq(Case.active, true)
         ));

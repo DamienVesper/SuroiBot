@@ -12,7 +12,11 @@ import { Guild } from "../models/Guild.js";
  * @param id The guild ID.
  */
 export const getLBUsers = async (client: DiscordBot, id: Snowflake): Promise<LBUser[]> => {
-    return (await client.db.select().from(User).where(
+    return (await client.db.select({
+        discordId: User.discordId,
+        level: User.level,
+        xp: User.xp
+    }).from(User).where(
         and(
             eq(User.guildId, id),
             eq(User.xpBanned, false)
@@ -36,7 +40,10 @@ export const getLBUsers = async (client: DiscordBot, id: Snowflake): Promise<LBU
 export const updateLeaderboards = async (client: DiscordBot): Promise<void> => {
     if (!client.redis || !client.config.modules.caching.enabled) return;
 
-    const guilds = await client.db.select().from(Guild);
+    const guilds = await client.db.select({
+        id: Guild.id,
+        discordId: Guild.discordId
+    }).from(Guild);
 
     for (const guild of guilds) {
         const users = await getLBUsers(client, guild.discordId);

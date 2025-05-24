@@ -1,42 +1,20 @@
 // import { relations } from "drizzle-orm";
-import {
-    boolean,
-    integer,
-    numeric,
-    pgTable,
-    serial,
-    text,
-    timestamp
-} from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
 
 // import { Case } from "./Case.js";
-// import { Guild } from "./Guild.js";
+import { Guild } from "./Guild.js";
 // import { Cooldowns } from "./Cooldowns.js";
 
-export const User = pgTable("user", {
-    id: serial("id").primaryKey(),
-    createdAt: timestamp()
-        .notNull()
-        .defaultNow(),
-    discordId: text("discordId")
-        .notNull()
-        .unique(),
-    guildId: text("guildId")
-        // .references(() => Guild.discordId)
-        .notNull(),
-    xp: integer()
-        .notNull()
-        .default(0),
-    level: integer()
-        .notNull()
-        .default(0),
-    balance: numeric()
-        .notNull()
-        .default("0.00"),
-    xpBanned: boolean()
-        .notNull()
-        .default(false)
-});
+export const User = pgTable("user", t => ({
+    id: t.serial().primaryKey(),
+    createdAt: t.timestamp().notNull().defaultNow(),
+    discordId: t.text().notNull(),
+    guildId: t.text().notNull().references(() => Guild.discordId),
+    xp: t.integer().notNull().default(0),
+    level: t.integer().notNull().default(0),
+    balance: t.numeric().notNull().default("0.00"),
+    xpBanned: t.boolean().notNull().default(false)
+}));
 
 // export const userRelations = relations(User, ({ one, many }) => ({
 //     guild: one(Guild, {

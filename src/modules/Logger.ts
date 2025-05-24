@@ -99,11 +99,11 @@ export class Logger {
         // Handle exceptions, if applicable.
         if (this.config.handleExceptions) {
             process.on("uncaughtException", (err, origin) => {
-                this.error("System", err.stack ?? err.message ?? err);
+                this.error("System", err.stack ?? [err.message, origin]);
             });
 
             process.on("unhandledRejection", (err, origin) => {
-                this.error("System", err);
+                this.error("System", err, origin);
             });
         }
     }

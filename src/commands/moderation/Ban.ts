@@ -61,7 +61,7 @@ class Ban extends Command {
         const caseCount = (await this.client.db.select({ count: count() }).from(Case).where(eq(Case.guildId, interaction.guildId)))[0].count;
         const modCase = (await this.client.db.insert(Case).values({
             id: caseCount + 1,
-            discordId: target.id,
+            targetId: target.id,
             issuerId: interaction.user.id,
             guildId: interaction.guildId,
             reason,

@@ -26,7 +26,7 @@ jobs:
         run: bun install
 
       - name: Lint
-        run: bun ci:lint
+        run: bun lint:ci
 
       - name: Build
         run: bun run build

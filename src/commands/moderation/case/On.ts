@@ -30,7 +30,7 @@ class On extends Subcommand {
         const id = interaction.options.getNumber("id", true);
         await interaction.deferReply();
 
-        const cases = await this.client.db.select().from(Case).where(and(
+        const cases = await this.client.db.select({ active: Case.active }).from(Case).where(and(
             eq(Case.guildId, interaction.guildId),
             eq(Case.id, id)
         )).limit(1);

@@ -30,7 +30,16 @@ class View extends Subcommand {
         const id = interaction.options.getNumber("id", true);
         await interaction.deferReply();
 
-        const cases = await this.client.db.select().from(Case).where(and(
+        const cases = await this.client.db.select({
+            id: Case.id,
+            action: Case.action,
+            active: Case.active,
+            createdAt: Case.createdAt,
+            expiresAt: Case.expiresAt,
+            targetId: Case.targetId,
+            issuerId: Case.issuerId,
+            reason: Case.reason
+        }).from(Case).where(and(
             eq(Case.guildId, interaction.guildId),
             eq(Case.id, id)
         )).limit(1);
@@ -43,16 +52,18 @@ class View extends Subcommand {
         const modCase = cases[0];
 
         const perpetrator = await this.client.users.fetch(modCase.issuerId);
-        const target = await this.client.users.fetch(modCase.discordId);
+        const target = await this.client.users.fetch(modCase.targetId);
 
         const desc = [
             `**Active:** ${modCase.active ? this.client.config.emojis.checkmark : this.client.config.emojis.xmark}`,
-            "",
             `**Action:** \`${capitalize(modCase.action)}\``,
-            "",
             `**Date:** <t:${Math.floor(modCase.createdAt.getTime() / 1e3)}:f>`,
-            `**Target:** ${target.tag} (<@${modCase.discordId}>)`,
-            `**Moderator:** ${perpetrator.tag} (<@${modCase.issuerId}>)`,
+            target
+                ? `**Target:** ${target.tag} (<@${modCase.targetId}>)`
+                : `**Target:** <@${modCase.targetId}>`,
+            perpetrator
+                ? `**Moderator:** ${perpetrator.tag} (<@${modCase.issuerId}>)`
+                : `**Moderator:** <@${modCase.issuerId}>`,
             `**Reason:** \`${modCase.reason}\``
         ];
 

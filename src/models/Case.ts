@@ -1,13 +1,5 @@
 // import { relations } from "drizzle-orm";
-import {
-    boolean,
-    integer,
-    pgEnum,
-    pgTable,
-    serial,
-    text,
-    timestamp
-} from "drizzle-orm/pg-core";
+import { pgEnum, pgTable } from "drizzle-orm/pg-core";
 
 // import { Guild } from "./Guild.js";
 // import { User } from "./User.js";
@@ -25,35 +17,21 @@ export enum CaseAction {
     Unban = "unban"
 }
 
-export const actionEnum = pgEnum("action", ["warn", "mute", "unmute", "kick", "softban", "ban", "unban"]);
+export const CaseActionEnum = pgEnum("caseAction", ["warn", "mute", "unmute", "kick", "softban", "ban", "unban"]);
 
-export const Case = pgTable("case", {
-    sId: serial("sId").primaryKey(),
-    id: integer("id")
-        .notNull(),
-    createdAt: timestamp()
-        .notNull()
-        .defaultNow(),
-    updatedAt: timestamp(),
-    expiresAt: timestamp(),
-    discordId: text("discordId")
-        // .references(() => User.discordId)
-        .notNull(),
-    issuerId: text("issuerId")
-        // .references(() => User.discordId)
-        .notNull(),
-    guildId: text("guildId")
-        // .references(() => Guild.discordId)
-        .notNull(),
-    reason: text("reason")
-        .notNull(),
-    action: actionEnum()
-        .notNull()
-        .$type<CaseAction>(),
-    active: boolean("active")
-        .notNull()
-        .default(true)
-});
+export const Case = pgTable("case", t => ({
+    sId: t.serial().primaryKey(),
+    id: t.integer().notNull(),
+    createdAt: t.timestamp().notNull().defaultNow(),
+    updatedAt: t.timestamp(),
+    expiresAt: t.timestamp(),
+    targetId: t.text().notNull(),
+    issuerId: t.text().notNull(),
+    guildId: t.text().notNull(),
+    reason: t.text("reason").notNull(),
+    action: CaseActionEnum().notNull().$type<CaseAction>(),
+    active: t.boolean().notNull().default(true)
+}));
 
 // export const caseRelations = relations(Case, ({ one }) => ({
 //     guild: one(Guild, {

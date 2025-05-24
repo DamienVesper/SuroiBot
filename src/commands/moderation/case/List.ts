@@ -32,9 +32,17 @@ class List extends Subcommand {
         const user = interaction.options.getUser("user") ?? interaction.user;
         await interaction.deferReply();
 
-        const cases = await this.client.db.select().from(Case).where(and(
+        const cases = await this.client.db.select({
+            id: Case.id,
+            action: Case.action,
+            active: Case.active,
+            createdAt: Case.createdAt,
+            expiresAt: Case.expiresAt,
+            issuerId: Case.issuerId,
+            reason: Case.reason
+        }).from(Case).where(and(
             eq(Case.guildId, interaction.guildId),
-            eq(Case.discordId, user.id)
+            eq(Case.targetId, user.id)
         )).orderBy(asc(Case.id));
 
         if (cases.length === 0) {

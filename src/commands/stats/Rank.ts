@@ -30,7 +30,11 @@ class Rank extends Command {
 
         await interaction.deferReply();
 
-        const userQuery = await this.client.db.select().from(User).where(and(
+        const userQuery = await this.client.db.select({
+            discordId: User.discordId,
+            level: User.level,
+            xp: User.xp
+        }).from(User).where(and(
             eq(User.discordId, interaction.user.id),
             eq(User.guildId, interaction.guildId))
         ).limit(1);

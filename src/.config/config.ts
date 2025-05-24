@@ -8,9 +8,6 @@ import type { ManagerOptions } from "magmastream";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { config as dotenvConfig } from "dotenv";
-dotenvConfig();
-
 const argv = yargs(hideBin(process.argv)).options({
     mode: { type: "string", default: "dev" }
 }).argv as Args;
@@ -77,6 +74,9 @@ export const config = {
                 tremoloVibratoFrequency: 5,
                 voiceTimeout: 3e4
             }
+        },
+        suroi: {
+            enabled: false
         }
     },
 
@@ -145,6 +145,10 @@ interface Config {
          * Music Player
          */
         music: Module<MusicModule>
+        /**
+         * Suroi API
+         */
+        suroi: Module<SuroiModule>
     }
 
     /**
@@ -157,8 +161,8 @@ interface Config {
 }
 
 type Module<ModuleTypeNarrowing> =
-    | { enabled: true } & ModuleTypeNarrowing
-    | { enabled: false };
+    | { enabled: false } & Partial<ModuleTypeNarrowing>
+    | { enabled: true } & ModuleTypeNarrowing;
 
 interface CachingModule {
     /**
@@ -217,6 +221,11 @@ interface MusicModule extends Partial<ManagerOptions> {
         tremoloVibratoFrequency: number
         voiceTimeout: number
     }
+}
+
+interface SuroiModule {
+    baseURL: string
+    apiKey: string
 }
 
 interface Args {
